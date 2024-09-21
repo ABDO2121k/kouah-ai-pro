@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullName  String
+  email     String   @unique
+  clerkId   String   @unique
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stripeId     String?
+  subscription Billings?
+  chatBots     ChatBot[]
+}
+
+model Billings {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  plan    Plans   @default(STANDARD)
+  credits Int     @default(10)
+  User    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String? @unique @db.Uuid
+}
+
+model LeadField {
+  id        String   @id @default(cuid())
+  fieldName String
+  chatBotId String?
+  chatBot   ChatBot? @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
+}
+
+model File {
+  id        String   @id @default(cuid())
+  fileName  String
+  size      String
+  type      String   @default("File")
+  key       String
+  chatBotId String?
+  url       String
+  chatBot   ChatBot? @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
+}
+
+model Query {
+  id        String   @id @default(cuid())
+  query     String
+  answer    String
+  createdAt DateTime @default(now())
+  chatBotId String?
+  chatBot   ChatBot? @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
+}
+
+model ChatBotLeadsData {
+  id        String        @id @default(cuid())
+  fieldName String?
+  value     String?
+  isShow    Boolean       @default(false)
+  leadId    String?
+  lead      ChatBotLeads? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model ChatBotLeads {
+  id        String             @id @default(cuid())
+  leadsData ChatBotLeadsData[]
+  createdAt DateTime           @default(now())
+  chatBotId String?
+  chatBot   ChatBot?           @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
+}
+
+model ChatBot {
+  id             String         @id @default(cuid())
+  origin         String         @default("files")
+  assistantId    String?
+  title          String         @default("Your chatbot title")
+  description    String         @default("")
+  logo           String         @default("")
+  theme          String         @default("dark")
+  leads          Boolean        @default(false)
+  language       String         @default("arabic")
+  initialMessage String         @default("Hello, how can I help you?")
+  suggestQ       String[]
+  placeHolder    String         @default("Type your question here...")
+  leadFields     LeadField[]
+  files          File[]
+  queries        Query[]
+  chatBotLeads   ChatBotLeads[]
+  createdAt      DateTime       @default(now())
+  User           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?        @db.Uuid
+  leadsTitle     String         @default("Tell us how to reach you")
+  queriesNumber  Int            @default(0)
+  customer       Customer[]
+  HelpDesk       HelpDesk[]
+  isRealTimeChat Boolean        @default(true)
+  isHelpDisk     Boolean        @default(false)
+  videosUsage    Int            @default(0)
+  fileUsage      Int            @default(0)
+  webUsage       Int            @default(0)
+}
+
+model HelpDesk {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  question  String
+  answer    String
+  chatbot   ChatBot @relation(fields: [chatBotId], references: [id])
+  chatBotId String
+}
+
+model Customer {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String?
+  chatRoom  ChatRoom[]
+  domainId  String?    @db.Uuid
+  ChatBot   ChatBot?   @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
+  chatBotId String?
+}
+
+model ChatRoom {
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  live       Boolean       @default(false)
+  mailed     Boolean       @default(false)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  Customer   Customer?     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String?       @db.Uuid
+  message    ChatMessage[]
+}
+
+model ChatMessage {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  message    String
+  role       Role?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  chatRoomId String?   @db.Uuid
+  seen       Boolean   @default(false)
+  ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+}
+
+enum Plans {
+  STANDARD
+  PRO
+  ULTIMATE
+}
+
+enum Role {
+  user
+  assistant
+}
