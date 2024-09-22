@@ -5,7 +5,7 @@ import { currentUser } from "@clerk/nextjs";
 
 export const updateGenerale = async (
   chatbotId: string,
-  values: { description: string | null; isHelpDisk: boolean; title: string }
+  values: { description: string | undefined; isHelpDisk: boolean; title: string }
 ) => {
   try {
     const userClerk = await currentUser();

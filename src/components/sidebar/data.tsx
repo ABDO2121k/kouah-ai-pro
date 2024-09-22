@@ -7,6 +7,7 @@ import {
   LucideProps,
   MessageCircle,
   MessagesSquare,
+  Paintbrush,
   Send,
   Settings,
   // ShoppingCart,
@@ -34,6 +35,12 @@ export const links1: {
     icon: Settings,
     variant: "ghost",
     navigation: "/dashboard/generale",
+  },
+  {
+    title: "Customize",
+    icon: Paintbrush,
+    variant: "ghost",
+    navigation: "/dashboard/customize",
   },
   // {
   //   title: "Drafts",
