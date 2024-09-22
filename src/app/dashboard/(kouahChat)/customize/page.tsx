@@ -1,3 +1,4 @@
+import HelpDesk from "@/components/forms/helpDisk";
 import React from "react";
 
 const page = () => {
@@ -11,6 +12,7 @@ const page = () => {
           Customize your chatbot here
         </span>
       </div>
+      <HelpDesk />
     </div>
   );
 };

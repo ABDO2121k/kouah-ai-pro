@@ -16,7 +16,7 @@ const HI = () => {
           className="h-full w-full rounded-md shadow-lg overflow-none"
         />
       </div>
-      <div className="col-span-1 hidden sm:flex w-full h-full p-5 mt-10  flex-col gap-5">
+      <div className="col-span-1 hidden sm:flex w-full  p-5 mt-10  flex-col gap-5">
         <div className="flex flex-col gap-1">
           <span className="text-zinc-500 font-bold">Name :</span>
           <span className="text-zinc-800 font-bold">{chatbot?.title}</span>

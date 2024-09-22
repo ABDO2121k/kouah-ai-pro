@@ -25,6 +25,8 @@ export const useGenerale = () => {
       description: "",
       title: "",
       isHelpDisk: false,
+      isLead:false,
+      isRealTimeChat:false
     },
   });
 
@@ -47,6 +49,8 @@ export const useGenerale = () => {
         description: chatbot.description ?? null,
         title: chatbot.title == "Your chatbot title" ? "" : chatbot.title,
         isHelpDisk: chatbot.isHelpDisk,
+        isLead: chatbot.isLead,
+        isRealTimeChat: chatbot.isRealTimeChat
       });
     }
   }, [chatbot, reset]);

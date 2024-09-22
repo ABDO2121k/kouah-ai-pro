@@ -86,9 +86,10 @@ model ChatBot {
   origin         String         @default("files")
   assistantId    String?
   title          String         @default("Your chatbot title")
+  subTitle       String         @default("")
   description    String         @default("")
   logo           String         @default("")
-  theme          String         @default("dark")
+  theme          String         @default("light")
   leads          Boolean        @default(false)
   language       String         @default("arabic")
   initialMessage String         @default("Hello, how can I help you?")
@@ -106,7 +107,8 @@ model ChatBot {
   customer       Customer[]
   HelpDesk       HelpDesk[]
   isRealTimeChat Boolean        @default(true)
-  isHelpDisk     Boolean        @default(false)
+  isHelpDisk     Boolean        @default(true)
+  isLead         Boolean        @default(false)
   videosUsage    Int            @default(0)
   fileUsage      Int            @default(0)
   webUsage       Int            @default(0)
