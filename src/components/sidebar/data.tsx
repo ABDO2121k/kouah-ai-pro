@@ -8,6 +8,7 @@ import {
   MessageCircle,
   MessagesSquare,
   Send,
+  Settings,
   // ShoppingCart,
   // Trash2,
   Users2,
@@ -27,6 +28,12 @@ export const links1: {
     icon: MessageCircle,
     variant: "ghost",
     navigation: "/dashboard/bot",
+  },
+  {
+    title: "Generale",
+    icon: Settings,
+    variant: "ghost",
+    navigation: "/dashboard/generale",
   },
   // {
   //   title: "Drafts",

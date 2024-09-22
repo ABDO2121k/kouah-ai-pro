@@ -12,6 +12,7 @@ export const useChatbots = () => {
   const [selectedChatbot, setSelectedChatbot] = useState("");
   const [currentlyDeleting, setCurrentlyDeleting] = useState("");
   const [prevSelected, setPrevSelected] = useState("");
+  const [actions, setActions] = useState(0);
 
   const getAllChatbots = async () => {
     const chatbotsV = await getAccountChatBots();
@@ -25,7 +26,7 @@ export const useChatbots = () => {
         setLoading(false);
       }, 2000);
     });
-  }, [currentlyDeleting]);
+  }, [currentlyDeleting, actions]);
 
   const deletechatbot = async (chatbotId: string) => {
     setCurrentlyDeleting(chatbotId);
@@ -46,7 +47,12 @@ export const useChatbots = () => {
       !prevSelected &&
       (selectedChatbot != prevSelected || (!selectedChatbot && !prevSelected))
     ) {
-      setSelectedChatbot(chatbots[0].id);
+      const selected = localStorage.getItem("selectedChatbot");
+      if (selected) {
+        setSelectedChatbot(selected);
+      } else {
+        setSelectedChatbot(chatbots[0].id);
+      }
       setPrevSelected(selectedChatbot);
     }
   }, [chatbots, selectedChatbot]);
@@ -59,5 +65,6 @@ export const useChatbots = () => {
     deletechatbot,
     currentlyDeleting,
     setCurrentlyDeleting,
+    setActions,
   };
 };

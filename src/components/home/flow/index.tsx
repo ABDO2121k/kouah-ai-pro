@@ -180,7 +180,7 @@ const Flow = () => {
         >
           <Sparkles /> WORKFLOW
         </Button>
-        <h1 className="max-w-4xl text-5xl md:text-6xl lg:text-7xl font-extrabold">
+        <h1 className="max-w-4xl text-5xl md:text-6xl lg:text-7xl font-extrabold text-center">
           How <span className="text-[#06b6d4]">KouahChat</span> Works
         </h1>
       </div>

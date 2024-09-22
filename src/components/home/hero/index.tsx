@@ -19,7 +19,7 @@ export default function HeroSection() {
           Why <span className="text-[#06b6d4]">Us</span> ?
         </h1>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto w-full p-10 mb-10 mt-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4  mx-auto w-full px-4 sm:px-10 max-w-[100%] sm:max-w-[80%] mt-10">
         <WobbleCard
           containerClassName="col-span-1 lg:col-span-2 h-full bg-pink-800 min-h-[500px] lg:min-h-[300px]"
           className=""
@@ -39,7 +39,7 @@ export default function HeroSection() {
             width={500}
             height={500}
             alt="linear demo image"
-            className="absolute -right-4 lg:-right-[30%] grayscale filter -bottom-10 object-contain rounded-2xl"
+            className="absolute -right-15 lg:-right-[40%] grayscale filter -bottom-20 sm:-bottom-15 object-contain rounded-2xl"
           />
         </WobbleCard>
         <WobbleCard containerClassName="col-span-1 min-h-[300px]">
@@ -66,7 +66,7 @@ export default function HeroSection() {
             width={500}
             height={500}
             alt="linear demo image"
-            className="absolute -right-10 md:-right-[30%] lg:-right-[25%] -bottom-10 object-contain rounded-2xl"
+            className="absolute -right-15 md:-right-[40%] lg:-right-[20%] -bottom-20 sm:-bottom-15 object-contain rounded-2xl"
           />
         </WobbleCard>
       </div>{" "}

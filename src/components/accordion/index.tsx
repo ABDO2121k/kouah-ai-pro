@@ -9,6 +9,7 @@ interface AccordionType {
   question: string;
   answer: string;
 }
+
 export default function FaqAccordion() {
   const faqs: AccordionType[] = [
     {
@@ -46,11 +47,11 @@ export default function FaqAccordion() {
       answer:
         "Kouah AI’s recommendation engine suggests products or content based on user preferences, helping increase engagement and conversions.",
     },
-    {
-      question: "Can I use Kouah AI for voice and chatbot functions?",
-      answer:
-        "Absolutely, Kouah AI enables voice and chatbot interactions, allowing businesses to create human-like conversations with users across apps or websites.",
-    },
+    // {
+    //   question: "Can I use Kouah AI for voice and chatbot functions?",
+    //   answer:
+    //     "Absolutely, Kouah AI enables voice and chatbot interactions, allowing businesses to create human-like conversations with users across apps or websites.",
+    // },
     {
       question: "How does Kouah AI benefit e-commerce businesses?",
       answer:
@@ -64,14 +65,21 @@ export default function FaqAccordion() {
   ];
 
   return (
-    <Accordion type="single" collapsible className="w-[80%] mx-auto mt-5 text-lg">
-      {faqs &&
-        faqs.map((e, i) => (
-          <AccordionItem value={`item-${i}`} key={i}>
-            <AccordionTrigger>{e.question}</AccordionTrigger>
-            <AccordionContent>{e.answer}</AccordionContent>
-          </AccordionItem>
-        ))}
+    <Accordion
+      type="single"
+      collapsible
+      className="w-[80%] mx-auto mt-5 text-lg text-start"
+    >
+      {faqs.map((e, i) => (
+        <AccordionItem value={`item-${i}`} key={i}>
+          <AccordionTrigger className="text-left p-3 border-b border-neutral-300">
+            {e.question}
+          </AccordionTrigger>
+          <AccordionContent className="text-left p-4">
+            {e.answer}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
     </Accordion>
   );
 }

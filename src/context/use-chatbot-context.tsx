@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 // import { Message, useChat } from "ai/react";
 
 type ChatContextType = ReturnType<typeof useChatbots>;
+
 const initialChatContextValue: ChatContextType = {
   loading: false,
   chatbots: [],
@@ -13,6 +14,7 @@ const initialChatContextValue: ChatContextType = {
   deletechatbot: async () => {},
   currentlyDeleting: "",
   setCurrentlyDeleting: () => {},
+  setActions: () => {},
 };
 
 //eslint-disable-next-line
@@ -20,7 +22,6 @@ const ChatContext = createContext<ChatContextType>(initialChatContextValue);
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   //eslint-disable-next-line
-  const [chatbot, setChatbot] = useState<any>(null);
   // const { messages, handleInputChange, handleSubmit, input, setInput } =
   //   useChat({
   //     api: "/api/chat-stream"
@@ -33,12 +34,13 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     deletechatbot,
     currentlyDeleting,
     setCurrentlyDeleting,
+    setActions,
   } = useChatbots();
 
   useEffect(() => {
-    if (chatbots.length > 0&&selectedChatbot)
-      setChatbot(chatbots.find((bot) => bot.id === selectedChatbot));
-  }, [chatbots, selectedChatbot]);
+    if (selectedChatbot)
+      localStorage.setItem("selectedChatbot", selectedChatbot);
+  }, [selectedChatbot]);
 
   const values = {
     loading,
@@ -47,8 +49,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setSelectedChatbot,
     deletechatbot,
     currentlyDeleting,
-    chatbot,
     setCurrentlyDeleting,
+    setActions
   };
 
   return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;

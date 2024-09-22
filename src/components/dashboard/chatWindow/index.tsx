@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BOT_TABS_MENU } from "@/constants/menu";
 import Bubble from "./bubble";
-import { useChatbot } from "@/hooks/chatbot";
 import Accordion from "@/components/accordion/Accordion";
 import { useElementSize } from "@mantine/hooks";
+import { useChatbot } from "@/hooks/chatbot/use-chatbot";
 
 const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   const {

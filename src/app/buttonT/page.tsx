@@ -40,8 +40,9 @@ const ChatButton = () => {
           background: 'none',
           cursor: 'pointer',
         }}
+        className='truncate'
       >
-        {isOpen ? 'Close' : 'Chat'}
+        {isOpen ? 'HHHHHH' : 'Chat'}
       </button>
     </div>
   );

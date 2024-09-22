@@ -1,6 +1,7 @@
 "use client";
 
 import { getChatBot } from "@/actions/chatbot";
+import { useChatContext } from "@/context/use-chatbot-context";
 import {
   ChatBotMessageProps,
   ChatBotMessageSchema,
@@ -13,8 +14,6 @@ type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 export const useChatbot = (chatbotId: string) => {
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
-  const [botOpened, setBotOpened] = useState<boolean>(false);
-  const onOpenChatBot = () => setBotOpened((prev) => !prev);
   const [loading, setLoading] = useState<boolean>(true);
   const [onChats, setOnChats] = useState<
     { role: "assistant" | "user"; content: string; link?: string }[]
@@ -51,8 +50,8 @@ export const useChatbot = (chatbotId: string) => {
     if (chatbot) {
       setOnChats((prev) => {
         // alert(JSON.stringify(prev));
-        if(prev.length>0){
-        return [...prev]
+        if (prev.length > 0) {
+          return [...prev];
         }
         return [
           ...prev,
@@ -160,8 +159,6 @@ export const useChatbot = (chatbotId: string) => {
 
   return {
     chatbot,
-    botOpened,
-    onOpenChatBot,
     onStartChatting,
     onChats,
     register,
@@ -171,5 +168,22 @@ export const useChatbot = (chatbotId: string) => {
     setOnChats,
     onRealTime,
     errors,
+  };
+};
+
+export const useGetChatbot = () => {
+  const { selectedChatbot, chatbots, setActions } = useChatContext();
+  // eslint-disable-next-line
+  const [chatbot, setChatbot] = useState<any>(null);
+
+  useEffect(() => {
+    if (chatbots && chatbots.length > 0 && selectedChatbot) {
+      const bot = chatbots.find((bot) => bot.id === selectedChatbot);
+      setChatbot(bot);
+    }
+  }, [chatbots, selectedChatbot]);
+  return {
+    chatbot,
+    setActions,
   };
 };

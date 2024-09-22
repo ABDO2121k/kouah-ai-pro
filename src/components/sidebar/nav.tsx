@@ -31,14 +31,17 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 <span
                   onClick={() => router.push(`${link.navigation}`)}
                   className={cn(
-                    buttonVariants({variant: link.navigation === path ? "default" : "ghost", size: "icon" }),
+                    buttonVariants({
+                      variant: link.navigation === path ? "default" : "ghost",
+                      size: "icon",
+                    }),
                     "h-9 w-9",
                     "default" === "default" &&
-                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                      "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white cursor-pointer"
                   )}
                 >
                   <link.icon className="h-4 w-4" />
-                  <span className="sr-only">{link.title}</span>
+                  <span className="sr-only text-md">{link.title}</span>
                 </span>
               </TooltipTrigger>
               <TooltipContent side="right" className="flex items-center gap-4">
@@ -51,8 +54,9 @@ export function Nav({ links, isCollapsed }: NavProps) {
               onClick={() => router.push(`${link.navigation}`)}
               className={cn(
                 buttonVariants({
-                  variant: link.navigation === path ? "default" : "ghost", // تأكد من استخدام === بدلًا من ==
+                  variant: link.navigation === path ? "default" : "ghost",
                   size: isCollapsed ? "icon" : "sm",
+                  className:"cursor-pointer"
                 }),
                 isCollapsed
                   ? "h-9 w-9 dark:bg-muted m-auto dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"

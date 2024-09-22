@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowRight,
+  Copy,
+  CopyCheck,
   Ghost,
   Loader2,
   MessageSquare,
@@ -14,6 +16,8 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useChatContext } from "@/context/use-chatbot-context";
+import { useState } from "react";
+import CopyButton from "../copyButton";
 
 const Dashboard = () => {
   const {
@@ -24,6 +28,7 @@ const Dashboard = () => {
     currentlyDeleting,
   } = useChatContext();
   const router = useRouter();
+
   return (
     <div className=" mx-auto ">
       <div className="flex justify-between pt-10  mb-10 py-4 px-5">
@@ -57,6 +62,9 @@ const Dashboard = () => {
                 <div className="flex flex-col gap-2">
                   <div className="pt-6 px-6 flex w-full items-center justify-between space-x-6">
                     <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500" />
+                    <div className="text-center w-full">
+                      <CopyButton chatbotId={chatbot.id} />
+                    </div>
                     <Button
                       // variant="secondary"
                       onClick={() => {

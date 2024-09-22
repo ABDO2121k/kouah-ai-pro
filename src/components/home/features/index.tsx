@@ -24,7 +24,7 @@ export default function Features() {
         >
           <Sparkles /> FEATURES
         </Button>
-        <h1 className="max-w-4xl text-5xl md:text-6xl lg:text-7xl font-extrabold">
+        <h1 className="max-w-4xl text-5xl md:text-6xl lg:text-7xl font-extrabold text-center">
           Powerful <span className="text-[#06b6d4]">AI</span> Features
         </h1>
       </div>
@@ -142,8 +142,8 @@ const SkeletonTwo = () => {
 const SkeletonThree = () => {
   const first = {
     initial: {
-      x: -10,
-      rotate: 5,
+      x: -5,
+      rotate: 2,
     },
     hover: {
       x: 0,
@@ -213,9 +213,7 @@ const SkeletonFour = () => {
           className="h-100 w-100 "
         />
       </motion.div>
-      <motion.div
-        className="h-full relative z-20 w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center"
-      >
+      <motion.div className="h-full relative z-20 w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center">
         <Image
           src="/images/shopify-logo.webp"
           alt="avatar"
@@ -224,9 +222,7 @@ const SkeletonFour = () => {
           className="h-100 w-100 "
         />
       </motion.div>
-      <motion.div
-        className="h-full w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center"
-      >
+      <motion.div className="h-full w-1/3 rounded-2xl bg-white p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 flex flex-col items-center justify-center hidden md:flex">
         <Image
           src="/images/youcan.webp"
           alt="avatar"

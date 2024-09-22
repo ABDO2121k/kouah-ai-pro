@@ -41,7 +41,7 @@ export async function GET() {
         </style>
       </head>
       <body>
-        <iframe id="chat-button-frame" src="/api/button"></iframe>
+        <iframe id="chat-button-frame" src="/buttonT"></iframe>
         <iframe
           id="chat-iframe"
           src="/embed/cm1725s9u000h12a5o0kmgfup"

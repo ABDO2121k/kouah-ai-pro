@@ -17,8 +17,18 @@ const nextConfig = {
         hostname: 'www.gravatar.com',
         pathname: '/avatar*', // Allow any path that starts with /avatar
       },
+      {
+        protocol: 'https',
+        hostname: 'pbs.twimg.com',
+        pathname: '/*',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ucarecdn.com',
+        pathname: '/*',
+      },
     ],
-    domains: ['images.clerk.dev',"img.clerk.com", 'pbs.twimg.com', 'www.gravatar.com',"ucarecdn.com"],
+    domains: ['images.clerk.dev', "img.clerk.com", 'pbs.twimg.com', 'www.gravatar.com', "ucarecdn.com"],
 
   },
 };
