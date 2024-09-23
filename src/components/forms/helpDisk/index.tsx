@@ -23,7 +23,7 @@ const HelpDesk = () => {
   } = useHelpDesk();
 
   return (
-    <Card className="w-full grid grid-cols-1 lg:grid-cols-2">
+    <Card className="w-full sm:w-[80%]  grid grid-cols-1 lg:grid-cols-2">
       <CardContent className="p-6 border-r-[1px]">
         <CardTitle className="text-lg lg-text-2xl md:text-lg font-bold ">
           Help Desk

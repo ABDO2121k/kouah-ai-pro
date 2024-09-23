@@ -6,7 +6,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { Textarea } from "@/components/ui/textarea";
 
 type Props = {
-  type: "text" | "email" | "password";
+  type: "text" | "email" | "password" | "file";
   inputType: "select" | "input" | "textarea";
   options?: { value: string; label: string; id: string }[];
   label?: string;
@@ -37,7 +37,7 @@ const FormGenerator = ({
     case "input":
       return (
         <Label
-          className="flex flex-col gap-2  mb-2 mt-2"
+          className="flex flex-col gap-2"
           htmlFor={`input-${label}`}
         >
           {label && label}
@@ -48,6 +48,7 @@ const FormGenerator = ({
             form={form}
             defaultValue={defaultValue}
             {...register(name)}
+
           />
           <ErrorMessage
             errors={errors}
@@ -62,9 +63,10 @@ const FormGenerator = ({
       );
     case "select":
       return (
-        <Label htmlFor={`select-${label}`} className=" mb-2 mt-2">
+        <Label htmlFor={`select-${label}`} className=" mb-2 mt-2 p-5">
           {label && label}
-          <select form={form} id={`select-${label}`} {...register(name)}>
+          <select form={form} id={`select-${label}`} {...register(name)}             className="outline-none"
+          >
             {options?.length &&
               options.map((option) => (
                 <option value={option.value} key={option.id}>
@@ -86,7 +88,7 @@ const FormGenerator = ({
     case "textarea":
       return (
         <Label
-          className="flex flex-col gap-2 mb-2 mt-2"
+          className="flex flex-col gap-2 "
           htmlFor={`input-${label}`}
         >
           {label && label}
@@ -97,6 +99,7 @@ const FormGenerator = ({
             {...register(name)}
             rows={lines}
             defaultValue={defaultValue}
+            className="scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch p-2"
           />
           <ErrorMessage
             errors={errors}

@@ -11,6 +11,8 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
+export type ChatbotType = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
+
 export const useChatbot = (chatbotId: string) => {
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
@@ -185,5 +187,6 @@ export const useGetChatbot = () => {
   return {
     chatbot,
     setActions,
+    setChatbot
   };
 };

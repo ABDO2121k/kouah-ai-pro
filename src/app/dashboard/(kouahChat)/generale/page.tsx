@@ -1,9 +1,10 @@
 import GeneraleForm from "@/components/forms/generale/generale-form";
+import HelpDesk from "@/components/forms/helpDisk";
 import React from "react";
 
 const page = () => {
   return (
-    <div className="overflow-y-auto h-[calc(100vh-3.5rem)]  flex flex-col gap-3 p-5">
+    <div className="flex flex-col gap-3 p-5 h-full max-h-[calc(100vh-3.5rem)] overflow-y-auto">
       <div className="flex flex-col gap-2 p-5">
         <h2 className="text-zinc-800 text-xl lg:text-3xl md:text-2xl font-bold">
           Generale
@@ -12,7 +13,10 @@ const page = () => {
           Update your chatbot profile here
         </span>
       </div>
-      <GeneraleForm />
+      <div className="flex flex-col gap-5">
+        <GeneraleForm />
+        <HelpDesk />
+      </div>
     </div>
   );
 };

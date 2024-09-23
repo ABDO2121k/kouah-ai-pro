@@ -1,4 +1,6 @@
-import HelpDesk from "@/components/forms/helpDisk";
+import WindowPreview from "@/components/dashboard/chatWindow/windwPreview";
+import Customize from "@/components/dashboard/Customize";
+import LogoForm from "@/components/forms/costomize/logo-form";
 import React from "react";
 
 const page = () => {
@@ -12,7 +14,7 @@ const page = () => {
           Customize your chatbot here
         </span>
       </div>
-      <HelpDesk />
+      <Customize />
     </div>
   );
 };

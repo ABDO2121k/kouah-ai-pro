@@ -4,7 +4,7 @@ import { redirect, useSearchParams } from "next/navigation";
 export default function SSOCallback() {
   const searchParams = useSearchParams();
   const origin = searchParams.get("origin");
-  console.log({origin})
+  // console.log({origin})
   if (origin=="auth") {
     redirect("/auth-callback");
   } else {

@@ -20,7 +20,6 @@ const Layout = async ({
   const defaultCollapsed = collapsed ? JSON.parse(collapsed.value) : undefined;
   return (
     <div className="h-[calc(100vh-3.5rem)] w-full">
-
       <Sidebar
         childrenProps={children}
         defaultCollapsed={defaultCollapsed}

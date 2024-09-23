@@ -26,6 +26,18 @@ export const ourFileRouter = {
       // console.log("file size", file.size);
       return { userId: metadata.userId };
     }),
+  logoUploader: f({
+    image: { maxFileSize: "8MB" },
+  })
+    .middleware(async () => {
+      const user = await currentUser();
+      if (!user) throw new UploadThingError("Unauthorized");
+      const dbUser = await db.user.findFirst({ where: { clerkId: user.id } });
+      return { userId: dbUser?.id };
+    })
+    .onUploadComplete(async ({ metadata }) => {
+      return { userId: metadata.userId };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

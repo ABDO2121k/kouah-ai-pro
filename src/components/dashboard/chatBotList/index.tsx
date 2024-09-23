@@ -66,7 +66,7 @@ const Dashboard = () => {
                       <CopyButton chatbotId={chatbot.id} />
                     </div>
                     <Button
-                      // variant="secondary"
+                      variant="outline"
                       onClick={() => {
                         setSelectedChatbot(chatbot.id);
                         router.push("/dashboard/bot");

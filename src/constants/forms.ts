@@ -1,6 +1,6 @@
 type UserRegistrationProps = {
   id: string;
-  type: "email" | "text" | "password";
+  type: "email" | "text" | "password" | "file";
   inputType: "select" | "input" | "textarea";
   options?: { value: string; label: string; id: string }[];
   label?: string;
@@ -82,5 +82,40 @@ export const USER_GENERALE_FORM: UserRegistrationProps[] = [
     name: "description",
     type: "text",
     lines: 4,
+  },
+];
+
+export const USER_LOGO_FORM: UserRegistrationProps[] = [
+  {
+    id: "1",
+    inputType: "input",
+    placeholder: "Please enter the kouahBot logo",
+    name: "logo",
+    type: "file",
+    label: "Logo",
+  },
+  {
+    id: "2",
+    inputType: "textarea",
+    placeholder: "Please enter the kouahBot initial message",
+    name: "initialMessage",
+    type: "text",
+    label: "Initial Message",
+  },
+  {
+    id: "3",
+    inputType: "textarea",
+    placeholder: "Please enter the kouahBot suggested questions",
+    name: "suggestQ",
+    type: "text",
+    label: "Suggested Questions",
+  },
+  {
+    id: "4",
+    inputType: "input",
+    placeholder: "Please enter the kouahBot message placeholder",
+    name: "placeHolder",
+    type: "text",
+    label: "Message Placeholder",
   },
 ];
