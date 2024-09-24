@@ -10,18 +10,21 @@ import { cn } from "@/lib/utils";
 import { useCustomizeContext } from "@/context/use-customize-context";
 import BotPreview from "./BotPreview";
 import HelpDiskPreview from "./HelpDiskPreview";
+import { useCustomizeThemeContext } from "@/context/use-theme-context";
 
 //eslint-deisable-next-line
 const WindowPreview = () => {
-  const { chatbot, watch, theme: chatbotTheme } = useCustomizeContext();
+  const { chatbot, watch } = useCustomizeContext();
   const theme = watch("theme");
+  const { theme: chatbotTheme } = useCustomizeThemeContext();
   return (
     <div
       className={cn(
         "h-full w-full flex flex-col bg-zinc-50 rounded-xl mr-[80px] border-[1px]",
         {
           "bg-black": theme == "dark",
-          [`bg-[${chatbotTheme?.containerBackground??"#ffffff"}]`]: theme === "customize",
+          [`bg-[${chatbotTheme?.containerBackground ?? "#ffffff"}]`]:
+            theme === "customize",
         }
       )}
     >
