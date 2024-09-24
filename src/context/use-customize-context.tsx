@@ -11,28 +11,52 @@ interface CustomizeContextType {
   //eslint-disable-next-line
   errors: any;
   handleCustomizeLogo: () => void;
+  chatbot: ChatbotType | null;
   //eslint-disable-next-line
-  chatbot: ChatbotType;
+  watch: any;
+  //eslint-disable-next-line
+  control: any;
 }
+
 const initialCustomizeContextValue: CustomizeContextType = {
   loading: false,
-  register: () => ({}), 
-  errors: {}, 
+  register: () => ({}),
+  errors: {},
   handleCustomizeLogo: () => {},
-  chatbot: null, 
+  chatbot: null,
+  watch: () => ({}),
+  control: () => ({}),
 };
 
-const CustomizeContext = createContext<CustomizeContextType>(initialCustomizeContextValue);
+const CustomizeContext = createContext<CustomizeContextType>(
+  initialCustomizeContextValue
+);
 
 export const CustomizeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { loading, register, errors, handleCustomizeLogo, chatbot } =
-    useCustomize();
+  const {
+    loading,
+    register,
+    errors,
+    handleCustomizeLogo,
+    chatbot,
+    watch,
+    control,
+  } = useCustomize();
 
   return (
     <CustomizeContext.Provider
-      value={{ loading, register, errors, handleCustomizeLogo, chatbot }}
+      // eslint-disable-next-line
+      value={{
+        loading,
+        register,
+        errors,
+        handleCustomizeLogo,
+        chatbot: chatbot as ChatbotType | null,
+        watch,
+        control,
+      }}
     >
       {children}
     </CustomizeContext.Provider>

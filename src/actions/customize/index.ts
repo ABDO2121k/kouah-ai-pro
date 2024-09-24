@@ -10,6 +10,7 @@ export const updateLogoForm = async (
     initialMessage: string | undefined;
     suggestQ: string | undefined;
     placeHolder: string | undefined;
+    theme: string;
   }
 ) => {
   try {
@@ -33,6 +34,7 @@ export const updateLogoForm = async (
           initialMessage: values.initialMessage,
           suggestQ: values.suggestQ ? values.suggestQ?.split("\n") : [],
           placeHolder: values.placeHolder,
+          theme: values.theme,
         },
       });
     } else {
@@ -40,6 +42,41 @@ export const updateLogoForm = async (
     }
     return { message: "KouahBot updated with success", code: 200 };
     // eslint-disable-next-line
+  } catch (err: any) {
+    console.log({ err });
+    return { message: err?.message, code: 500 };
+  }
+};
+
+export const updateThemeForm = async (
+  chatbotId: string,
+  values: {
+    containerBackground: string;
+    borderColor: string;
+    primaryTextColor: string;
+    primaryBackground: string;
+    botMessageTextColor: string;
+    botMessageBackground: string;
+    suggestedQuestionTextColor: string;
+    suggestedQuestionBackground: string;
+    textColor: string;
+    textBackground: string;
+    placeholderTextColor: string;
+  }
+) => {
+  try {
+    await db.chatbotTheme.upsert({
+      where: {
+        chatbotId: chatbotId,
+      },
+      update: { ...values },
+      create: {
+        chatbotId: chatbotId,
+        ...values,
+      },
+    });
+    return { message: "KouahBot updated with success", code: 200 };
+    //eslint-disable-next-line
   } catch (err: any) {
     console.log({ err });
     return { message: err?.message, code: 500 };

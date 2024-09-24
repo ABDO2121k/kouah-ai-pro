@@ -7,6 +7,7 @@ export type LogoFormType = {
   initialMessage: string;
   suggestQ?: string;
   placeHolder?: string;
+  theme: "light" | "dark" | "customize";
 };
 
 export const LogoFormSchema = z
@@ -16,6 +17,10 @@ export const LogoFormSchema = z
       .min(1, { message: "You must choose kouahBot's initial message " })
       .nullable(),
     suggestQ: z.string().nullable(),
+    theme: z
+      .string()
+      .min(1, { message: "You must choose kouahBot's theme " })
+      .nullable(),
     placeHolder: z
       .string()
       .min(1, { message: "You must choose kouahBot's placeHolder " })
@@ -36,3 +41,19 @@ export const LogoFormSchema = z
       return true;
     }
   });
+
+export const ThemFormSchema = z.object({
+  containerBackground: z.string(),
+  borderColor: z.string(),
+  primaryTextColor: z.string(),
+  primaryBackground: z.string(),
+  botMessageTextColor: z.string(),
+  botMessageBackground: z.string(),
+  suggestedQuestionTextColor: z.string(),
+  suggestedQuestionBackground: z.string(),
+  textColor: z.string(),
+  textBackground: z.string(),
+  placeholderTextColor: z.string(),
+});
+
+export type ThemeFormType = z.infer<typeof ThemFormSchema>;

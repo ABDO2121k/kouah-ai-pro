@@ -1,9 +1,21 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React from "react";
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import {
+  Controller,
+  FieldErrors,
+  FieldValues,
+  UseFormRegister,
+} from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type Props = {
   type: "text" | "email" | "password" | "file";
@@ -18,6 +30,8 @@ type Props = {
   lines?: number;
   form?: string;
   defaultValue?: string;
+  //eslint-disable-next-line
+  control?: any;
 };
 
 const FormGenerator = ({
@@ -32,14 +46,12 @@ const FormGenerator = ({
   label,
   lines,
   options,
+  control,
 }: Props) => {
   switch (inputType) {
     case "input":
       return (
-        <Label
-          className="flex flex-col gap-2"
-          htmlFor={`input-${label}`}
-        >
+        <Label className="flex flex-col gap-2" htmlFor={`input-${label}`}>
           {label && label}
           <Input
             id={`input-${label}`}
@@ -48,7 +60,6 @@ const FormGenerator = ({
             form={form}
             defaultValue={defaultValue}
             {...register(name)}
-
           />
           <ErrorMessage
             errors={errors}
@@ -63,17 +74,27 @@ const FormGenerator = ({
       );
     case "select":
       return (
-        <Label htmlFor={`select-${label}`} className=" mb-2 mt-2 p-5">
+        <Label htmlFor={`select-${label}`} className="mb-2 mt-2 p-5">
           {label && label}
-          <select form={form} id={`select-${label}`} {...register(name)}             className="outline-none"
-          >
-            {options?.length &&
-              options.map((option) => (
-                <option value={option.value} key={option.id}>
-                  {option.label}
-                </option>
-              ))}
-          </select>
+          <Controller
+            name={name}
+            control={control}
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value} >
+                <SelectTrigger id={`select-${label}`} className="w-full mt-2">
+                  <SelectValue placeholder={`Select ${label}`} />
+                </SelectTrigger>
+                <SelectContent>
+                  {options?.length &&
+                    options.map((option) => (
+                      <SelectItem value={option.value} key={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
           <ErrorMessage
             errors={errors}
             name={name}
@@ -87,10 +108,7 @@ const FormGenerator = ({
       );
     case "textarea":
       return (
-        <Label
-          className="flex flex-col gap-2 "
-          htmlFor={`input-${label}`}
-        >
+        <Label className="flex flex-col gap-2 " htmlFor={`input-${label}`}>
           {label && label}
           <Textarea
             form={form}

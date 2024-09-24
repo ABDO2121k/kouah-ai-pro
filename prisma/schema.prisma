@@ -112,28 +112,28 @@ model ChatBot {
   videosUsage    Int            @default(0)
   fileUsage      Int            @default(0)
   webUsage       Int            @default(0)
-  ChatbotTheme   ChatbotTheme[]
   useTheme       Boolean        @default(false)
+  chatbotTheme   ChatbotTheme?  @relation(fields: [chatbotThemeId], references: [id])
+  chatbotThemeId String?        @unique
 }
 
 model ChatbotTheme {
   id                          String   @id @default(uuid())
   chatbotId                   String   @unique
-  containerBackground         String   @db.VarChar(7)
-  borderColor                 String   @db.VarChar(7)
-  primaryTextColor            String   @db.VarChar(7)
-  primaryBackground           String   @db.VarChar(7)
-  botMessageTextColor         String   @db.VarChar(7)
-  botMessageBackground        String   @db.VarChar(7)
-  suggestedQuestionTextColor  String   @db.VarChar(7)
-  suggestedQuestionBackground String   @db.VarChar(7)
-  textColor                   String   @db.VarChar(7)
-  textBackground              String   @db.VarChar(7)
-  placeholderTextColor        String   @db.VarChar(7)
-  chatbot                     ChatBot  @relation(fields: [chatBotId], references: [id])
+  chatbot                     ChatBot? @relation
+  containerBackground         String
+  borderColor                 String
+  primaryTextColor            String
+  primaryBackground           String
+  botMessageTextColor         String
+  botMessageBackground        String
+  suggestedQuestionTextColor  String
+  suggestedQuestionBackground String
+  textColor                   String
+  textBackground              String
+  placeholderTextColor        String
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
-  chatBotId                   String
 }
 
 model HelpDesk {

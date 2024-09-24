@@ -8,10 +8,10 @@ import { useCustomizeContext } from "@/context/use-customize-context";
 import React from "react";
 
 const LogoForm = () => {
-  const { loading, register, errors, handleCustomizeLogo, chatbot } =
+  const { loading, register, errors, handleCustomizeLogo, control } =
     useCustomizeContext();
   return (
-    <Card className="w-full sm:w-[80%]">
+    <Card className="w-full px-5">
       <CardContent className="p-6 border-r-[1px]">
         <CardTitle className="text-lg lg-text-2xl md:text-lg font-bold ">
           Textual Customize
@@ -28,10 +28,12 @@ const LogoForm = () => {
                 register={register}
                 {...filed}
                 name={filed.name}
+                control={control}
               />
             ))}
+
             <Button className="bg-[#06b6d4] hover:bg-[#06b6d4] hover:opacity-70 transition duration-150 ease-in-out text-white font-semibold">
-              Create
+              Customize
             </Button>
           </Loader>
         </form>

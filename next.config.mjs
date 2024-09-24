@@ -32,6 +32,11 @@ const nextConfig = {
         hostname: 'utfs.io',
         pathname: '/*',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com',
+        pathname: '/*',
+      },
     ],
     domains: ['images.clerk.dev', "img.clerk.com", 'pbs.twimg.com', 'www.gravatar.com', "ucarecdn.com", "utfs.io"],
 

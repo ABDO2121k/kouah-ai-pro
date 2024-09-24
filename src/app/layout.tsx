@@ -23,7 +23,7 @@ export default function RootLayout({
       <html lang="en">
         <body
           className={cn(
-            `main-h-screen font-sans antialiased `,
+            `max-h-screen overflow-y-hidden font-sans antialiased `,
             jakarta.className
           )}
         >

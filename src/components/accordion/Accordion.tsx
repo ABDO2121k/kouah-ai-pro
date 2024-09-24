@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 import { Trash } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Props = {
   trigger: string;
@@ -19,6 +20,9 @@ type Props = {
   withTooltip?: boolean;
   onDeleteQuestions?: (questionId: string) => Promise<void>;
   id?: string;
+  theme?: string;
+  background?: string;
+  textColor?: string;
 };
 
 const Accordion = ({
@@ -27,7 +31,11 @@ const Accordion = ({
   withTooltip,
   onDeleteQuestions,
   id,
+  textColor,
+  background,
+  theme,
 }: Props) => {
+  console.log({ theme });
   return (
     <ShadcnAccordion type="single" collapsible>
       <AccordionItem value="item-1">
@@ -36,7 +44,13 @@ const Accordion = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span>{trigger}</span>
+                  <span
+                    className={cn("text-black ", {
+                      "text-white": theme == "dark",
+                    })}
+                  >
+                    {trigger}
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent
                   // eslint-disable-next-line
@@ -44,17 +58,31 @@ const Accordion = ({
                     onDeleteQuestions != undefined &&
                     onDeleteQuestions(id ?? "")
                   }
-                  className="bg-destructive  text-black "
+                  className={cn("bg-destructive  text-black ", {
+                    "text-white": theme == "dark",
+                  })}
                 >
                   <Trash className="h-5 w-5" />
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ) : (
-            <span>{trigger}</span>
+            <span
+              className={cn("text-black ", {
+                "text-white": theme == "dark",
+              })}
+            >
+              {trigger}
+            </span>
           )}
         </AccordionTrigger>
-        <AccordionContent>{content}</AccordionContent>
+        <AccordionContent
+          className={cn("text-black ", {
+            "text-white bg-zinc-800": theme == "dark",
+          })}
+        >
+          {content}
+        </AccordionContent>
       </AccordionItem>
     </ShadcnAccordion>
   );

@@ -118,4 +118,17 @@ export const USER_LOGO_FORM: UserRegistrationProps[] = [
     type: "text",
     label: "Message Placeholder",
   },
+  {
+    id: "5",
+    inputType: "select",
+    placeholder: "Please enter the kouahBot message placeholder",
+    name: "theme",
+    type: "text",
+    label: "Theme",
+    options: [
+      { label: "Light", value: "light", id: "1" },
+      { label: "Dark", value: "dark", id: "2" },
+      { label: "Customize", value: "customize", id: "3" },
+    ],
+  },
 ];

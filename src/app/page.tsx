@@ -34,7 +34,7 @@ const page = async () => {
     : null;
 
   return (
-    <main className="grainy">
+    <main className="grainy overflow-y-auto max-h-screen">
       <NavBar user={userData} isDashboard={false} />
       <Header />
       <HeroSection />

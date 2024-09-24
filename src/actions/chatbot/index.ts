@@ -14,6 +14,26 @@ export const getAccountChatBots = async () => {
           clerkId: userClerk.id ?? "",
         },
       },
+      include: {
+        leadFields: true, // لجلب حقول الـ Leads
+        files: true, // لجلب الملفات المرتبطة
+        queries: true, // لجلب الاستفسارات
+        chatBotLeads: {
+          include: {
+            leadsData: true, // لجلب بيانات الـ LeadsData المرتبطة
+          },
+        },
+        customer: {
+          include: {
+            chatRoom: {
+              include: {
+                message: true, // لجلب الرسائل المرتبطة بكل غرفة دردشة
+              },
+            },
+          },
+        },
+        HelpDesk: true, // لجلب بيانات المساعدة
+      },
     });
     console.log({ chatbots });
     return chatbots;

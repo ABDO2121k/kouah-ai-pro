@@ -2,11 +2,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChatbotType, useGetChatbot } from "../chatbot/use-chatbot";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LogoFormSchema, LogoFormType } from "@/schemas/customize.schema";
+import {
+  LogoFormSchema,
+  LogoFormType,
+  ThemeFormType,
+  ThemFormSchema,
+} from "@/schemas/customize.schema";
 import { useUploadThing } from "@/lib/uploadThing";
 import { updateLogoForm } from "@/actions/customize";
 import { toast } from "../use-toast";
 import { useForm } from "react-hook-form";
+import { updateThemeForm } from "../../actions/customize";
 
 export const useCustomize = () => {
   const [loading, setLoading] = useState(false);
@@ -20,6 +26,7 @@ export const useCustomize = () => {
     reset,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<LogoFormType>({
     resolver: zodResolver(LogoFormSchema),
@@ -32,6 +39,7 @@ export const useCustomize = () => {
         placeHolder: chatbot.placeHolder || "",
         suggestQ: chatbot.suggestQ?.join("\n") || "",
         initialMessage: chatbot.initialMessage || "",
+        theme: chatbot?.theme,
       });
     }
     if (chatbot && !copyChatbot) {
@@ -57,9 +65,9 @@ export const useCustomize = () => {
       initialMessage: values.initialMessage || "",
     });
     toast({
-      title: response.code === 200 ? "Success" : "Error",
+      title: response?.code === 200 ? "Success" : "Error",
       description: response.message,
-      variant: response.code === 200 ? "default" : "destructive",
+      variant: response?.code === 200 ? "default" : "destructive",
     });
     setActions((prev) => prev + 1);
     setLoading(false);
@@ -86,6 +94,7 @@ export const useCustomize = () => {
       suggestQ: watch("suggestQ")?.split("\n"),
       initialMessage: watch("initialMessage"),
       logo: localLogo || chatbot.logo,
+      theme: watch("theme"),
     };
   }, [chatbot, watch, localLogo]);
 
@@ -107,7 +116,47 @@ export const useCustomize = () => {
     watch,
     handleCustomizeLogo,
     chatbot: copyChatbot,
+    control,
   };
 };
 
 export type useCustomizeTypes = ReturnType<typeof useCustomize>;
+
+export const useCustomizeTheme = () => {
+  const [loading, setLoading] = useState(false);
+  const { chatbot, setActions } = useGetChatbot();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<ThemeFormType>({
+    resolver: zodResolver(ThemFormSchema),
+    mode: "onChange",
+  });
+
+  const handleCustomizeTheme = handleSubmit(async (values) => {
+    setLoading(true);
+    const response = await updateThemeForm(chatbot.id, { ...values });
+    toast({
+      title: response?.code === 200 ? "Success" : "Error",
+      description: response.message,
+      variant: response?.code === 200 ? "default" : "destructive",
+    });
+    setActions((prev) => prev + 1);
+    setLoading(false);
+  });
+
+  return {
+    loading,
+    register,
+    errors,
+    setValue,
+    watch,
+    control,
+    handleCustomizeTheme,
+  };
+};
