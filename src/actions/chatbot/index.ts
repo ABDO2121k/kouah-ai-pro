@@ -65,7 +65,12 @@ export const createChatBot = async () => {
         userId: dbUser.id,
       },
     });
-
+    if (chatbot)
+      await db.chatbotTheme.create({
+        data: {
+          chatbotId: chatbot.id,
+        },
+      });
     return { status: 200, chatbot };
   } catch (err) {
     console.error("Error creating chatbot:", err);

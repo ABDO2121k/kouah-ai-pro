@@ -9,13 +9,13 @@ import {
 } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "../ui/select";
 
 type Props = {
   type: "text" | "email" | "password" | "file";
@@ -54,7 +54,7 @@ const FormGenerator = ({
         <Label className="flex flex-col gap-2" htmlFor={`input-${label}`}>
           {label && label}
           <Input
-            id={`input-${label}`}
+            // id={`input-${label}`}
             type={type}
             placeholder={placeholder}
             form={form}
@@ -74,27 +74,21 @@ const FormGenerator = ({
       );
     case "select":
       return (
-        <Label htmlFor={`select-${label}`} className="mb-2 mt-2 p-5">
-          {label && label}
-          <Controller
-            name={name}
-            control={control}
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value} >
-                <SelectTrigger id={`select-${label}`} className="w-full mt-2">
-                  <SelectValue placeholder={`Select ${label}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  {options?.length &&
-                    options.map((option) => (
-                      <SelectItem value={option.value} key={option.id}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
+        <Label htmlFor={`select-${label}`} className="flex flex-col gap-2">
+          {label && <span className="block mb-2">{label}</span>}
+          <select
+            id={`select-${label}`}
+            {...register(name)}
+            className="block w-full mt-2 bg-white border border-gray-300 text-gray-700 py-2 px-3 rounded leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select {label}</option>
+            {options?.length &&
+              options.map((option) => (
+                <option value={option.value} key={option.id}>
+                  {option.label}
+                </option>
+              ))}
+          </select>
           <ErrorMessage
             errors={errors}
             name={name}

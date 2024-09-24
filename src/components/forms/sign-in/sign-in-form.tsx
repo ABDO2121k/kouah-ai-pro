@@ -15,9 +15,9 @@ const LoginForm = () => {
     <>
       <h2 className="text-gravel md:text-4xl font-bold"> Login </h2>
       <p className="text-iridium md:text-sm">Enter your email and password</p>
-      {USER_LOGIN_FORM.map((filed) => (
+      {USER_LOGIN_FORM.map((filed,i) => (
         <FormGenerator
-          key={filed.id}
+          key={i}
           errors={errors}
           register={register}
           {...filed}

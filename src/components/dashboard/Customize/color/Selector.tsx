@@ -1,31 +1,39 @@
-"use client"
+"use client";
 import React, { useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Palette } from "lucide-react";
+import { useCustomizeContext } from "@/context/use-customize-context";
+import { useCustomizeThemeContext } from "@/context/use-theme-context";
 
-const ColorSelector = ({ title }: { title: string }) => {
-  const [color, setColor] = useState("#000000");
-  const inputRef = useRef(null);
-  // eslint-disable-next-line
-  const handleColorChange = (e:any) => {
-    setColor(e.target.value);
+const ColorSelector = ({
+  element,
+}: {
+  element: {
+    label: string;
+    name: string;
   };
+}) => {
+  const { watch, register } = useCustomizeThemeContext();
+  // const { watch, register } = useCustomizeTheme();
+
+  const color = watch(element.name);
   return (
     <div className="space-y-2">
       <Label
-        htmlFor={`${title.replace(/\s+/g, "-").toLowerCase()}-form-item`}
+        htmlFor={`${element.label
+          .replace(/\s+/g, "-")
+          .toLowerCase()}-form-item`}
         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
-        {title}
+        {element.label}
       </Label>
       <div className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded border">
         <Palette className="h-6 w-6" />
         <input
-          ref={inputRef}
           type="color"
-          id={`${title.replace(/\s+/g, "-").toLowerCase()}-form-item`}
-          value={color}
-          onChange={handleColorChange}
+          id={`${element.label.replace(/\s+/g, "-").toLowerCase()}-form-item`}
+          value={color ?? "#ffffff"}
+          {...register(element.name)}
           className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
         />
         <div

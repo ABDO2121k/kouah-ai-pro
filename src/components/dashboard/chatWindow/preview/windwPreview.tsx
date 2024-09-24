@@ -13,7 +13,7 @@ import HelpDiskPreview from "./HelpDiskPreview";
 
 //eslint-deisable-next-line
 const WindowPreview = () => {
-  const { chatbot, watch } = useCustomizeContext();
+  const { chatbot, watch, theme: chatbotTheme } = useCustomizeContext();
   const theme = watch("theme");
   return (
     <div
@@ -21,6 +21,7 @@ const WindowPreview = () => {
         "h-full w-full flex flex-col bg-zinc-50 rounded-xl mr-[80px] border-[1px]",
         {
           "bg-black": theme == "dark",
+          [`bg-[${chatbotTheme?.containerBackground??"#ffffff"}]`]: theme === "customize",
         }
       )}
     >
@@ -42,10 +43,14 @@ const WindowPreview = () => {
             />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className={cn("flex items-center flex-col justify-center mb-2",{
-            "text-zinc-50": theme == "dark",
-          })}>
-            <h3 className="text-lg font-bold leading-none text-center my-auto">{chatbot?.title}</h3>
+          <div
+            className={cn("flex items-center flex-col justify-center mb-2", {
+              "text-zinc-50": theme == "dark",
+            })}
+          >
+            <h3 className="text-lg font-bold leading-none text-center my-auto">
+              {chatbot?.title}
+            </h3>
             <p className="text-sm text-center my-auto">{chatbot?.subTitle}</p>
           </div>
         </div>

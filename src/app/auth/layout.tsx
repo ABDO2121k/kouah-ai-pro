@@ -43,8 +43,8 @@ const Layout = async ({ children }: Props) => {
           loading="lazy"
           sizes="30"
           className="absolute shrink-0 !w-[1600px] top-48 mt-5 overflow-hidden"
-          width={0}
-          height={0}
+          width={100}
+          height={100}
         />
       </div>
     </div>

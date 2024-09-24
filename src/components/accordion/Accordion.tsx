@@ -35,7 +35,6 @@ const Accordion = ({
   background,
   theme,
 }: Props) => {
-  console.log({ theme });
   return (
     <ShadcnAccordion type="single" collapsible>
       <AccordionItem value="item-1">

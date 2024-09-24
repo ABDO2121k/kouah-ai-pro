@@ -10,7 +10,7 @@ export const updateLogoForm = async (
     initialMessage: string | undefined;
     suggestQ: string | undefined;
     placeHolder: string | undefined;
-    theme: string;
+    theme: "light" | "dark" | "customize";
   }
 ) => {
   try {
@@ -82,3 +82,33 @@ export const updateThemeForm = async (
     return { message: err?.message, code: 500 };
   }
 };
+
+export const getChatbotTheme = async (chatbotId: string) => {
+  try {
+    const theme = await db.chatbotTheme.findFirst({
+      where: {
+        chatbotId: chatbotId,
+      },
+      select: {
+        containerBackground: true,
+        borderColor: true,
+        primaryTextColor: true,
+        primaryBackground: true,
+        botMessageTextColor: true,
+        botMessageBackground: true,
+        suggestedQuestionTextColor: true,
+        suggestedQuestionBackground: true,
+        textColor: true,
+        textBackground: true,
+        placeholderTextColor: true,
+      },
+    });
+    return { message: "success", theme, code: 200 };
+    //eslint-disable-next-line
+  } catch (err: any) {
+    console.log({ err });
+    return { message: err?.message, code: 500, theme: null };
+  }
+};
+
+export type ThemeType = Awaited<ReturnType<typeof getChatbotTheme>>["theme"];

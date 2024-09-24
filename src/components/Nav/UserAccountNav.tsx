@@ -33,6 +33,7 @@ const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
                   src={imageUrl}
                   alt="profile picture"
                   referrerPolicy="no-referrer"
+                  sizes=""
                 />
               </div>
             ) : (

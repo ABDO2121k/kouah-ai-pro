@@ -32,7 +32,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <main className="dark:bg-black max-h-screen h-screen overflow-y-auto">
+      <main className="dark:bg-black max-h-screen h-screen overflow-y-auto ">
         <ChatProvider>
           <Navbar user={userData} isDashboard={true} />
           {children}

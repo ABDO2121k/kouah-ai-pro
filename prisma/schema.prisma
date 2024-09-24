@@ -121,17 +121,17 @@ model ChatbotTheme {
   id                          String   @id @default(uuid())
   chatbotId                   String   @unique
   chatbot                     ChatBot? @relation
-  containerBackground         String
-  borderColor                 String
-  primaryTextColor            String
-  primaryBackground           String
-  botMessageTextColor         String
-  botMessageBackground        String
-  suggestedQuestionTextColor  String
-  suggestedQuestionBackground String
-  textColor                   String
-  textBackground              String
-  placeholderTextColor        String
+  containerBackground         String   @default("#FFFFFF")
+  borderColor                 String   @default("#E2E8F0")
+  primaryTextColor            String   @default("#F8FAFC")
+  primaryBackground           String   @default("#2563EB")
+  botMessageTextColor         String   @default("#020817")
+  botMessageBackground        String   @default("#F1F5F9")
+  suggestedQuestionTextColor  String   @default("#020817")
+  suggestedQuestionBackground String   @default("#FFFFFF")
+  textColor                   String   @default("#020817")
+  textBackground              String   @default("#F1F5F9")
+  placeholderTextColor        String   @default("#64748B")
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
 }

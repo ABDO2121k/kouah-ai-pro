@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { USER_LOGO_FORM } from "@/constants/forms";
 import { useCustomizeContext } from "@/context/use-customize-context";
+import { watch } from "fs";
 import React from "react";
 
 const LogoForm = () => {
-  const { loading, register, errors, handleCustomizeLogo, control } =
+  const { loading, register, errors, handleCustomizeLogo, control, watch } =
     useCustomizeContext();
   return (
     <Card className="w-full px-5">
