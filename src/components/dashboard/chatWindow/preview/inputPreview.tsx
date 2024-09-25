@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useCustomizeContext } from "@/context/use-customize-context";
+import { useCustomizeThemeContext } from "@/context/use-theme-context";
 
 const ChatInput = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { chatbot, watch } = useCustomizeContext();
   const theme = watch("theme");
+  const { theme: chatbotTheme } = useCustomizeThemeContext();
 
   return (
     <div className="absolute bottom-0 left-0 w-full">
@@ -31,6 +33,13 @@ const ChatInput = () => {
                   className={cn("", {
                     "text-white": theme == "dark",
                   })}
+                  style={
+                    theme === "customize"
+                      ? {
+                          color: chatbotTheme?.primaryBackground,
+                        }
+                      : {}
+                  }
                 />
                 <Input
                   type="file"
@@ -43,10 +52,13 @@ const ChatInput = () => {
               {/* Text area for inputting questions */}
               <Textarea
                 ref={textareaRef}
+                id="textarea"
                 rows={1}
                 maxRows={4}
                 placeholder={chatbot?.placeHolder}
-                className="resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
+                className={`resize-none pr-12 text-base py-3 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch placeholder-[${
+                  theme === "customize" ? chatbotTheme?.placeholderTextColor : "#06b6d4"
+                }]`}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -63,6 +75,14 @@ const ChatInput = () => {
                 onClick={() => {
                   textareaRef.current?.focus();
                 }}
+                style={
+                  theme === "customize"
+                    ? {
+                        color: chatbotTheme?.primaryTextColor,
+                        background: chatbotTheme?.primaryBackground,
+                      }
+                    : {}
+                }
               >
                 <Send className="h-4 w-4" />
               </Button>

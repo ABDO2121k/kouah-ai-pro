@@ -3,9 +3,13 @@ import Bubble from "../bubble";
 import { TooltipC } from "@/components/tooltip";
 import { useCustomizeContext } from "@/context/use-customize-context";
 import ChatInput from "./inputPreview";
+import { watch } from "fs";
+import { useCustomizeThemeContext } from "@/context/use-theme-context";
 
 const BotPreview = () => {
-  const { chatbot } = useCustomizeContext();
+  const { chatbot, watch } = useCustomizeContext();
+  const theme = watch("theme");
+  const { theme: chatbotTheme } = useCustomizeThemeContext();
   return (
     <div className="relative h-[calc(100vh-9rem)]  flex divide-y divide-zinc-200 flex-col justify-between gap-2">
       {" "}
@@ -15,6 +19,14 @@ const BotPreview = () => {
             role: "assistant",
             content: chatbot?.initialMessage ?? "",
           }}
+          style={
+            theme === "customize"
+              ? {
+                  color: chatbotTheme?.botMessageTextColor,
+                  background:chatbotTheme?.botMessageBackground
+                }
+              : {}
+          }
         />
         <TooltipC suggestQ={chatbot?.suggestQ ?? []} />
       </div>

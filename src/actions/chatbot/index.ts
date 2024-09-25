@@ -64,6 +64,9 @@ export const createChatBot = async () => {
       data: {
         userId: dbUser.id,
       },
+      select:{
+        id:true
+      }
     });
     if (chatbot)
       await db.chatbotTheme.create({

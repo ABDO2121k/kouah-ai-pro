@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BOT_TABS_MENU } from "@/constants/menu";
 import Bubble from "./bubble";
-import Accordion from "@/components/accordion/Accordion";
-import { useElementSize } from "@mantine/hooks";
 import { useChatbot } from "@/hooks/chatbot/use-chatbot";
 import { cn } from "@/lib/utils";
+import HelpDisk from "./HelpDisk";
+import Bot from "./bot";
 
 const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   const {
@@ -34,13 +34,39 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
     // setOnChats,
     // errors,
     messageWindowRef,
+    theme,
   } = useChatbot(chatbotId);
   return (
-    <div className="h-full w-full flex flex-col bg-white rounded-xl mr-[80px] border-[1px]">
+    <div
+      className={cn(
+        "h-full w-full flex flex-col bg-zinc-50 rounded-xl mr-[80px] border-[1px]",
+        {
+          "bg-black": chatbot?.theme == "dark",
+        }
+      )}
+      style={
+        chatbot?.theme === "customize"
+          ? {
+              background: theme?.containerBackground,
+              borderColor: theme?.borderColor,
+            }
+          : {}
+      }
+    >
       <div
-        className={cn("flex justify-between px-4 pt-4 mb-2", {
-          "py-7": !chatbot?.isHelpDisk,
-        })}
+        className={cn(
+          "flex justify-between px-4 pt-4 mb-2 divide-zinc-400 border-b",
+          {
+            "py-7": !chatbot?.isHelpDisk,
+          }
+        )}
+        style={
+          chatbot?.theme === "customize"
+            ? {
+                borderColor: theme?.borderColor,
+              }
+            : {}
+        }
       >
         <div className="flex gap-2">
           <Avatar className="w-10 h-10">
@@ -52,9 +78,22 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
             />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className="flex items-center flex-col">
-            <h3 className="text-lg font-bold leading-none">{chatbot?.title}</h3>
-            <p className="text-sm">{chatbot?.subTitle}</p>
+          <div
+            className={cn("flex items-center flex-col justify-center mb-2", {
+              "text-zinc-50": chatbot?.theme == "dark",
+            })}
+            style={
+              chatbot?.theme === "customize"
+                ? {
+                    color: theme?.textColor,
+                  }
+                : {}
+            }
+          >
+            <h3 className="text-lg font-bold leading-none text-center my-auto">
+              {chatbot?.title}
+            </h3>
+            <p className="text-sm text-center my-auto">{chatbot?.subTitle}</p>
           </div>
         </div>
         <div className="relative w-10 h-10">
@@ -70,104 +109,39 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
         <TabsMenu
           triggers={BOT_TABS_MENU}
           className="bg-transparent border-[1px] border-border max-w-full"
+          style={
+            chatbot?.theme === "customize"
+              ? {
+                  borderColor: theme?.borderColor,
+                }
+              : {}
+          }
         >
           <TabsContent value="chat">
             <Separator orientation="horizontal" />
-            <div className="flex flex-col h-[calc(100vh-9rem)]">
-              {" "}
-              {/* Adjust this value as needed */}
-              <div
-                className="flex-grow px-3 py-5 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
-                ref={messageWindowRef}
-              >
-                {onChats.map((chat, key) => (
-                  <Bubble key={key} message={chat} />
-                ))}
-                {onAiTyping && <Responding />}
-              </div>
-              <form
-                onSubmit={onStartChatting}
-                className="flex px-3 py-1 flex-col flex-shrink-0 bg-porcelain"
-              >
-                <div className="flex justify-between">
-                  <Input
-                    {...register("content")}
-                    placeholder="Type your message..."
-                    className="focus-visible:ring-0 flex-1 p-0 focus-visible:ring-offset-0 bg-porcelain rounded-none outline-none border-none"
-                  />
-                  <Button type="submit" className="mt-3">
-                    <Send />
-                  </Button>
-                </div>
-                <Label htmlFor="bot-image">
-                  <Paperclip />
-                  <Input
-                    {...register("image")}
-                    type="file"
-                    id="bot-image"
-                    className="hidden"
-                  />
-                </Label>
-              </form>
-            </div>
+            <Bot
+              theme={theme}
+              chatbot={chatbot}
+              onAiTyping={onAiTyping}
+              onChats={onChats}
+              onStartChatting={onStartChatting}
+              register={register}
+            />
           </TabsContent>
 
           <TabsContent value="helpdesk">
-            <div className="h-[calc(100vh-9rem)] overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-              <div>
-                <CardTitle>Help Desk</CardTitle>
-                <CardDescription>
-                  Browse from a list of questions people usually ask.
-                </CardDescription>
-              </div>
-              <Separator orientation="horizontal" />
-              {chatbot?.HelpDesk?.map((desk) => (
-                <Accordion
-                  key={desk.id}
-                  trigger={desk.question}
-                  content={desk.answer}
-                />
-              ))}
-            </div>
+            <HelpDisk chatbot={chatbot} />
           </TabsContent>
         </TabsMenu>
       ) : (
-        <div className="flex flex-col h-[calc(100vh-9rem)] border-[1px] border-border max-w-full">
-          {" "}
-          <div
-            className="flex-grow px-3 py-5 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
-            ref={messageWindowRef}
-          >
-            {onChats.map((chat, key) => (
-              <Bubble key={key} message={chat} />
-            ))}
-            {onAiTyping && <Responding />}
-          </div>
-          <form
-            onSubmit={onStartChatting}
-            className="flex px-3 py-1 flex-col flex-shrink-0 bg-porcelain"
-          >
-            <div className="flex justify-between">
-              <Input
-                {...register("content")}
-                placeholder="Type your message..."
-                className="focus-visible:ring-0 flex-1 p-0 focus-visible:ring-offset-0 bg-porcelain rounded-none outline-none border-none"
-              />
-              <Button type="submit" className="mt-3">
-                <Send />
-              </Button>
-            </div>
-            <Label htmlFor="bot-image">
-              <Paperclip />
-              <Input
-                {...register("image")}
-                type="file"
-                id="bot-image"
-                className="hidden"
-              />
-            </Label>
-          </form>
-        </div>
+        <Bot
+          theme={theme}
+          chatbot={chatbot}
+          onAiTyping={onAiTyping}
+          onChats={onChats}
+          onStartChatting={onStartChatting}
+          register={register}
+        />
       )}
 
       <div className="flex justify-center">

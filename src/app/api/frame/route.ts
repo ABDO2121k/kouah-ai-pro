@@ -1,5 +1,5 @@
 // app/api/chat-iframe/route.ts
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export async function GET() {
   const html = `
@@ -24,7 +24,7 @@ export async function GET() {
             right: 1rem;
             bottom: 6rem;
             width: 30rem;
-            height: 65vh;
+            height: 80vh;
             border: 2px solid #e2e8f0;
             border-radius: 0.375rem;
           }
@@ -39,6 +39,7 @@ export async function GET() {
             }
           }
         </style>
+          <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body>
         <iframe id="chat-button-frame" src="/buttonT"></iframe>
@@ -66,6 +67,6 @@ export async function GET() {
   `;
 
   return new NextResponse(html, {
-    headers: { 'Content-Type': 'text/html' },
+    headers: { "Content-Type": "text/html" },
   });
 }

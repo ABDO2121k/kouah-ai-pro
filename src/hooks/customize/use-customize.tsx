@@ -131,100 +131,100 @@ export const useCustomize = () => {
 
 export type useCustomizeTypes = ReturnType<typeof useCustomize>;
 
-// export const useCustomizeTheme = () => {
-//   const [loading, setLoading] = useState(false);
-//   const { chatbot, setActions } = useGetChatbot();
-//   const [theme, setTheme] = useState<ThemeType>(null);
-//   const [copyTheme, setCopyTheme] = useState<ThemeType>(null);
-//   const {
-//     register,
-//     handleSubmit,
-//     setValue,
-//     watch,
-//     control,
-//     reset,
-//     formState: { errors },
-//   } = useForm<ThemeFormType>({
-//     resolver: zodResolver(ThemFormSchema),
-//     mode: "onChange",
-//   });
+export const useCustomizeTheme = () => {
+  const [loading, setLoading] = useState(false);
+  const { chatbot, setActions } = useGetChatbot();
+  const [theme, setTheme] = useState<ThemeType>(null);
+  const [copyTheme, setCopyTheme] = useState<ThemeType>(null);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<ThemeFormType>({
+    resolver: zodResolver(ThemFormSchema),
+    mode: "onChange",
+  });
 
-//   const handleCustomizeTheme = handleSubmit(async (values) => {
-//     setLoading(true);
-//     const response = await updateThemeForm(chatbot.id, { ...values });
-//     toast({
-//       title: response?.code === 200 ? "Success" : "Error",
-//       description: response.message,
-//       variant: response?.code === 200 ? "default" : "destructive",
-//     });
-//     setActions((prev) => prev + 1);
-//     setLoading(false);
-//   });
-//   const getTheme = async () => {
-//     const response = await getChatbotTheme(chatbot?.id);
-//     if (response.code == 200) {
-//       reset({
-//         ...response.theme,
-//       });
-//       setTheme(response.theme);
-//     } else {
-//       toast({
-//         title: "Error",
-//         description: response.message,
-//         variant: "destructive",
-//       });
-//     }
-//   };
-//   useEffect(() => {
-//     if (chatbot) getTheme();
-//   }, [chatbot]);
+  const handleCustomizeTheme = handleSubmit(async (values) => {
+    setLoading(true);
+    const response = await updateThemeForm(chatbot.id, { ...values });
+    toast({
+      title: response?.code === 200 ? "Success" : "Error",
+      description: response.message,
+      variant: response?.code === 200 ? "default" : "destructive",
+    });
+    setActions((prev) => prev + 1);
+    setLoading(false);
+  });
+  const getTheme = async () => {
+    const response = await getChatbotTheme(chatbot?.id);
+    if (response.code == 200) {
+      reset({
+        ...response.theme,
+      });
+      setTheme(response.theme);
+    } else {
+      toast({
+        title: "Error",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
+  };
+  useEffect(() => {
+    if (chatbot) getTheme();
+  }, [chatbot]);
 
-//   useEffect(() => {
-//     if (theme) setCopyTheme(theme);
-//   }, [theme]);
-//   const getUpdatedChatbotTheme = useCallback(() => {
-//     if (!chatbot) return null;
-//     return {
-//       containerBackground: watch("containerBackground"),
-//       borderColor: watch("borderColor"),
-//       primaryTextColor: watch("primaryTextColor"),
-//       primaryBackground: watch("primaryBackground"),
-//       botMessageTextColor: watch("botMessageTextColor"),
-//       botMessageBackground: watch("botMessageBackground"),
-//       suggestedQuestionTextColor: watch("suggestedQuestionTextColor"),
-//       suggestedQuestionBackground: watch("suggestedQuestionBackground"),
-//       textColor: watch("textColor"),
-//       textBackground: watch("textBackground"),
-//       placeholderTextColor: watch("placeholderTextColor"),
-//     };
-//   }, [chatbot, watch]);
-//   useEffect(() => {
-//     const updatedChatbotTheme = getUpdatedChatbotTheme();
-//     // console.log({updatedChatbotTheme})
-//     setCopyTheme(updatedChatbotTheme);
-//   }, [
-//     watch("containerBackground"),
-//     watch("borderColor"),
-//     watch("primaryTextColor"),
-//     watch("primaryBackground"),
-//     watch("botMessageBackground"),
-//     watch("suggestedQuestionTextColor"),
-//     watch("suggestedQuestionBackground"),
-//     watch("textColor"),
-//     watch("textBackground"),
-//     watch("placeholderTextColor"),
-//   ]);
-//   return {
-//     loading,
-//     register,
-//     errors,
-//     setValue,
-//     watch,
-//     control,
-//     handleCustomizeTheme,
-//     theme: copyTheme,
-//   };
-// };
+  useEffect(() => {
+    if (theme) setCopyTheme(theme);
+  }, [theme]);
+  const getUpdatedChatbotTheme = useCallback(() => {
+    if (!chatbot) return null;
+    return {
+      containerBackground: watch("containerBackground"),
+      borderColor: watch("borderColor"),
+      primaryTextColor: watch("primaryTextColor"),
+      primaryBackground: watch("primaryBackground"),
+      botMessageTextColor: watch("botMessageTextColor"),
+      botMessageBackground: watch("botMessageBackground"),
+      suggestedQuestionTextColor: watch("suggestedQuestionTextColor"),
+      suggestedQuestionBackground: watch("suggestedQuestionBackground"),
+      textColor: watch("textColor"),
+      textBackground: watch("textBackground"),
+      placeholderTextColor: watch("placeholderTextColor"),
+    };
+  }, [chatbot, watch]);
+  useEffect(() => {
+    const updatedChatbotTheme = getUpdatedChatbotTheme();
+    // console.log({updatedChatbotTheme})
+    setCopyTheme(updatedChatbotTheme);
+  }, [
+    watch("containerBackground"),
+    watch("borderColor"),
+    watch("primaryTextColor"),
+    watch("primaryBackground"),
+    watch("botMessageBackground"),
+    watch("suggestedQuestionTextColor"),
+    watch("suggestedQuestionBackground"),
+    watch("textColor"),
+    watch("textBackground"),
+    watch("placeholderTextColor"),
+  ]);
+  return {
+    loading,
+    register,
+    errors,
+    setValue,
+    watch,
+    control,
+    handleCustomizeTheme,
+    theme: copyTheme,
+  };
+};
 
 // export const useCustomizeTheme = () => {
 //   const [loading, setLoading] = useState(false);

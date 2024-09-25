@@ -1,6 +1,7 @@
 "use client";
 
 import { getChatBot } from "@/actions/chatbot";
+import { getChatbotTheme, ThemeType } from "@/actions/customize";
 import { useChatContext } from "@/context/use-chatbot-context";
 import {
   ChatBotMessageProps,
@@ -9,6 +10,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "../use-toast";
 
 type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 export type ChatbotType = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
@@ -20,6 +22,7 @@ export const useChatbot = (chatbotId: string) => {
   const [onChats, setOnChats] = useState<
     { role: "assistant" | "user"; content: string; link?: string }[]
   >([]);
+  const [theme, setTheme] = useState<ThemeType>(null);
   const [onAiTyping, setOnAiTyping] = useState<boolean>(false);
   const [onRealTime, setOnRealTime] = useState<
     { chatroom: string; mode: boolean } | undefined
@@ -67,11 +70,23 @@ export const useChatbot = (chatbotId: string) => {
       setLoading(false);
     }
   };
-
+  const getTheme = async () => {
+    const response = await getChatbotTheme(chatbotId);
+    if (response.code == 200) {
+      setTheme(response.theme);
+    } else {
+      toast({
+        title: "Error",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
+  };
   useEffect(() => {
     if (chatbotId) {
       setOnChats([]);
       onGetChatBot(chatbotId);
+      getTheme();
     }
   }, [chatbotId]);
 
@@ -170,6 +185,7 @@ export const useChatbot = (chatbotId: string) => {
     setOnChats,
     onRealTime,
     errors,
+    theme,
   };
 };
 
@@ -187,6 +203,6 @@ export const useGetChatbot = () => {
   return {
     chatbot,
     setActions,
-    setChatbot
+    setChatbot,
   };
 };

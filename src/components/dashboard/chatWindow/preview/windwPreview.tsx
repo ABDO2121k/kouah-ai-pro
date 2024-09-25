@@ -23,10 +23,16 @@ const WindowPreview = () => {
         "h-full w-full flex flex-col bg-zinc-50 rounded-xl mr-[80px] border-[1px]",
         {
           "bg-black": theme == "dark",
-          [`bg-[${chatbotTheme?.containerBackground ?? "#ffffff"}]`]:
-            theme === "customize",
         }
       )}
+      style={
+        theme === "customize"
+          ? {
+              background: chatbotTheme?.containerBackground,
+              borderColor: chatbotTheme?.borderColor,
+            }
+          : {}
+      }
     >
       <div
         className={cn(
@@ -35,6 +41,13 @@ const WindowPreview = () => {
             "py-7": !chatbot?.isHelpDisk,
           }
         )}
+        style={
+          theme === "customize"
+            ? {
+                borderColor: chatbotTheme?.borderColor,
+              }
+            : {}
+        }
       >
         <div className="flex gap-2">
           <Avatar className="w-10 h-10">
@@ -50,6 +63,13 @@ const WindowPreview = () => {
             className={cn("flex items-center flex-col justify-center mb-2", {
               "text-zinc-50": theme == "dark",
             })}
+            style={
+              theme === "customize"
+                ? {
+                    color: chatbotTheme?.textColor,
+                  }
+                : {}
+            }
           >
             <h3 className="text-lg font-bold leading-none text-center my-auto">
               {chatbot?.title}
@@ -70,6 +90,13 @@ const WindowPreview = () => {
         <TabsMenu
           triggers={BOT_TABS_MENU}
           className="bg-transparent border-[1px] border-border max-w-full"
+          style={
+            theme === "customize"
+              ? {
+                  borderColor: chatbotTheme?.borderColor,
+                }
+              : {}
+          }
         >
           <TabsContent value="chat">
             <Separator orientation="horizontal" />

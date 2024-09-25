@@ -1,23 +1,22 @@
-import React from 'react'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { cn } from '@/lib/utils'
+import React from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 type Props = {
   triggers: {
-    label: string
-    icon?: JSX.Element
-  }[]
-  children: React.ReactNode
-  className?: string
-  button?: JSX.Element
-}
+    label: string;
+    icon?: JSX.Element;
+  }[];
+  children: React.ReactNode;
+  className?: string;
+  button?: JSX.Element;
+  //eslint-disable-next-line
+  style?: any;
+};
 
-const TabsMenu = ({ triggers, children, className }: Props) => {
+const TabsMenu = ({ triggers, children, className,style }: Props) => {
   return (
-    <Tabs
-      defaultValue={triggers[0].label}
-      className="w-full"
-    >
+    <Tabs defaultValue={triggers[0].label} className="w-full" style={style}>
       <TabsList className={cn(className)}>
         {triggers.map((trigger, key) => (
           <TabsTrigger
@@ -32,7 +31,7 @@ const TabsMenu = ({ triggers, children, className }: Props) => {
       </TabsList>
       {children}
     </Tabs>
-  )
-}
+  );
+};
 
-export default TabsMenu
+export default TabsMenu;
