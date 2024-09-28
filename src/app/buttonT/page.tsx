@@ -1,51 +1,55 @@
-// pages/chat-button.tsx
-"use client"
-import { useEffect, useState } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { MessageCircle, X } from "lucide-react";
 
-const ChatButton = () => {
+const ChatbotToggleButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.data === 'openChat') {
+      if (event.data === "openChat") {
         setIsOpen(true);
-      } else if (event.data === 'closeChat') {
+      } else if (event.data === "closeChat") {
         setIsOpen(false);
       }
     };
 
-    window.addEventListener('message', handleMessage);
-
+    window.addEventListener("message", handleMessage);
     return () => {
-      window.removeEventListener('message', handleMessage);
+      window.removeEventListener("message", handleMessage);
     };
   }, []);
 
   const toggleChat = () => {
-    const newIsOpen = !isOpen;
-    setIsOpen(newIsOpen);
-    window.parent.postMessage(newIsOpen ? 'openChat' : 'closeChat', '*');
+    window.parent.postMessage(!isOpen ? "openChat" : "closeChat", "*");
   };
 
   return (
-    <div>
+    <motion.div
+      className="h-screen w-screen flex justify-center items-center overflow-hidden"
+      initial={{ scale: 0 }}
+      animate={{ scale: 0.92 }}
+      transition={{ type: "spring", stiffness: 260, damping: 20 }}
+    >
       <button
         id="chat-button"
         onClick={toggleChat}
-        style={{
-          width: '56px',
-          height: '56px',
-          border: '2px solid #e2e8f0',
-          borderRadius: '50%',
-          background: 'none',
-          cursor: 'pointer',
-        }}
-        className='truncate'
+        className="w-20 h-20 border-2 m-auto border-slate-200 rounded-full bg-white hover:bg-slate-50 cursor-pointer flex items-center justify-center overflow-hidden"
       >
-        {isOpen ? 'HHHHHH' : 'Chat'}
+        <motion.div
+          animate={{ rotate: isOpen ? 90 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {isOpen ? (
+            <X className="text-slate-600 h-8 w-8" />
+          ) : (
+            <MessageCircle className="text-slate-600 h-10 w-10" />
+          )}
+        </motion.div>
       </button>
-    </div>
+    </motion.div>
   );
 };
 
-export default ChatButton;
+export default ChatbotToggleButton;

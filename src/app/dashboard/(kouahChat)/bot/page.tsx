@@ -12,7 +12,7 @@ const HI = () => {
     <div className="grid grid-cols-5 overflow-y-auto h-[calc(100vh-3.5rem)] pb-20">
       <div className="col-span-5 md:col-span-5 lg:col-span-4 h-[calc(screen-3.5rem-10rem)] md:h-[70%] lg:h-[30rem]  p-5 ">
         <iframe
-          src={`/embed/${selectedChatbot}`}
+          src={`/embed/${selectedChatbot}?opened=true`}
           className="h-full w-full rounded-md shadow-lg overflow-none"
         />
       </div>
@@ -21,12 +21,12 @@ const HI = () => {
           <span className="text-zinc-500 font-bold">Name :</span>
           <span className="text-zinc-800 font-bold">{chatbot?.title}</span>
         </div>
-        <div className="flex flex-col gap-1">
+        {/* <div className="flex flex-col gap-1">
           <span className="text-zinc-500 font-bold">Description :</span>
           <span className="text-zinc-800 font-bold">
             {chatbot?.description ? chatbot?.description : "No Description"}
           </span>
-        </div>
+        </div> */}
         <div className="flex flex-col gap-1">
           <span className="text-zinc-500 font-bold">ID :</span>
           <CopyButton chatbotId={chatbot?.id} />

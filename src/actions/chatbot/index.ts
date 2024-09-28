@@ -35,7 +35,7 @@ export const getAccountChatBots = async () => {
         HelpDesk: true, // لجلب بيانات المساعدة
       },
     });
-    console.log({ chatbots });
+    // console.log({ chatbots });
     return chatbots;
   } catch (err) {
     console.log({ err });

@@ -18,11 +18,13 @@ export default authMiddleware({
     "/kouahBot(.*)",
     "/api/iframe(.*)",
     "/test",
-    "/api/frame",
+    "/api/frame(.*)",
     "/api/button",
     "/test3",
     "/buttonT",
     "/frameT",
+    "/favicon.ico",
+    // "/api/uploadthing"
   ],
 });
 

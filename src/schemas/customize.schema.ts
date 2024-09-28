@@ -5,6 +5,7 @@ export type LogoFormType = {
   //eslint-disable-next-line
   logo?: any;
   initialMessage: string;
+  subTitle: string;
   suggestQ?: string;
   placeHolder?: string;
   theme: "light" | "dark" | "customize";
@@ -16,6 +17,7 @@ export const LogoFormSchema = z
       .string()
       .min(1, { message: "You must choose kouahBot's initial message " })
       .nullable(),
+    subTitle: z.string().nullable(),
     suggestQ: z.string().nullable(),
     theme: z
       .string()

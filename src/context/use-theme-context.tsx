@@ -51,7 +51,7 @@ export const CustomizethemeProvider: React.FC<{ children: React.ReactNode }> = (
   children,
 }) => {
   const [loading, setLoading] = useState(false);
-  const { chatbot, setActions } = useGetChatbot();
+  const { chatbot } = useGetChatbot();
   const {
     register,
     handleSubmit,
@@ -72,12 +72,12 @@ export const CustomizethemeProvider: React.FC<{ children: React.ReactNode }> = (
       description: response.message,
       variant: response?.code === 200 ? "default" : "destructive",
     });
-    setActions((prev) => prev + 1);
     setLoading(false);
   });
   const getTheme = async () => {
+    setLoading(true)
     const response = await getChatbotTheme(chatbot?.id);
-    if (response.code == 200) {
+    if (response &&response.code == 200) {
       reset({
         ...response.theme,
       });
@@ -88,6 +88,7 @@ export const CustomizethemeProvider: React.FC<{ children: React.ReactNode }> = (
         variant: "destructive",
       });
     }
+    setLoading(false)
   };
   useEffect(() => {
     if (chatbot) getTheme();

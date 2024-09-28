@@ -4,6 +4,7 @@ import React from "react";
 type Props = { params: { chatbotId: string } };
 const page = ({ params }: Props) => {
   const { chatbotId } = params;
+ 
 
   return (
     <div className="h-screen w-100">

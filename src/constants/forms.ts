@@ -95,6 +95,14 @@ export const USER_LOGO_FORM: UserRegistrationProps[] = [
     label: "Logo",
   },
   {
+    id: "6",
+    inputType: "input",
+    placeholder: "the chatbot subtitle ",
+    name: "subTitle",
+    type: "text",
+    label: "Subtitle",
+  },
+  {
     id: "2",
     inputType: "textarea",
     placeholder: "Please enter the kouahBot initial message",

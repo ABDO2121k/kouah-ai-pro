@@ -21,22 +21,23 @@ const ChatInput = ({
   onStartChatting: ReturnType<typeof useChatbot>["onStartChatting"];
   register: ReturnType<typeof useChatbot>["register"];
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   return (
     <div
-      className="relative w-full bg-zinc-50"
+      className={cn("relative w-full bg-zinc-50 text-black", {
+        "bg-black": chatbot?.theme == "dark",
+      })}
       style={
         chatbot?.theme === "customize"
           ? {
-              color: theme?.botMessageTextColor,
-              background: theme?.botMessageBackground,
+              // color: theme?.primaryTextColor,
+              background: theme?.containerBackground,
             }
           : {}
       }
     >
       <form
-        className="mx-2 flex flex-row p-1 md:mx-4 lg:mx-auto lg:max-w-2xl xl:max-w-3xl" // Reduced padding from p-2 to p-1
+        className="mx-2 flex flex-row p-1 md:mx-4 lg:mx-auto lg:max-w-2xl xl:max-w-3xl"
         onSubmit={onStartChatting}
       >
         <div className="relative flex h-full flex-1 items-center">
@@ -74,10 +75,16 @@ const ChatInput = ({
               placeholder={chatbot?.placeHolder}
               className={`flex-1 resize-y text-base py-1 pr-10 w-[85%] scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch placeholder-[${
                 chatbot?.theme === "customize"
-                  ? theme?.placeholderTextColor
+                  ? theme?.primaryTextColor
                   : "#06b6d4"
               }]`} // Adjusted width and padding
               {...register("content")}
+              onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  onStartChatting();
+                }
+              }}
             />
 
             {/* Send button */}
@@ -86,9 +93,6 @@ const ChatInput = ({
               type="submit"
               aria-label="send button"
               className="ml-2 p-1 w-[10%]" // Added width to the button
-              onClick={() => {
-                textareaRef.current?.focus();
-              }}
               style={
                 chatbot?.theme === "customize"
                   ? {

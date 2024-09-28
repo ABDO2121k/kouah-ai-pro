@@ -3,7 +3,6 @@ import Bubble from "../bubble";
 import { TooltipC } from "@/components/tooltip";
 import { useCustomizeContext } from "@/context/use-customize-context";
 import ChatInput from "./inputPreview";
-import { watch } from "fs";
 import { useCustomizeThemeContext } from "@/context/use-theme-context";
 
 const BotPreview = () => {
@@ -23,7 +22,21 @@ const BotPreview = () => {
             theme === "customize"
               ? {
                   color: chatbotTheme?.botMessageTextColor,
-                  background:chatbotTheme?.botMessageBackground
+                  background: chatbotTheme?.botMessageBackground,
+                }
+              : {}
+          }
+        />
+        <Bubble
+          message={{
+            role: "user",
+            content: "User message test ",
+          }}
+          style={
+            theme === "customize"
+              ? {
+                  color: chatbotTheme?.placeholderTextColor,
+                  background: chatbotTheme?.textBackground,
                 }
               : {}
           }

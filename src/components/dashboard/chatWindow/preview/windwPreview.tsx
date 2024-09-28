@@ -11,6 +11,7 @@ import { useCustomizeContext } from "@/context/use-customize-context";
 import BotPreview from "./BotPreview";
 import HelpDiskPreview from "./HelpDiskPreview";
 import { useCustomizeThemeContext } from "@/context/use-theme-context";
+import { Loader } from "@/components/loader";
 
 //eslint-deisable-next-line
 const WindowPreview = () => {
@@ -34,62 +35,14 @@ const WindowPreview = () => {
           : {}
       }
     >
-      <div
-        className={cn(
-          "flex justify-between px-4 pt-4 mb-2 divide-zinc-400 border-b",
-          {
-            "py-7": !chatbot?.isHelpDisk,
-          }
-        )}
-        style={
-          theme === "customize"
-            ? {
-                borderColor: chatbotTheme?.borderColor,
-              }
-            : {}
-        }
-      >
-        <div className="flex gap-2">
-          <Avatar className="w-10 h-10">
-            <AvatarImage
-              src={
-                chatbot?.logo ? chatbot?.logo : "https://github.com/shadcn.png"
-              }
-              alt="@shadcn"
-            />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <div
-            className={cn("flex items-center flex-col justify-center mb-2", {
-              "text-zinc-50": theme == "dark",
-            })}
-            style={
-              theme === "customize"
-                ? {
-                    color: chatbotTheme?.textColor,
-                  }
-                : {}
+      <Loader loading={chatbot && chatbotTheme ? false : true}>
+        <div
+          className={cn(
+            "flex justify-between px-4 pt-4 mb-2 divide-zinc-400 border-b",
+            {
+              "py-7": !chatbot?.isHelpDisk,
             }
-          >
-            <h3 className="text-lg font-bold leading-none text-center my-auto">
-              {chatbot?.title}
-            </h3>
-            <p className="text-sm text-center my-auto">{chatbot?.subTitle}</p>
-          </div>
-        </div>
-        <div className="relative w-10 h-10">
-          <Image
-            src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
-            fill
-            alt="users"
-            objectFit="contain"
-          />
-        </div>
-      </div>
-      {chatbot?.isHelpDisk ? (
-        <TabsMenu
-          triggers={BOT_TABS_MENU}
-          className="bg-transparent border-[1px] border-border max-w-full"
+          )}
           style={
             theme === "customize"
               ? {
@@ -98,20 +51,73 @@ const WindowPreview = () => {
               : {}
           }
         >
-          <TabsContent value="chat">
-            <Separator orientation="horizontal" />
-            <BotPreview />
-          </TabsContent>
-          <TabsContent value="helpdesk">
-            <HelpDiskPreview />
-          </TabsContent>
-        </TabsMenu>
-      ) : (
-        <BotPreview />
-      )}
-      <div className="flex justify-center">
-        <p className="text-gray-400 text-xs">Powered By Web Kouah AI</p>
-      </div>
+          <div className="flex gap-2 items-center">
+            <Avatar className="w-10 h-10">
+              <AvatarImage
+                src={
+                  chatbot?.logo
+                    ? chatbot?.logo
+                    : "https://github.com/shadcn.png"
+                }
+                alt="@shadcn"
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <div
+              className={cn("flex-1 text-left", {
+                "text-zinc-50": theme == "dark",
+              })}
+              style={
+                theme === "customize"
+                  ? {
+                      color: chatbotTheme?.textColor,
+                    }
+                  : {}
+              }
+            >
+              <h3 className="text-lg font-bold leading-none truncate">
+                {chatbot?.title}
+              </h3>
+              <p className="text-sm truncate">{chatbot?.subTitle}</p>
+            </div>
+          </div>
+
+          <div className="relative w-10 h-10">
+            <Image
+              src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
+              fill
+              alt="users"
+              objectFit="contain"
+            />
+          </div>
+        </div>
+        {chatbot?.isHelpDisk ? (
+          <TabsMenu
+            triggers={BOT_TABS_MENU}
+            className="bg-transparent border-[1px] border-border max-w-full"
+            style={
+              theme === "customize"
+                ? {
+                    borderColor: chatbotTheme?.borderColor,
+                  }
+                : {}
+            }
+          >
+            <TabsContent value="chat">
+              <Separator orientation="horizontal" />
+              <BotPreview />
+            </TabsContent>
+            <TabsContent value="helpdesk">
+              <HelpDiskPreview />
+            </TabsContent>
+          </TabsMenu>
+        ) : (
+          <BotPreview />
+        )}
+        <div className="flex justify-center">
+          <p className="text-gray-400 text-xs">Powered By Web Kouah AI</p>
+        </div>
+      </Loader>
     </div>
   );
 };

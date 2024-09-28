@@ -17,9 +17,9 @@ const ColorSelectors = () => {
       label: "Suggested Question Background",
       name: "suggestedQuestionBackground",
     },
+    { label: "User Question Background", name: "textBackground" },
+    { label: "User Message Color", name: "placeholderTextColor" },
     { label: "Text Color", name: "textColor" },
-    { label: "Text Background", name: "textBackground" },
-    { label: "Placeholder Text Color", name: "placeholderTextColor" },
   ];
 
   return (

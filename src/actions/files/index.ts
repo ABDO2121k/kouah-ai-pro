@@ -102,7 +102,7 @@ export const storePinecone = async (bot: string, file: FileUpload) => {
       pineconeIndex,
       namespace: bot,
     });
-
+    console.log("file stored with success")
     return { status: 200, message: "File processed and stored with success" };
   } catch (err) {
     console.error("Error storing in Pinecone:", err);

@@ -61,15 +61,16 @@ export const useUpload = (botId?: string) => {
         throw new Error("Bot ID is undefined");
       }
 
-      console.log({ res });
+      // console.log({ res });
       const fileUploaded = await uploadFiles(bot, res);
-      console.log({ fileUploaded });
+      // console.log({ fileUploaded });
 
       toast({
         title: "Files uploaded successfully",
         description: "Your files have been uploaded and processed.",
         variant: "default",
       });
+      localStorage.setItem("selectedChatbot", bot);
       router.push("/dashboard/bot");
     } catch (err) {
       console.error("Upload error:", err);

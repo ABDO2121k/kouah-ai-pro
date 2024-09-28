@@ -47,6 +47,7 @@ export const useCustomize = () => {
         suggestQ: chatbot.suggestQ?.join("\n") || "",
         initialMessage: chatbot.initialMessage || "",
         theme: chatbot?.theme || "light",
+        subTitle:chatbot?.subTitle
       });
     }
     if (chatbot && !copyChatbot) {
@@ -103,6 +104,7 @@ export const useCustomize = () => {
       initialMessage: watch("initialMessage"),
       logo: localLogo || chatbot.logo,
       theme: watch("theme"),
+      subTitle: watch("subTitle"),
     };
   }, [chatbot, watch, localLogo]);
 
@@ -114,6 +116,7 @@ export const useCustomize = () => {
     watch("suggestQ"),
     watch("initialMessage"),
     watch("theme"),
+    watch("subTitle"),
     localLogo,
   ]);
 

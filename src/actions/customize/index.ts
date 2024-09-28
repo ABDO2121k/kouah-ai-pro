@@ -9,6 +9,7 @@ export const updateLogoForm = async (
     logo?: string | undefined;
     initialMessage: string | undefined;
     suggestQ: string | undefined;
+    subTitle: string | undefined;
     placeHolder: string | undefined;
     theme: "light" | "dark" | "customize";
   }
@@ -35,6 +36,7 @@ export const updateLogoForm = async (
           suggestQ: values.suggestQ ? values.suggestQ?.split("\n") : [],
           placeHolder: values.placeHolder,
           theme: values.theme,
+          subTitle: values.subTitle,
         },
       });
     } else {

@@ -12,21 +12,17 @@ export async function GET() {
           body { margin: 0; padding: 0; }
           #chat-button-frame {
             position: fixed;
-            right: 1rem;
-            bottom: 1rem;
-            width: 60px;
-            height: 60px;
+            right: 2%;
+            bottom: 2%;
             border: none;
           }
           #chat-iframe {
             display: none;
             position: fixed;
-            right: 1rem;
-            bottom: 6rem;
+            right: 4%;
+            bottom: 6.5rem;
             width: 30rem;
             height: 80vh;
-            border: 2px solid #e2e8f0;
-            border-radius: 0.375rem;
           }
           @media (max-width: 1000px) {
             #chat-iframe {
@@ -42,12 +38,13 @@ export async function GET() {
           <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body>
-        <iframe id="chat-button-frame" src="/buttonT"></iframe>
+        <iframe id="chat-button-frame" src="/buttonT" class="h-24 w-24  overflow-hidden "></iframe>
         <iframe
           id="chat-iframe"
           src="/embed/cm1725s9u000h12a5o0kmgfup"
           allow="clipboard-read; clipboard-write"
           allowfullscreen
+          class="bg-transparent border-none overflow-x-hidden"
         ></iframe>
 
         <script>
@@ -57,8 +54,14 @@ export async function GET() {
           window.addEventListener('message', function (event) {
             if (event.data === 'openChat') {
               chatIframe.style.display = 'block';
+              buttonFrame.contentWindow.postMessage('openChat', '*');
+              chatIframe.contentWindow.postMessage('openChat', '*');
+
             } else if (event.data === 'closeChat') {
               chatIframe.style.display = 'none';
+               buttonFrame.contentWindow.postMessage('closeChat', '*');
+              chatIframe.contentWindow.postMessage('closeChat', '*');
+
             }
           });
         </script>
