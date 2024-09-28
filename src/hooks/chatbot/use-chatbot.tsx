@@ -172,7 +172,7 @@ export const useChatbot = (chatbotId: string) => {
       const response = await chatWithBot(chatbotId, onChats, values.content);
 
       if (response) {
-        if (response.status === 200 ) {
+        if (response.status === 200) {
           // console.log({ resp: response.response?.body });
           // const reader = response.response.body.getReader();
           // const decoder = new TextDecoder();
@@ -180,7 +180,10 @@ export const useChatbot = (chatbotId: string) => {
           // let accumulatedResponse = "";
 
           setOnAiTyping(false);
-          setOnChats((prev) => [...prev, { role: "assistant", content: response.response }]);
+          setOnChats((prev) => [
+            ...prev,
+            { role: "assistant", content: response.response ?? " " },
+          ]);
 
           // while (!done) {
           //   const { value, done: doneReading } = await reader.read();
