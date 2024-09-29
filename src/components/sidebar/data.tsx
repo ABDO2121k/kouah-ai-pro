@@ -13,6 +13,7 @@ import {
   // ShoppingCart,
   // Trash2,
   Users2,
+  UserPlus,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -41,6 +42,12 @@ export const links1: {
     icon: Paintbrush,
     variant: "ghost",
     navigation: "/dashboard/customize",
+  },
+  {
+    title: "Leads",
+    icon: UserPlus,
+    variant: "ghost",
+    navigation: "/dashboard/leads",
   },
   // {
   //   title: "Drafts",

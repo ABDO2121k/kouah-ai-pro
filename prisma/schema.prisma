@@ -40,6 +40,7 @@ model Billings {
 model LeadField {
   id        String   @id @default(cuid())
   fieldName String
+  required  Boolean  @default(true)
   chatBotId String?
   chatBot   ChatBot? @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
 }

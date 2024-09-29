@@ -38,6 +38,7 @@ export const useHelpDesk = () => {
       toast({
         title: question.code == 200 ? "Success" : "Error",
         description: question.message,
+        variant: question.code == 200 ? "default" : "destructive",
       });
       setLoading(false);
       reset();
@@ -53,9 +54,9 @@ export const useHelpDesk = () => {
     }
   };
 
-  const onDeleteQuestions = async (questionId:string) => {
+  const onDeleteQuestions = async (questionId: string) => {
     setLoading(true);
-    const questions = await deleteChatbotHelpDisk(selectedChatbot,questionId);
+    const questions = await deleteChatbotHelpDisk(selectedChatbot, questionId);
     if (questions) {
       setIsQuestions(questions.questions);
       setLoading(false);
@@ -71,6 +72,6 @@ export const useHelpDesk = () => {
     errors,
     isQuestions,
     loading,
-    onDeleteQuestions
+    onDeleteQuestions,
   };
 };

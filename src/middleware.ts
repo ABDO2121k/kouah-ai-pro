@@ -34,5 +34,6 @@ export const config = {
     "/",
     "/(api|trpc)(.*)",
     "/api/auth-callback(.*)",
+    "/(.*)",
   ],
 };

@@ -15,6 +15,7 @@ import Bot from "./bot";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { Loader } from "@/components/loader";
+import { UseLeads } from "@/hooks/leads/use-leads";
 
 const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   const {
@@ -31,8 +32,11 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
     // setOnChats,
     // errors,
     messageWindowRef,
+    onSuggestedQuestionClick,
     theme,
+    usedSuggestedQuestions,
   } = useChatbot(chatbotId);
+
   const searchParams = useSearchParams();
   const opened = searchParams.get("opened");
   const [isOpen, setIsOpen] = useState(opened == "true" ? true : false);
@@ -193,10 +197,12 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                   theme={theme}
                   chatbot={chatbot}
                   onAiTyping={onAiTyping}
+                  usedSuggestedQuestions={usedSuggestedQuestions}
                   onChats={onChats}
                   onStartChatting={onStartChatting}
                   register={register}
                   ref={messageWindowRef}
+                  onSuggestedQuestionClick={onSuggestedQuestionClick}
                 />
               </TabsContent>
               <TabsContent value="helpdesk">
@@ -208,10 +214,12 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
               theme={theme}
               chatbot={chatbot}
               onAiTyping={onAiTyping}
+              usedSuggestedQuestions={usedSuggestedQuestions}
               onChats={onChats}
               onStartChatting={onStartChatting}
               register={register}
               ref={messageWindowRef}
+              onSuggestedQuestionClick={onSuggestedQuestionClick}
             />
           )}
           <div

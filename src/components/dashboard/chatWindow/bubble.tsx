@@ -75,7 +75,7 @@ const Bubble = ({ message, createdAt, style, chatbot }: Props) => {
       >
         <div
           className={cn(
-            "px-4 py-2 rounded-lg inline-block max-w-[60%] w-full",
+            "px-4 py-2 rounded-lg inline-block max-w-[80%] w-full",
             {
               "bg-[#06b6d4] text-white": message.role !== "assistant",
               "bg-muted text-gray-900": message.role === "assistant",
@@ -92,7 +92,12 @@ const Bubble = ({ message, createdAt, style, chatbot }: Props) => {
               <Image src={`${message.content}`} fill alt="image" />
             </div>
           ) : (
-            <ReactMarkdown className={cn("prose", "text-sm break-words")}>
+            <ReactMarkdown
+              className={cn("prose", "text-sm break-words")}
+              components={{
+                a: ({ node, ...props }) => <a target="_blank" rel="noopener noreferrer" {...props} />
+              }}
+            >
               {message.content.replace("(complete)", " ")}
             </ReactMarkdown>
           )}

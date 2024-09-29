@@ -36,6 +36,7 @@ export const useChatbot = (chatbotId: string) => {
     { chatroom: string; mode: boolean } | undefined
   >(undefined);
   const messageWindowRef = useRef<HTMLDivElement>(null);
+  const [usedSuggestedQuestions, setUsedSuggestedQuestions] = useState<string[]>([]);
 
   const {
     register,
@@ -213,9 +214,46 @@ export const useChatbot = (chatbotId: string) => {
     }
   });
 
+  const onSuggestedQuestionClick = async (question: string) => {
+    setOnAiTyping(true);
+
+    // Add the user's question to the chat
+    setOnChats((prev) => [
+      ...prev,
+      {
+        role: "user",
+        content: question,
+      },
+    ]);
+
+    // Add the question to the used questions list
+    setUsedSuggestedQuestions((prev) => [...prev, question]);
+
+    const response = await chatWithBot(chatbotId, onChats, question);
+
+    if (response) {
+      if (response.status === 200) {
+        setOnAiTyping(false);
+        setOnChats((prev) => [
+          ...prev,
+          { role: "assistant", content: response.response ?? " " },
+        ]);
+      } else {
+        // Handle error
+        console.error("Error in chatbot response:", response);
+        toast({
+          title: "Error",
+          description: "An error occurred while processing your request.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   return {
     chatbot,
     onStartChatting,
+    onSuggestedQuestionClick,
     onChats,
     register,
     onAiTyping,
@@ -225,6 +263,7 @@ export const useChatbot = (chatbotId: string) => {
     onRealTime,
     errors,
     theme,
+    usedSuggestedQuestions,
   };
 };
 
