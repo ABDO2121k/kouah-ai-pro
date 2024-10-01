@@ -42,7 +42,7 @@ export const chatAi = async (
   );
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
-    temperature: 0,
+    temperature: 0.3,
     stream: false,
     messages: [
       {
@@ -95,7 +95,7 @@ export const chatAi = async (
           Kouah AI is a platform for chatbot integration across different use cases, such as commercial support, education, and customer service. The chatbot can be trained using data from URLs, PDFs, videos, and other formats. It can also escalate conversations to human agents when complex or sensitive queries arise.
           \`\`\`
 
-          **Context:**
+          ** Context:**
           \`\`\`
           ${results
             .map((r: { pageContent: string }) => r.pageContent)
@@ -104,8 +104,8 @@ export const chatAi = async (
         `,
       },
       {
-        role: "user",
-        content: `Respond based on the provided context. If the user asks for your identity, always use the chatbot name provided by the user (${chatbotName}). For angry or support-related questions, add **{{online}}** to indicate escalation to human support.`,
+        role: "system",
+        content: `Respond based on the provided context and the previous messages that you have with the user because it's the answers using similarity search . If the user asks for your identity, always use the chatbot name provided by the user (${chatbotName}). For angry or support-related questions, add **{{online}}** to indicate escalation to human support.`,
       },
       {
         role: "user",

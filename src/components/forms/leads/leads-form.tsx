@@ -8,13 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { UseLeads } from "@/hooks/leads/use-leads";
 import FormGenerator from "@/components/form-generator";
 import { X } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { ThemeType } from "@/actions/customize";
 import { cn } from "@/lib/utils";
 import { ChatbotType } from "@/hooks/chatbot/use-chatbot";
+import { UseLeads } from "@/hooks/leads/use-leads";
 
 export function LeadsForm({
   chatbotId,
@@ -22,6 +22,7 @@ export function LeadsForm({
   theme,
   chatbot,
   isPreview = false,
+  leadsTitle,
 }: {
   chatbotId: string;
   leadFields: {
@@ -33,6 +34,7 @@ export function LeadsForm({
   theme: ThemeType;
   chatbot: ChatbotType;
   isPreview?: boolean;
+  leadsTitle: string;
 }) {
   const {
     loading: leadsLoading,
@@ -86,10 +88,10 @@ export function LeadsForm({
           className="absolute top-2 right-2 cursor-pointer bg-gray-200 rounded-full p-1"
           onClick={handleClose}
         >
-        <X size={16} />
+          <X size={16} />
         </div>
         <CardHeader>
-          <CardTitle>Tell us how to reach you</CardTitle>
+          <CardTitle>{leadsTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -135,7 +137,9 @@ export function LeadsForm({
                 )}
               </Button>
               <small
-                className="text-left text-gray-500"
+                className={cn("text-left text-gray-500",{
+                  "text-white":chatbot?.theme === "dark"
+                })}
                 style={
                   chatbot?.theme === "customize"
                     ? {
@@ -144,9 +148,9 @@ export function LeadsForm({
                     : {}
                 }
               >
-                By completing this lead generation form, you grant us permission to
-                identify the questions from you in order to provide more tailored
-                support.
+                By completing this lead generation form, you grant us permission
+                to identify the questions from you in order to provide more
+                tailored support.
               </small>
             </CardFooter>
           </form>

@@ -51,6 +51,7 @@ const BotPreview = () => {
             theme={chatbotTheme}
             chatbot={chatbot}
             isPreview={true}
+            leadsTitle={chatbot?.leadsTitle ?? ""}
           />
         )}
       </div>

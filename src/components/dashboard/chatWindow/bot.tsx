@@ -85,6 +85,7 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
           {onAiTyping && <Responding theme={chatbot?.theme ?? ""} />}
           {onChats.length > 1 && chatbot?.isLead && (
             <LeadsForm
+              leadsTitle={chatbot?.leadsTitle ?? ""}
               chatbotId={chatbot.id}
               leadFields={chatbot.leadFields}
               theme={theme}

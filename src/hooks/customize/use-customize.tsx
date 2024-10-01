@@ -78,7 +78,7 @@ export const useCustomize = () => {
       description: response.message,
       variant: response?.code === 200 ? "default" : "destructive",
     });
-    setActions((prev) => prev + 1);
+    setActions((prev:number) => prev + 1);
     setLoading(false);
   });
   const watchLogo = watch("logo");

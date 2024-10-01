@@ -21,7 +21,6 @@ const HelpDesk = () => {
     loading,
     onDeleteQuestions,
   } = useHelpDesk();
-
   return (
     <Card className="w-full sm:w-[80%]  grid grid-cols-1 lg:grid-cols-2">
       <CardContent className="p-6 border-r-[1px]">

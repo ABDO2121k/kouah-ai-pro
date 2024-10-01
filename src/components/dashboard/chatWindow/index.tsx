@@ -15,7 +15,6 @@ import Bot from "./bot";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { Loader } from "@/components/loader";
-import { UseLeads } from "@/hooks/leads/use-leads";
 
 const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   const {
