@@ -91,16 +91,16 @@ const LeadsFormGenerator = () => {
             ))}
           </div>
 
-          <div className="mt-4 w-full lg:w-3/5 xl:w-7/10 mx-auto flex items-center justify-between">
+          <div className="mt-4 w-full lg:w-3/5 xl:w-7/10 mx-auto flex flex-col sm:flex-row items-center justify-between">
             <Input
-              className="w-1/3"
+              className="w-full sm:w-1/3 mb-2 sm:mb-0"
               placeholder="New field name"
               value={newField.fieldName}
               onChange={(e) =>
                 setNewField({ ...newField, fieldName: e.target.value })
               }
             />
-            <div className="w-1/3 flex justify-center">
+            <div className="w-full sm:w-1/3 flex justify-center mb-2 sm:mb-0">
               <Switch
                 checked={newField.required}
                 onCheckedChange={(checked) =>
@@ -108,10 +108,22 @@ const LeadsFormGenerator = () => {
                 }
               />
             </div>
-            <div className="w-1/3 flex justify-end">
-              <Button type="button" onClick={handleAddField} disabled={loading}>
+            <div className="w-full sm:w-1/3 flex justify-center sm:justify-end">
+              <Button 
+                type="button" 
+                onClick={handleAddField} 
+                disabled={loading}
+                className="flex items-center justify-center"
+              >
                 <PlusCircle className="h-4 w-4 mr-2" />
                 Add Field
+                {/* <Switch
+                  className="ml-2 sm:hidden"
+                  checked={newField.required}
+                  onCheckedChange={(checked) =>
+                    setNewField({ ...newField, required: checked })
+                  }
+                /> */}
               </Button>
             </div>
           </div>

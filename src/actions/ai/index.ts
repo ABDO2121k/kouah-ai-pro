@@ -150,6 +150,29 @@ export const chatWithBot = async (
       chatbot.description,
       chat
     );
+
+    // Create a new query entry
+    // await db.query.create({
+    //   data: {
+    //     query: message,
+    //     answer: chatbotResponse??"",
+    //     chatBotId: chatbot.id,
+    //   },
+    // });
+
+    await db.chatBot.update({
+      where: {
+        id: chatbot.id
+      },
+      data: {
+        queries: {
+          create: {
+            query: message,
+            answer: chatbotResponse??"",
+          },
+        },
+      },
+    });
     return { status: 200, response: chatbotResponse };
     //eslint-disable-next-line
   } catch (err: any) {
