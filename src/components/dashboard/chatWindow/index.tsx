@@ -6,7 +6,7 @@ import Image from "next/image";
 import TabsMenu from "@/components/tabs";
 import { TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { X } from "lucide-react";
+import { X, History } from "lucide-react";
 import { BOT_TABS_MENU } from "@/constants/menu";
 import { useChatbot } from "@/hooks/chatbot/use-chatbot";
 import { cn } from "@/lib/utils";
@@ -15,25 +15,29 @@ import Bot from "./bot";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { Loader } from "@/components/loader";
+import WouldLiveForm from "./wouldLiveForm";
 
 const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   const {
-    // onOpenChatBot,
-    // botOpened,
     onChats,
+    setOnChats,
     register,
     onStartChatting,
     onAiTyping,
-    // messageWindowRef,
     chatbot,
     loading,
-    // onRealTime,
-    // setOnChats,
-    // errors,
+    onRealTime,
     messageWindowRef,
     onSuggestedQuestionClick,
     theme,
     usedSuggestedQuestions,
+    wouldLive,
+    setWouldLive,
+    loadingLive,
+    registerEmail,
+    handleLiveSubmit,
+    openHistory,
+    setOpenHistory,
   } = useChatbot(chatbotId);
 
   const searchParams = useSearchParams();
@@ -54,12 +58,21 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
+
   const handleCloseChat = () => {
     window.parent.postMessage("closeChat", "*");
   };
-  // useEffect(() => {
-  //   alert(chatbot?.theme);
-  // }, [chatbot]);
+
+  const handleLiveChatSubmit = (email: string) => {
+    // Handle the live chat submission here
+    console.log("Live chat requested with email:", email);
+    setWouldLive(false); // Hide the dialog after submission
+  };
+
+  const toggleHistory = () => {
+    setOpenHistory(!openHistory);
+  };
+
   return (
     <div className="h-full w-full bg-zinc-50 border-[1px] rounded-lg flex flex-col items-center overflow-hidden">
       <Loader loading={!loading && chatbot && theme ? false : true}>
@@ -136,48 +149,113 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                   {chatbot?.title}
                 </h3>
                 <p className="text-sm truncate">{chatbot?.subTitle}</p>
+                {onRealTime?.mode && (
+                  <RealTimeMode
+                    setChats={setOnChats}
+                    chatRoomId={onRealTime.chatroom}
+                  />
+                )}
               </div>
             </div>
 
-            <div className="relative w-10 h-10">
-              {opened ? (
-                <Image
-                  src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
-                  fill
-                  alt="users"
-                  objectFit="contain"
-                  className={cn({
-                    block: opened !== null,
-                    "hidden sm:hidden md:hidden lg:block": opened === null,
+            <div className="flex items-center gap-2">
+              {chatbot?.isRealTimeChat&&!onRealTime?.chatroom && (
+                <History
+                  className={cn("cursor-pointer h-4 w-4 text-zinc-500 opacity-70", {
+                    "text-white": chatbot?.theme === "dark",
                   })}
+                  onClick={toggleHistory}
+                  style={
+                    chatbot?.theme === "customize"
+                      ? { color: theme?.textColor }
+                      : {}
+                  }
                 />
-              ) : (
-                <>
+              )}
+              <div className="relative w-10 h-10">
+                {opened !== null ? (
                   <Image
                     src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
                     fill
                     alt="users"
                     objectFit="contain"
-                    className={"hidden lg:block md:hidden sm:hiden"}
-                  />{" "}
-                  <X
-                    className={cn(
-                      "cursor-pointer block lg:hidden md:block sm:block",
-                      {
-                        "text-white": chatbot?.theme === "dark",
-                      }
-                    )}
-                    onClick={handleCloseChat}
-                    style={
-                      chatbot?.theme === "customize"
-                        ? { color: theme?.textColor }
-                        : {}
-                    }
+                    className="block"
                   />
-                </>
-              )}
+                ) : (
+                  <>
+                    <Image
+                      src="https://ucarecdn.com/019dd17d-b69b-4dea-a16b-60e0f25de1e9/propuser.png"
+                      fill
+                      alt="users"
+                      objectFit="contain"
+                      className="hidden"
+                    />
+                    <X
+                      className={cn("cursor-pointer block", {
+                        "text-white": chatbot?.theme === "dark",
+                      })}
+                      onClick={handleCloseChat}
+                      style={
+                        chatbot?.theme === "customize"
+                          ? { color: theme?.textColor }
+                          : {}
+                      }
+                    />
+                  </>
+                )}
+              </div>
             </div>
           </div>
+          {openHistory && chatbot?.isRealTimeChat && (
+            <WouldLiveForm
+              onSubmit={handleLiveChatSubmit}
+              style={
+                chatbot?.theme === "customize"
+                  ? {
+                      color: theme?.primaryTextColor,
+                      background: theme?.primaryBackground,
+                    }
+                  : {}
+              }
+              style2={
+                chatbot?.theme === "customize"
+                  ? {
+                      background: theme?.containerBackground,
+                    }
+                  : {}
+              }
+              loadingLive={loadingLive}
+              registerEmail={registerEmail}
+              handleLiveSubmit={handleLiveSubmit}
+              text={"View Chat History"}
+              isHistory={true}
+              onCancel={toggleHistory}
+            />
+          )}
+          {wouldLive && chatbot?.isRealTimeChat && (
+            <WouldLiveForm
+              onSubmit={handleLiveChatSubmit}
+              style={
+                chatbot?.theme === "customize"
+                  ? {
+                      color: theme?.primaryTextColor,
+                      background: theme?.primaryBackground,
+                    }
+                  : {}
+              }
+              style2={
+                chatbot?.theme === "customize"
+                  ? {
+                      background: theme?.containerBackground,
+                    }
+                  : {}
+              }
+              loadingLive={loadingLive}
+              registerEmail={registerEmail}
+              handleLiveSubmit={handleLiveSubmit}
+              text={"Start Live Chat"}
+            />
+          )}
           {chatbot?.isHelpDisk ? (
             <TabsMenu
               triggers={BOT_TABS_MENU}
@@ -202,6 +280,9 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                   register={register}
                   ref={messageWindowRef}
                   onSuggestedQuestionClick={onSuggestedQuestionClick}
+                  setWouldLive={setWouldLive}
+                  wouldLive={wouldLive}
+                  chatRoomId={onRealTime?.chatroom ?? ""}
                 />
               </TabsContent>
               <TabsContent value="helpdesk">
@@ -219,6 +300,9 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
               register={register}
               ref={messageWindowRef}
               onSuggestedQuestionClick={onSuggestedQuestionClick}
+              setWouldLive={setWouldLive}
+              wouldLive={wouldLive}
+              chatRoomId={onRealTime?.chatroom ?? ""}
             />
           )}
           <div

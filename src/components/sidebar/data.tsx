@@ -15,6 +15,7 @@ import {
   Users2,
   UserPlus,
   BarChart2,
+  MessageSquare,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -55,6 +56,12 @@ export const links1: {
     icon: BarChart2,
     variant: "ghost",
     navigation: "/dashboard/query-log",
+  },
+  {
+    title: "Realtime Conversation",
+    icon: MessageSquare,
+    variant: "ghost",
+    navigation: "/dashboard/realtime-conversation",
   },
   // {
   //   title: "Drafts",

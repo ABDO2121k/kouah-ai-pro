@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "../use-toast";
 import { useUploadThing } from "@/lib/uploadThing";
 import { chatWithBot } from "@/actions/ai";
+import { createChatRoom } from "@/actions/ai";
 
 type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 export type ChatbotType = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
@@ -22,12 +23,13 @@ export const useChatbot = (chatbotId: string) => {
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [wouldLive, seWouldLive] = useState(); // hadi drtha 3la 7sab chatot ila sft online atwlli true bax n affichiw simple form for email bax dik sa3a nswbo chatRoom w nrdoha live
+  const [wouldLive, setWouldLive] = useState(false); // hadi drtha 3la 7sab chatot ila sft online atwlli true bax n affichiw simple form for email bax dik sa3a nswbo chatRoom w nrdoha live
   const [onChats, setOnChats] = useState<
     {
       role: "assistant" | "user";
       content: string;
       isImage?: boolean;
+      seen?: boolean;
     }[]
   >([]);
   const [theme, setTheme] = useState<ThemeType>(null);
@@ -36,8 +38,12 @@ export const useChatbot = (chatbotId: string) => {
     { chatroom: string; mode: boolean } | undefined
   >(undefined);
   const messageWindowRef = useRef<HTMLDivElement>(null);
-  const [usedSuggestedQuestions, setUsedSuggestedQuestions] = useState<string[]>([]);
-
+  const [usedSuggestedQuestions, setUsedSuggestedQuestions] = useState<
+    string[]
+  >([]);
+  const [openHistory, setOpenHistory] = useState(false); // whadi ila use brk 3la button 4adiy njib room li mstoria
+  const [loadingLive, setLoadingLive] = useState(false);
+  //forms
   const {
     register,
     handleSubmit,
@@ -47,6 +53,14 @@ export const useChatbot = (chatbotId: string) => {
     resolver: zodResolver(ChatBotMessageSchema),
   });
 
+  const {
+    reset: resetEmail,
+    register: registerEmail,
+    handleSubmit: handleSubmitEmail,
+    formState: { errors: emailErrors },
+  } = useForm<{ email: string }>(); // email registration form
+
+  // end forms
   const onScrollToBottom = () => {
     messageWindowRef.current?.scroll({
       top: messageWindowRef.current.scrollHeight,
@@ -54,14 +68,6 @@ export const useChatbot = (chatbotId: string) => {
       behavior: "smooth",
     });
   };
-  // const onScrollToBottom = () => {
-  //   setTimeout(() => {
-  //     if (messageWindowRef?.current != null) {
-  //       messageWindowRef.current.scrollTop =
-  //         messageWindowRef.current.scrollHeight;
-  //     }
-  //   }, 500);
-  // };
 
   useEffect(() => {
     onScrollToBottom();
@@ -70,19 +76,19 @@ export const useChatbot = (chatbotId: string) => {
   const onGetChatBot = async (id: string) => {
     const chatbot = await getChatBot(id);
     if (chatbot) {
-      setOnChats((prev) => {
-        // alert(JSON.stringify(prev));
-        if (prev.length > 0) {
-          return [...prev];
-        }
-        return [
-          ...prev,
-          {
-            role: "assistant",
-            content: chatbot?.chatbot?.initialMessage ?? "",
-          },
-        ];
-      });
+      // setOnChats((prev) => {
+      //   // alert(JSON.stringify(prev));
+      //   if (prev.length > 0) {
+      //     return [...prev];
+      //   }
+      //   return [
+      //     ...prev,
+      //     {
+      //       role: "assistant",
+      //       content: chatbot?.chatbot?.initialMessage ?? "",
+      //     },
+      //   ];
+      // });
       setChatbot(chatbot.chatbot);
     }
   };
@@ -105,9 +111,7 @@ export const useChatbot = (chatbotId: string) => {
       onGetChatBot(chatbotId);
       getTheme();
     }
-    setTimeout(() => {
-      setLoading(false);
-    }, 800);
+    setLoading(false);
   }, [chatbotId]);
 
   const onStartChatting = handleSubmit(async (values) => {
@@ -250,6 +254,44 @@ export const useChatbot = (chatbotId: string) => {
     }
   };
 
+  const handleLiveSubmit = handleSubmitEmail(async (data) => {
+    setLoadingLive(true);
+    const response = await createChatRoom(
+      chatbotId,
+      data.email,
+      onChats,
+      openHistory ? "history" : wouldLive ? "live" : "history"
+    );
+    if (response && response.status === 200) {
+      setOnRealTime({
+        chatroom: response.chatRoomId ?? "",
+        mode: response.mode,
+      });
+      toast({
+        title: "Success",
+        description: "Live chat started successfully.",
+      });
+    }
+    toast({
+      title: response.status == 200 ? "Success" : "Error",
+      description: response.message,
+      variant: response.status == 200 ? "default" : "destructive",
+    });
+    if (response.chatHistory) {
+      setOnChats(
+        response.chatHistory.map((chat) => ({
+          role: chat.role as "assistant" | "user",
+          content: chat.message,
+          isImage: false,
+        }))
+      );
+    }
+    resetEmail();
+    setLoadingLive(false);
+    setWouldLive(false);
+    setOpenHistory(false)
+  });
+
   return {
     chatbot,
     onStartChatting,
@@ -264,6 +306,13 @@ export const useChatbot = (chatbotId: string) => {
     errors,
     theme,
     usedSuggestedQuestions,
+    openHistory,
+    setOpenHistory,
+    wouldLive,
+    setWouldLive,
+    registerEmail,
+    handleLiveSubmit,
+    loadingLive,
   };
 };
 

@@ -41,7 +41,7 @@ export async function GET() {
         <iframe id="chat-button-frame" src="/buttonT" class="h-24 w-24  overflow-hidden "></iframe>
         <iframe
           id="chat-iframe"
-          src="/embed/cm1725s9u000h12a5o0kmgfup"
+          src="/embed/cm1lghktm0001br0k599pwsvf"
           allow="clipboard-read; clipboard-write"
           allowfullscreen
           class="bg-transparent border-none overflow-x-hidden"

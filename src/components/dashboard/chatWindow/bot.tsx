@@ -11,6 +11,8 @@ type BotProps = {
   theme: ThemeType;
   chatbot: ChatbotType;
   onAiTyping: boolean;
+  setWouldLive: React.Dispatch<React.SetStateAction<boolean>>;
+  wouldLive: boolean;
   onChats: ReturnType<typeof useChatbot>["onChats"];
   onStartChatting: ReturnType<typeof useChatbot>["onStartChatting"];
   register: ReturnType<typeof useChatbot>["register"];
@@ -18,6 +20,7 @@ type BotProps = {
     typeof useChatbot
   >["onSuggestedQuestionClick"];
   usedSuggestedQuestions: string[];
+  chatRoomId: string | null;
 };
 const Bot = forwardRef<HTMLDivElement, BotProps>(
   (
@@ -30,6 +33,9 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
       register,
       onSuggestedQuestionClick,
       usedSuggestedQuestions,
+      setWouldLive,
+      wouldLive,
+      chatRoomId
     },
     ref
   ) => {
@@ -52,7 +58,18 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
                   }
                 : {}
             }
+            styleB={
+              chatbot?.theme === "customize"
+                ? {
+                    color: theme?.primaryTextColor,
+                    background: theme?.primaryBackground,
+                  }
+                : {}
+            }
             chatbot={chatbot}
+            wouldLive={wouldLive}
+            showRealtime={chatbot?.isRealTimeChat ?? false}
+            chatRoomId={chatRoomId}
           />
           <SuggestedQ
             suggestQ={chatbot?.suggestQ ?? []}
@@ -61,7 +78,7 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
             onSuggestedQuestionClick={onSuggestedQuestionClick}
             usedSuggestedQuestions={usedSuggestedQuestions}
           />
-          {onChats.slice(1).map((chat, key) => (
+          {onChats.map((chat, key) => (
             <Bubble
               key={key}
               message={chat}
@@ -79,7 +96,19 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
                     }
                   : {}
               }
+              styleB={
+                chatbot?.theme === "customize"
+                  ? {
+                      color: theme?.primaryTextColor,
+                      background: theme?.primaryBackground,
+                    }
+                  : {}
+              }
               chatbot={chatbot}
+              setWouldLive={setWouldLive}
+              wouldLive={wouldLive}
+              showRealtime={chatbot?.isRealTimeChat ?? false}
+              chatRoomId={chatRoomId}
             />
           ))}
           {onAiTyping && <Responding theme={chatbot?.theme ?? ""} />}
@@ -87,7 +116,7 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
             <LeadsForm
               leadsTitle={chatbot?.leadsTitle ?? ""}
               chatbotId={chatbot.id}
-              leadFields={chatbot.leadFields}
+              leadFields={chatbot?.leadFields}
               theme={theme}
               chatbot={chatbot}
             />

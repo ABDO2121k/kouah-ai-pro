@@ -23,10 +23,10 @@ export default function RootLayout({
       <html lang="en">
         <body
           className={cn(
-            `max-h-screen overflow-y-hidden font-sans antialiased `,
+            `max-h-screen overflow-y-auto font-sans antialiased `,
             jakarta.className
           )}
-        >
+        >      
           <TooltipProvider delayDuration={0}>
             <Toaster />
             {children}

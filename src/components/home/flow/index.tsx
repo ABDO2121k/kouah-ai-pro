@@ -86,14 +86,11 @@ const initialNodes = [
       slot: (
         <pre className="mt-2 rounded border border-white/60 px-2">
           <code className="text-xs">
-            {`&lt;script
-      type="text/javascript"
-      id="denser-chat-widget"
-      data-denser-chatbot-id="your-denserbot-key"
-      data-target="denser-chatbot-wrapper"
-      src="/widget.js"
-    &gt;&lt;/script&gt;</code></pre>,
-    `}
+            {` <script type="module">
+              import { KouahAiBotEmbedd } from "https://cdn.jsdelivr.net/npm/@kouahai/frame@2.0.11";
+              KouahAiBotEmbedd("your chatbotId");
+            </script>
+         `}
           </code>
         </pre>
       ),

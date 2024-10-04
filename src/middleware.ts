@@ -12,6 +12,7 @@ export default authMiddleware({
     "/api/auth-callback(.*)",
     "/redirectUrl",
     "/api/uploadthing",
+    
   ],
   ignoredRoutes: [
     "/embed(.*)",
@@ -25,6 +26,8 @@ export default authMiddleware({
     "/frameT",
     "/favicon.ico",
     // "/api/uploadthing"
+    // "/_next/static/chunks/(.*)",
+    // "/_next/static/(.*)",
   ],
 });
 

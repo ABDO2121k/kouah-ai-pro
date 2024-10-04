@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { useClerk } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface UserAccountNavProps {
   email: string | undefined;
@@ -21,6 +21,14 @@ interface UserAccountNavProps {
 
 const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
   const { signOut } = useClerk();
+  const router = useRouter();
+
+  const handleSignOut = () => {
+    signOut().then(() => {
+      router.push("/");
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="overflow-visible">
@@ -77,7 +85,7 @@ const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer">
-          <span onClick={() => signOut(() => redirect("/"))}>Log out</span>
+          <span onClick={handleSignOut}>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

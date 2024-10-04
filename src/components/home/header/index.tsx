@@ -25,9 +25,12 @@ const Header = () => {
         engagement and streamline operations effortlessly.
       </p>
       <Link
-        className={cn("mt-5 truncate break-words bg-[#06b6d4]",buttonVariants({
-            className:"bg-[#06b6d4]"
-        }))}
+        className={cn(
+          "mt-5 truncate break-words bg-[#06b6d4]",
+          buttonVariants({
+            className: "bg-[#06b6d4]",
+          })
+        )}
         href="/dashboard"
         target="_blank"
       >
@@ -35,15 +38,14 @@ const Header = () => {
         <ArrowRight className="ml-2 h-5 w-5" />
       </Link>{" "}
       <div className="mt-10">
-         <Image
-        src="/images/iphonecorinna.png"
-        width={400}
-        height={100}
-        alt="Logo"
-        className="max-w-lg object-contain"
-      />
+        <Image
+          src="/images/1.png"
+          width={400}
+          height={100}
+          alt="Logo"
+          className="max-w-lg object-contain"
+        />
       </div>
-     
     </MaxWidthWrapper>
   );
 };

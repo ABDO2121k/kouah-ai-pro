@@ -35,11 +35,11 @@ export default function HeroSection() {
             </p>
           </div>
           <Image
-            src="/images/app-ui.png"
+            src="/images/loginP.png"
             width={500}
             height={500}
             alt="linear demo image"
-            className="absolute -right-15 lg:-right-[40%] grayscale filter -bottom-20 sm:-bottom-15 object-contain rounded-2xl"
+            className="absolute -right-15 lg:-right-[40%] -bottom-10 sm:-bottom-5 object-contain rounded-2xl"
           />
         </WobbleCard>
         <WobbleCard containerClassName="col-span-1 min-h-[300px]">
@@ -62,11 +62,11 @@ export default function HeroSection() {
             </p>
           </div>
           <Image
-            src="/images/app-ui.png"
+            src="/images/loginP.png"
             width={500}
             height={500}
             alt="linear demo image"
-            className="absolute -right-15 md:-right-[40%] lg:-right-[20%] -bottom-20 sm:-bottom-15 object-contain rounded-2xl"
+            className="absolute -right-15 md:-right-[40%] lg:-right-[20%] -bottom-10 sm:-bottom-5 object-contain rounded-2xl"
           />
         </WobbleCard>
       </div>{" "}

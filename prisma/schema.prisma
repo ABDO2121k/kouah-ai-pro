@@ -94,7 +94,7 @@ model ChatBot {
   leads          Boolean        @default(false)
   language       String         @default("arabic")
   initialMessage String         @default("Hello, how can I help you?")
-  suggestQ       String[]
+  suggestQ       String[]       @default(["I wnat to talk to manager !!!"])
   placeHolder    String         @default("Type your question here...")
   leadFields     LeadField[]
   files          File[]
@@ -105,7 +105,6 @@ model ChatBot {
   userId         String?        @db.Uuid
   leadsTitle     String         @default("Tell us how to reach you")
   queriesNumber  Int            @default(0)
-  customer       Customer[]
   HelpDesk       HelpDesk[]
   isRealTimeChat Boolean        @default(true)
   isHelpDisk     Boolean        @default(true)
@@ -116,6 +115,7 @@ model ChatBot {
   useTheme       Boolean        @default(false)
   chatbotTheme   ChatbotTheme?  @relation(fields: [chatbotThemeId], references: [id])
   chatbotThemeId String?        @unique
+  ChatRoom       ChatRoom[]
 }
 
 model ChatbotTheme {
@@ -145,24 +145,17 @@ model HelpDesk {
   chatBotId String
 }
 
-model Customer {
-  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email     String?
-  chatRoom  ChatRoom[]
-  domainId  String?    @db.Uuid
-  ChatBot   ChatBot?   @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
-  chatBotId String?
-}
-
 model ChatRoom {
-  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  live       Boolean       @default(false)
-  mailed     Boolean       @default(false)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  Customer   Customer?     @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId String?       @db.Uuid
-  message    ChatMessage[]
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  live      Boolean?      @default(false)
+  chatRead  Boolean?      @default(false)
+  mailed  Boolean?      @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  message   ChatMessage[]
+  ChatBot   ChatBot       @relation(fields: [chatBotId], references: [id])
+  email     String?
+  chatBotId String
 }
 
 model ChatMessage {

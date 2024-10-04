@@ -38,11 +38,11 @@ const Layout = async ({ children }: Props) => {
           something never done before 😉
         </p>
         <Image
-          src="/images/app-ui.png"
+          src="/images/loginP.png"
           alt="Kouah AI interface"
           loading="lazy"
           sizes="30"
-          className="absolute shrink-0 !w-[1600px] top-48 mt-5 overflow-hidden"
+          className="absolute shrink-0 !w-[1600px] top-48 mt-5 overflow-hidden rounded-lg border-8 border-[#06b6d4]"
           width={100}
           height={100}
         />

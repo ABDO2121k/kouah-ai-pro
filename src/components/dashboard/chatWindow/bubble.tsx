@@ -16,10 +16,54 @@ type Props = {
   createdAt?: Date;
   // eslint-disable-next-line
   style?: any;
+  // eslint-disable-next-line
+  styleB?: any;
   chatbot?: ChatbotType;
+  setWouldLive?: React.Dispatch<React.SetStateAction<boolean>>;
+  wouldLive: boolean;
+  showRealtime: boolean;
+  chatRoomId: string | null;
 };
 
-const Bubble = ({ message, createdAt, style, chatbot }: Props) => {
+const Bubble = ({
+  message,
+  createdAt,
+  style,
+  chatbot,
+  styleB,
+  setWouldLive,
+  wouldLive,
+  showRealtime,
+  chatRoomId,
+}: Props) => {
+  const renderContent = (content: string) => {
+    const parts = content.split("**{{online}}**");
+    const hasOnlineTag = parts.length > 1;
+    return (
+      <>
+        <ReactMarkdown
+          className={cn("prose", "text-sm break-words")}
+          components={{
+            a: ({ node, ...props }) => (
+              <a target="_blank" rel="noopener noreferrer" {...props} />
+            ),
+          }}
+        >
+          {parts.join("")}
+        </ReactMarkdown>
+        {hasOnlineTag && showRealtime && !chatRoomId && (
+          <button
+            className="inline-block px-2 py-1 text-xs font-semibold text-white bg-[#06b6d4] rounded-full mt-2 cursor-pointer"
+            style={styleB}
+            onClick={() => setWouldLive && setWouldLive((prev) => !prev)}
+          >
+            {wouldLive ? "Cancel" : "Online Support"}
+          </button>
+        )}
+      </>
+    );
+  };
+
   return (
     <div
       className={cn("flex items-end p-2 my-2 ", {
@@ -92,14 +136,7 @@ const Bubble = ({ message, createdAt, style, chatbot }: Props) => {
               <Image src={`${message.content}`} fill alt="image" />
             </div>
           ) : (
-            <ReactMarkdown
-              className={cn("prose", "text-sm break-words")}
-              components={{
-                a: ({ node, ...props }) => <a target="_blank" rel="noopener noreferrer" {...props} />
-              }}
-            >
-              {message.content.replace("(complete)", " ")}
-            </ReactMarkdown>
+            renderContent(message.content)
           )}
 
           {createdAt ? (

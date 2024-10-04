@@ -42,7 +42,7 @@ export const chatAi = async (
   );
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
-    temperature: 0.3,
+    temperature: 0,
     stream: false,
     messages: [
       {
@@ -53,21 +53,29 @@ export const chatAi = async (
           **Kouah AI Overview:**
           - The platform allows for easy integration with websites using just two lines of code.
           - Chatbots can be trained with content from URLs, YouTube videos, PDF files, text files, CSVs, HTML, and other formats.
-          - Users can personalize the chatbot’s appearance (colors, logo) and add custom help sections.
+          - Users can personalize the chatbot's appearance (colors, logo) and add custom help sections.
           - **Real-time chat functionality** is available, allowing the chatbot to escalate complex questions or support requests to human agents.
 
           Your primary responsibility as this chatbot is to adapt to the unique needs of the customer and provide context-based, coherent answers in **Markdown format**. You must reflect the given chatbot role, organization, and persona, tailoring your responses accordingly.
 
-          **Important Customization Requirements:**
+          **Critical Customization Requirements:**
           1. **Chatbot Name**: The user will provide a custom name for you. Always respond with this name if asked "Who are you?" or similar questions.
-          2. **Chatbot Role**: The user will define your role (e.g., Commercial Assistant, Teacher, Product Specialist, etc.), and you must modify your behavior and responses to fit that role.
-          3. **User-Specific Adaptation**: You should fully adapt to the needs of the customer that created you. Each customer has specific requirements for their chatbot, which you need to meet.
-          4. **Keyword for Human Escalation**: If the user is upset, asks for support, or requests to speak to a manager, you must include the keyword **{{online}}** in your response to trigger a potential switch to human support.
+          2. **Chatbot Role**: The user will define your role (e.g., Commercial Assistant, Teacher, Product Specialist, etc.), and you must modify your behavior and responses to fit that role precisely.
+          3. **User-Specific Adaptation**: You should fully adapt to the needs of the customer that created you. Each customer has specific requirements for their chatbot, which you need to meet without fail.
+          4. **Keyword for Human Escalation**: You MUST include the keyword **{{online}}** in your response in the following situations:
+             - If the user's question is unclear or ambiguous
+             - If the user asks a question that seems unrelated to your role or the provided context
+             - If the user's message appears nonsensical or lacks clear meaning
+             - If the user expresses frustration or dissatisfaction
+             - If the user explicitly requests to speak with a human, support agent, or manager
+             - If you're uncertain about how to respond or feel the query is beyond your capabilities
+             - If the user asks about sensitive topics or complex issues that require human intervention
 
           **Handling User Queries:**
-          - When a user asks for your identity (e.g., "Who are you?"), respond with the chatbot name provided by the user: " I am ${chatbotName} ready to assist you for any thing tha you want ".
-          - If the user asks irrelevant or angry questions, add **{{online}}** to your answer to indicate escalation to human support.
-          - If you're unsure of the answer, simply respond with: "Sorry, I couldn't find the answer." Do not attempt to fabricate information.
+          - When a user asks for your identity (e.g., "Who are you?"), respond with the chatbot name provided by the user: "I am ${chatbotName}, ready to assist you with anything you need."
+          - For ANY situation mentioned in point 4 above, ALWAYS include **{{online}}** in your response. This is CRUCIAL and must not be overlooked.
+          - If you're unsure of the answer, do not apologize. Instead, use the context provided to give the best possible response, or ask for clarification if needed, and include **{{online}}** in your response.
+          - ALWAYS be aware of requests for human intervention, such as "I want to talk to a manager" or "Can I speak to a real person?". In these cases, ALWAYS include **{{online}}** in your response.
 
           **Chatbot Context Example:**
           Use the following context to guide your responses:
@@ -105,7 +113,7 @@ export const chatAi = async (
       },
       {
         role: "system",
-        content: `Respond based on the provided context and the previous messages that you have with the user because it's the answers using similarity search . If the user asks for your identity, always use the chatbot name provided by the user (${chatbotName}). For angry or support-related questions, add **{{online}}** to indicate escalation to human support.`,
+        content: `Respond based on the provided context and the previous messages that you have with the user. This context is crucial and should be your primary source of information. If the user asks for your identity, always use the chatbot name provided by the user (${chatbotName}). For angry or support-related questions, carefully assess the situation and ALWAYS add **{{online}}** if human intervention is requested or necessary. This includes any requests to speak with a manager, human, or support agent. Always strive to provide a helpful and relevant response based on the available information, but prioritize using the **{{online}}** tag when appropriate.`,
       },
       {
         role: "user",
@@ -162,13 +170,13 @@ export const chatWithBot = async (
 
     await db.chatBot.update({
       where: {
-        id: chatbot.id
+        id: chatbot.id,
       },
       data: {
         queries: {
           create: {
             query: message,
-            answer: chatbotResponse??"",
+            answer: chatbotResponse ?? "",
           },
         },
       },
@@ -178,5 +186,104 @@ export const chatWithBot = async (
   } catch (err: any) {
     console.log({ err });
     return { message: err.message, isError: true, status: 500 };
+  }
+};
+export const createChatRoom = async (
+  chatbotId: string,
+  email: string,
+  onChats: { role: "assistant" | "user"; content: string }[],
+  type: "history" | "live"
+) => {
+  try {
+    const chatbot = await db.chatBot.findFirst({
+      where: {
+        id: chatbotId,
+      },
+    });
+    if (!chatbot) throw new Error("Chatbot not found!");
+
+    const existingChatRoom = await db.chatRoom.findFirst({
+      where: {
+        email: email,
+        chatBotId: chatbotId,
+      },
+      include: {
+        message: true,
+      },
+    });
+
+    if (existingChatRoom) {
+      // Add new messages to existing chat room
+      const updatedChatRoom = await db.chatRoom.update({
+        where: {
+          id: existingChatRoom.id,
+        },
+        data: {
+          message: {
+            createMany: {
+              data: onChats.map((chat) => ({
+                message: chat.content,
+                role: chat.role,
+              })),
+            },
+          },
+        },
+        include: {
+          message: true,
+        },
+      });
+
+      return {
+        status: 200,
+        message:
+          type === "history"
+            ? "your history was successfully retrieved"
+            : "Messages added to existing chat room.",
+        chatRoomId: updatedChatRoom.id,
+        chatHistory: updatedChatRoom.message,
+        mode: type !== "history",
+      };
+    } else {
+      if (type === "history") {
+        throw new Error("history not found for this email !!!!!!");
+      }
+      // Create new chat room
+      const newChatRoom = await db.chatRoom.create({
+        data: {
+          email: email,
+          chatBotId: chatbotId,
+          message: {
+            createMany: {
+              data: onChats.map((chat) => ({
+                message: chat.content,
+                role: chat.role,
+              })),
+            },
+          },
+        },
+        include: {
+          message: true,
+        },
+      });
+
+      return {
+        status: 200,
+        message: "New chat room created successfully.",
+        chatRoomId: newChatRoom.id,
+        mode: type === "live",
+        chatHistory: newChatRoom.message,
+      };
+    }
+    //eslint-disable-next-line
+  } catch (err: any) {
+    console.error({ err });
+    return {
+      message: err.message,
+      isError: true,
+      status: 500,
+      chatRoomId: null,
+      chatHistory: null,
+      mode: false,
+    };
   }
 };

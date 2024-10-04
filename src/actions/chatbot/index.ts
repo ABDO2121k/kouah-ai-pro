@@ -23,13 +23,16 @@ export const getAccountChatBots = async () => {
             leadsData: true, // لجلب بيانات الـ LeadsData المرتبطة
           },
         },
-        customer: {
+        ChatRoom: {
+          orderBy: {
+            createdAt: 'desc',
+          },
           include: {
-            chatRoom: {
-              include: {
-                message: true, // لجلب الرسائل المرتبطة بكل غرفة دردشة
+            message: {
+              orderBy: {
+                createdAt: 'desc',
               },
-            },
+            }, // لجلب الرسائل المرتبطة بكل غرفة دردشة
           },
         },
         HelpDesk: true, // لجلب بيانات المساعدة
@@ -64,9 +67,9 @@ export const createChatBot = async () => {
       data: {
         userId: dbUser.id,
       },
-      select:{
-        id:true
-      }
+      select: {
+        id: true,
+      },
     });
     if (chatbot)
       await db.chatbotTheme.create({
@@ -138,13 +141,16 @@ export const getChatBot = async (chatbotId: string) => {
             leadsData: true, // لجلب بيانات الـ LeadsData المرتبطة
           },
         },
-        customer: {
+        ChatRoom: {
+          orderBy: {
+            createdAt: 'desc',
+          },
           include: {
-            chatRoom: {
-              include: {
-                message: true, // لجلب الرسائل المرتبطة بكل غرفة دردشة
+            message: {
+              orderBy: {
+                createdAt: 'desc',
               },
-            },
+            }, // لجلب الرسائل المرتبطة بكل غرفة دردشة
           },
         },
         HelpDesk: true, // لجلب بيانات المساعدة
