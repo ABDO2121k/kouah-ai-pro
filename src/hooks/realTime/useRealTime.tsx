@@ -214,28 +214,30 @@ export const useAdvancedRealTime = () => {
     },
     [currentRoomId]
   );
-
   const handleSendMessage = handleSubmit(async (values) => {
+    const { content, image } = values;
+    reset({ content: "", image: undefined });
+
     if (currentRoomId?.chatroom) {
-      if (values.image && values.image.length > 0 && currentRoomId?.chatroom) {
-        console.log("IMAGE FROM ", values.image[0]);
+      if (image && image.length > 0 && currentRoomId?.chatroom) {
+        console.log("IMAGE FROM ", image[0]);
         const fileReader = new FileReader();
         fileReader.onload = async (e) => {
           const newLogoUrl = e.target?.result as string;
           sendMessage(newLogoUrl, true);
         };
-        fileReader.readAsDataURL(values.image[0]);
+        fileReader.readAsDataURL(image[0]);
 
         try {
-          console.log("Before upload check:", values.image[0]);
-          if (!values.image || !values.image[0]) {
+          console.log("Before upload check:", image[0]);
+          if (!image || !image[0]) {
             throw new Error("No image file found before upload");
           }
-          const uploaded = await startUpload([values.image[0]]);
+          const uploaded = await startUpload([image[0]]);
           console.log("Upload result:", uploaded);
           if (uploaded && uploaded[0] && uploaded[0].url) {
             await addMessagesToChatRoom(currentRoomId.chatroom, [
-              { content: uploaded[0].url, isImage: true, role: "user" },
+              { content: uploaded[0].url, isImage: true, role: "assistant" },
             ]);
           } else {
             throw new Error("Upload failed or returned invalid results");
@@ -250,15 +252,13 @@ export const useAdvancedRealTime = () => {
           });
         }
       }
-      if (values.content) {
-        sendMessage(values.content, false);
+      if (content) {
+        sendMessage(content, false);
         await addMessagesToChatRoom(currentRoomId.chatroom || "", [
-          { content: values.content, isImage: false, role: "user" },
+          { content: content, isImage: false, role: "assistant" },
         ]);
       }
     }
-
-    reset();
   });
 
   const toggleRoomMode = useCallback((roomId: string, value: boolean) => {

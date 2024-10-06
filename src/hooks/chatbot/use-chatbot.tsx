@@ -26,6 +26,7 @@ export const useChatbot = (chatbotId: string) => {
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [iconLoading,setIconLoading]=useState(false)
   const [wouldLive, setWouldLive] = useState(false);
   const [onChats, setOnChats] = useState<
     {
@@ -111,7 +112,9 @@ export const useChatbot = (chatbotId: string) => {
     setLoading(false);
   }, [chatbotId]);
 
-  const onStartChatting = handleSubmit(async (values) => {
+  const onStartChatting = handleSubmit(async (data) => {
+    const values=data
+    reset({ content: "", image: undefined });
     if (
       values.image &&
       values.image.length > 0 &&
@@ -202,7 +205,6 @@ export const useChatbot = (chatbotId: string) => {
         emitNewMessageToChatbot(chatbotId);
       }
     }
-    reset({ content: "", image: undefined });
   });
 
   const onSuggestedQuestionClick = async (question: string) => {
@@ -279,6 +281,7 @@ export const useChatbot = (chatbotId: string) => {
   });
 
   const handleMakeRealTime = async () => {
+    setIconLoading(true)
     if (onRealTime?.chatroom) {
       const response = await retrieveChatAndMakeItLive(
         chatbotId,
@@ -311,11 +314,11 @@ export const useChatbot = (chatbotId: string) => {
         });
       }
     }
+    setIconLoading(false)
   };
 
   const toggleRoomMode = useCallback(
     (roomId: string, value: boolean) => {
-      alert("hello");
       if (onRealTime?.chatroom === roomId) {
         setOnRealTime((prev) => {
           if (prev?.mode !== value) {
@@ -361,6 +364,7 @@ export const useChatbot = (chatbotId: string) => {
     loadingLive,
     handleMakeRealTime,
     toggleRoomMode,
+    iconLoading
   };
 };
 

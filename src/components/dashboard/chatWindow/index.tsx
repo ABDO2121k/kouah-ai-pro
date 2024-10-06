@@ -6,7 +6,7 @@ import Image from "next/image";
 import TabsMenu from "@/components/tabs";
 import { TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { X, History, PhoneCall, PhoneOff } from "lucide-react";
+import { X, History, PhoneCall, PhoneOff, Loader2 } from "lucide-react";
 import { BOT_TABS_MENU } from "@/constants/menu";
 import { useChatbot } from "@/hooks/chatbot/use-chatbot";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
     openHistory,
     setOpenHistory,
     handleMakeRealTime,
+    iconLoading,
   } = useChatbot(chatbotId);
 
   const searchParams = useSearchParams();
@@ -163,7 +164,21 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
 
             <div className="flex items-center gap-2">
               {chatbot?.isRealTimeChat &&
-                (onRealTime?.chatroom ? (
+                (iconLoading ? (
+                  <Loader2
+                    className={cn(
+                      "animate-spin h-4 w-4 text-zinc-500 opacity-70",
+                      {
+                        "text-white": chatbot?.theme === "dark",
+                      }
+                    )}
+                    style={
+                      chatbot?.theme === "customize"
+                        ? { color: theme?.textColor }
+                        : {}
+                    }
+                  />
+                ) : onRealTime?.chatroom ? (
                   onRealTime.mode ? (
                     <PhoneOff
                       className={cn(
