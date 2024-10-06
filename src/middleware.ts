@@ -26,8 +26,8 @@ export default authMiddleware({
     "/frameT",
     "/favicon.ico",
     // "/api/uploadthing"
-    // "/_next/static/chunks/(.*)",
-    // "/_next/static/(.*)",
+    "/_next/static/chunks/(.*)",
+    "/_next/static/(.*)",
   ],
 });
 
