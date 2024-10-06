@@ -39,23 +39,22 @@ export const useChatbots = () => {
       variant: resp.status !== 200 ? "destructive" : "default",
     });
   };
-
   useEffect(() => {
-    if (
-      chatbots?.length > 0 &&
-      !selectedChatbot &&
-      !prevSelected &&
-      (selectedChatbot != prevSelected || (!selectedChatbot && !prevSelected))
-    ) {
+    if (chatbots?.length > 0 && !selectedChatbot) {
       const selected = localStorage.getItem("selectedChatbot");
-      if (selected) {
+      if (selected && chatbots.some(chatbot => chatbot.id === selected)) {
         setSelectedChatbot(selected);
       } else {
         setSelectedChatbot(chatbots[0].id);
       }
-      setPrevSelected(selectedChatbot);
     }
   }, [chatbots, selectedChatbot]);
+
+  useEffect(() => {
+    if (selectedChatbot) {
+      localStorage.setItem("selectedChatbot", selectedChatbot);
+    }
+  }, [selectedChatbot]);
 
   return {
     loading,
@@ -66,5 +65,6 @@ export const useChatbots = () => {
     currentlyDeleting,
     setCurrentlyDeleting,
     setActions,
+    actions
   };
 };

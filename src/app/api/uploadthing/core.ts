@@ -27,7 +27,7 @@ export const ourFileRouter = {
       return { userId: metadata.userId };
     }),
   logoUploader: f({
-    image: { maxFileSize: "8MB" },
+    image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
       const user = await currentUser();
@@ -35,7 +35,8 @@ export const ourFileRouter = {
       const dbUser = await db.user.findFirst({ where: { clerkId: user.id } });
       return { userId: dbUser?.id };
     })
-    .onUploadComplete(async ({ metadata }) => {
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Logo upload complete:", file);
       return { userId: metadata.userId };
     }),
 } satisfies FileRouter;

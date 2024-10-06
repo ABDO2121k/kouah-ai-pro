@@ -20,9 +20,12 @@ type Props = {
   styleB?: any;
   chatbot?: ChatbotType;
   setWouldLive?: React.Dispatch<React.SetStateAction<boolean>>;
-  wouldLive: boolean;
-  showRealtime: boolean;
-  chatRoomId: string | null;
+  wouldLive?: boolean;
+  showRealtime?: boolean;
+  chatRoomId?: string | null;
+  isNotShowing?: boolean;
+  realTimeMode?: boolean;
+  handleMakeRealTime?: () => Promise<void>;
 };
 
 const Bubble = ({
@@ -35,9 +38,12 @@ const Bubble = ({
   wouldLive,
   showRealtime,
   chatRoomId,
+  isNotShowing,
+  realTimeMode,
+  handleMakeRealTime
 }: Props) => {
   const renderContent = (content: string) => {
-    const parts = content.split("**{{online}}**");
+    const parts = content?.split("**{{online}}**");
     const hasOnlineTag = parts.length > 1;
     return (
       <>
@@ -51,14 +57,24 @@ const Bubble = ({
         >
           {parts.join("")}
         </ReactMarkdown>
-        {hasOnlineTag && showRealtime && !chatRoomId && (
-          <button
-            className="inline-block px-2 py-1 text-xs font-semibold text-white bg-[#06b6d4] rounded-full mt-2 cursor-pointer"
-            style={styleB}
-            onClick={() => setWouldLive && setWouldLive((prev) => !prev)}
-          >
-            {wouldLive ? "Cancel" : "Online Support"}
-          </button>
+        {hasOnlineTag && showRealtime && !isNotShowing && (
+          chatRoomId && !realTimeMode ? (
+            <button
+              className="inline-block px-2 py-1 text-xs font-semibold text-white bg-[#06b6d4] rounded-full mt-2 cursor-pointer"
+              style={styleB}
+              onClick={handleMakeRealTime}
+            >
+              Make Real-time
+            </button>
+          ) : !chatRoomId ? (
+            <button
+              className="inline-block px-2 py-1 text-xs font-semibold text-white bg-[#06b6d4] rounded-full mt-2 cursor-pointer"
+              style={styleB}
+              onClick={() => setWouldLive && setWouldLive((prev) => !prev)}
+            >
+              {wouldLive ? "Cancel" : "Online Support"}
+            </button>
+          ) : null
         )}
       </>
     );

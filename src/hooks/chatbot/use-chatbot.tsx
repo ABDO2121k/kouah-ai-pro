@@ -8,22 +8,25 @@ import {
   ChatBotMessageSchema,
 } from "@/schemas/conversation-shema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "../use-toast";
 import { useUploadThing } from "@/lib/uploadThing";
-import { chatWithBot } from "@/actions/ai";
-import { createChatRoom } from "@/actions/ai";
+import { addMessagesToChatRoom, chatWithBot } from "@/actions/ai";
+import { createChatRoom, retrieveChatAndMakeItLive } from "@/actions/ai";
+import { useSendMessage } from "@/hooks/realTime/useRealTime";
 
 type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 export type ChatbotType = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 
 export const useChatbot = (chatbotId: string) => {
-  const { startUpload } = useUploadThing("logoUploader");
+  // const { startUpload } = useUploadThing("logoUploader");
+  const { startUpload } = useUploadThing("fileUploader");
+
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [wouldLive, setWouldLive] = useState(false); // hadi drtha 3la 7sab chatot ila sft online atwlli true bax n affichiw simple form for email bax dik sa3a nswbo chatRoom w nrdoha live
+  const [wouldLive, setWouldLive] = useState(false);
   const [onChats, setOnChats] = useState<
     {
       role: "assistant" | "user";
@@ -41,7 +44,7 @@ export const useChatbot = (chatbotId: string) => {
   const [usedSuggestedQuestions, setUsedSuggestedQuestions] = useState<
     string[]
   >([]);
-  const [openHistory, setOpenHistory] = useState(false); // whadi ila use brk 3la button 4adiy njib room li mstoria
+  const [openHistory, setOpenHistory] = useState(false);
   const [loadingLive, setLoadingLive] = useState(false);
   //forms
   const {
@@ -54,11 +57,18 @@ export const useChatbot = (chatbotId: string) => {
   });
 
   const {
+    sendMessage,
+    toggleRoomMode: toggleRoomModeSocket,
+    emitNewRoom,
+    emitNewMessageToChatbot,
+  } = useSendMessage();
+
+  const {
     reset: resetEmail,
     register: registerEmail,
     handleSubmit: handleSubmitEmail,
     formState: { errors: emailErrors },
-  } = useForm<{ email: string }>(); // email registration form
+  } = useForm<{ email: string }>();
 
   // end forms
   const onScrollToBottom = () => {
@@ -76,19 +86,6 @@ export const useChatbot = (chatbotId: string) => {
   const onGetChatBot = async (id: string) => {
     const chatbot = await getChatBot(id);
     if (chatbot) {
-      // setOnChats((prev) => {
-      //   // alert(JSON.stringify(prev));
-      //   if (prev.length > 0) {
-      //     return [...prev];
-      //   }
-      //   return [
-      //     ...prev,
-      //     {
-      //       role: "assistant",
-      //       content: chatbot?.chatbot?.initialMessage ?? "",
-      //     },
-      //   ];
-      // });
       setChatbot(chatbot.chatbot);
     }
   };
@@ -115,113 +112,102 @@ export const useChatbot = (chatbotId: string) => {
   }, [chatbotId]);
 
   const onStartChatting = handleSubmit(async (values) => {
-    // console.log("ALL VALUES", values);
-    setOnAiTyping(true);
-    if (values.image.length) {
-      console.log("IMAGE fROM ", values.image[0]);
-      if (!onRealTime?.mode) {
-        // const newLogoUrl = URL.createObjectURL(values.image[0]);
-        const fileReader = new FileReader();
-        fileReader.onload = (event) => {
-          const newLogoUrl = event?.target?.result ?? ""; // The image data URL
-          //eslint-disable-next-line
-          setOnChats((prev: any) => [
-            ...prev,
-            {
-              role: "user",
-              content: newLogoUrl,
-              isImage: true,
-            },
+    if (
+      values.image &&
+      values.image.length > 0 &&
+      onRealTime?.chatroom &&
+      onRealTime.mode
+    ) {
+      console.log("IMAGE FROM ", values.image[0]);
+      const fileReader = new FileReader();
+      fileReader.onload = async (e) => {
+        const newLogoUrl = e.target?.result as string;
+        sendMessage(onRealTime.chatroom, newLogoUrl, "user", true);
+      };
+      fileReader.readAsDataURL(values.image[0]);
+
+      try {
+        console.log("Before upload check:", values.image[0]);
+        if (!values.image || !values.image[0]) {
+          throw new Error("No image file found before upload");
+        }
+        const uploaded = await startUpload([values.image[0]]);
+        console.log("Upload result:", uploaded);
+        if (uploaded && uploaded[0] && uploaded[0].url) {
+          // sendMessage(onRealTime.chatroom, uploaded[0].url, "user", true);
+          await addMessagesToChatRoom(onRealTime.chatroom, [
+            { content: uploaded[0].url, isImage: true, role: "user" },
           ]);
-        };
-        fileReader.readAsDataURL(values.image[0]);
+          emitNewMessageToChatbot(chatbotId);
+        } else {
+          throw new Error("Upload failed or returned invalid results");
+        }
+        //eslint-disable-next-line
+      } catch (error: any) {
+        console.error("Error uploading image:", error);
+        toast({
+          title: "Error",
+          description: `Failed to upload image: ${error?.message}`,
+          variant: "destructive",
+        });
       }
-      const uploaded = await startUpload([values.image[0]]);
-
-      // const response = await onAiChatBotAssistant(
-      //   currentBotId!,
-      //   onChats,
-      //   "user",
-      //   uploaded.uuid
-      // );
-
-      // if (response) {
-      //   setOnAiTyping(false);
-      //   if (response.live) {
-      //     setOnRealTime((prev) => ({
-      //       ...prev,
-      //       chatroom: response.chatRoom,
-      //       mode: response.live,
-      //     }));
-      //   } else {
-      //     setOnChats((prev: any) => [...prev, response.response]);
-      //   }
-      // }
+    } else {
+      console.log("No image to upload or missing chatroom:", {
+        hasImage: !!values.image,
+        imageLength: values.image?.length,
+        chatroom: onRealTime?.chatroom,
+      });
     }
-    reset();
 
     if (values.content) {
       if (!onRealTime?.mode) {
-        //eslint-disable-next-line
-        setOnChats((prev: any) => [
+        setOnAiTyping(true);
+        setOnChats((prev) => [
           ...prev,
           {
             role: "user",
-            content: values.content,
+            content: values.content || "",
+            isImage: false,
           },
         ]);
-      }
+        const response = await chatWithBot(
+          chatbotId,
+          onChats,
+          values.content,
+          onRealTime?.chatroom
+        );
 
-      setOnAiTyping(true);
-
-      const response = await chatWithBot(chatbotId, onChats, values.content);
-
-      if (response) {
-        if (response.status === 200) {
-          // console.log({ resp: response.response?.body });
-          // const reader = response.response.body.getReader();
-          // const decoder = new TextDecoder();
-          // let done = false;
-          // let accumulatedResponse = "";
-
-          setOnAiTyping(false);
-          setOnChats((prev) => [
-            ...prev,
-            { role: "assistant", content: response.response ?? " " },
-          ]);
-
-          // while (!done) {
-          //   const { value, done: doneReading } = await reader.read();
-          //   done = doneReading;
-          //   const chunkValue = decoder.decode(value);
-          //   accumulatedResponse += chunkValue;
-
-          //   setOnChats((prev) => {
-          //     const updatedChats = [...prev];
-          //     updatedChats[updatedChats.length - 1] = {
-          //       role: "assistant",
-          //       content: accumulatedResponse,
-          //     };
-          //     return updatedChats;
-          //   });
-          // }
-        } else {
-          // Handle error
-          console.error("Error in chatbot response:", response);
-          toast({
-            title: "Error",
-            description: "An error occurred while processing your request.",
-            variant: "destructive",
-          });
+        if (response) {
+          if (response.status === 200) {
+            setOnAiTyping(false);
+            setOnChats((prev) => [
+              ...prev,
+              { role: "assistant", content: response.response ?? " " },
+            ]);
+          } else {
+            console.error("Error in chatbot response:", response);
+            toast({
+              title: "Error",
+              description: "An error occurred while processing your request.",
+              variant: "destructive",
+            });
+          }
         }
+        setOnAiTyping(false);
+      } else {
+        sendMessage(onRealTime.chatroom, values.content, "user", false);
+        await addMessagesToChatRoom(onRealTime.chatroom, [
+          { content: values.content, isImage: false, role: "user" },
+        ]);
+        emitNewMessageToChatbot(chatbotId);
       }
     }
+    reset({ content: "", image: undefined });
   });
 
   const onSuggestedQuestionClick = async (question: string) => {
     setOnAiTyping(true);
 
-    // Add the user's question to the chat
     setOnChats((prev) => [
       ...prev,
       {
@@ -230,7 +216,6 @@ export const useChatbot = (chatbotId: string) => {
       },
     ]);
 
-    // Add the question to the used questions list
     setUsedSuggestedQuestions((prev) => [...prev, question]);
 
     const response = await chatWithBot(chatbotId, onChats, question);
@@ -243,7 +228,6 @@ export const useChatbot = (chatbotId: string) => {
           { role: "assistant", content: response.response ?? " " },
         ]);
       } else {
-        // Handle error
         console.error("Error in chatbot response:", response);
         toast({
           title: "Error",
@@ -267,6 +251,8 @@ export const useChatbot = (chatbotId: string) => {
         chatroom: response.chatRoomId ?? "",
         mode: response.mode,
       });
+      toggleRoomModeSocket(response.chatRoomId ?? "", response.mode);
+      emitNewRoom(chatbotId);
       toast({
         title: "Success",
         description: "Live chat started successfully.",
@@ -282,15 +268,74 @@ export const useChatbot = (chatbotId: string) => {
         response.chatHistory.map((chat) => ({
           role: chat.role as "assistant" | "user",
           content: chat.message,
-          isImage: false,
+          isImage: chat.isImage,
         }))
       );
     }
     resetEmail();
     setLoadingLive(false);
     setWouldLive(false);
-    setOpenHistory(false)
+    setOpenHistory(false);
   });
+
+  const handleMakeRealTime = async () => {
+    if (onRealTime?.chatroom) {
+      const response = await retrieveChatAndMakeItLive(
+        chatbotId,
+        onRealTime.chatroom
+      );
+      if (response.status === 200) {
+        setOnRealTime({
+          chatroom: response.chatRoomId ?? "",
+          mode: response.mode ?? false,
+        });
+        toggleRoomModeSocket(response.chatRoomId ?? "", response.mode ?? false);
+        if (response.chatHistory) {
+          setOnChats(
+            response.chatHistory.map((chat) => ({
+              role: chat.role as "assistant" | "user",
+              content: chat.message,
+              isImage: chat.isImage,
+            }))
+          );
+        }
+        toast({
+          title: "Success",
+          description: "Chat room retrieved and set to live successfully.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.message,
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const toggleRoomMode = useCallback(
+    (roomId: string, value: boolean) => {
+      alert("hello");
+      if (onRealTime?.chatroom === roomId) {
+        setOnRealTime((prev) => {
+          if (prev?.mode !== value) {
+            return {
+              chatroom: prev?.chatroom || "",
+              mode: value,
+            };
+          }
+          return prev;
+        });
+      }
+    },
+    [onRealTime]
+  );
+
+  // useEffect(() => {
+  //   if (onRealTime) {
+  //     toggleRoomMode(onRealTime.chatroom, onRealTime.mode);
+  //   }
+  // }, [onRealTime?.chatroom, onRealTime?.mode, toggleRoomMode]);
 
   return {
     chatbot,
@@ -303,6 +348,7 @@ export const useChatbot = (chatbotId: string) => {
     loading,
     setOnChats,
     onRealTime,
+    setOnRealTime,
     errors,
     theme,
     usedSuggestedQuestions,
@@ -313,11 +359,13 @@ export const useChatbot = (chatbotId: string) => {
     registerEmail,
     handleLiveSubmit,
     loadingLive,
+    handleMakeRealTime,
+    toggleRoomMode,
   };
 };
 
 export const useGetChatbot = () => {
-  const { selectedChatbot, chatbots, setActions } = useChatContext();
+  const { selectedChatbot, chatbots, setActions, actions } = useChatContext();
   // eslint-disable-next-line
   const [chatbot, setChatbot] = useState<any>(null);
 
@@ -331,5 +379,6 @@ export const useGetChatbot = () => {
     chatbot,
     setActions,
     setChatbot,
+    actions,
   };
 };

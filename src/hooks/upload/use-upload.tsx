@@ -10,7 +10,7 @@ export const useUpload = (botId?: string) => {
   const [files, setFiles] = useState<File[]>([]);
   const { startUpload } = useUploadThing("fileUploader");
   const [isUploading, setIsUploading] = useState(false);
-  const router=useRouter()
+  const router = useRouter();
 
   const handleFileUpload = (files: File[]) => {
     setFiles(files);
@@ -20,7 +20,7 @@ export const useUpload = (botId?: string) => {
     try {
       setIsUploading(true);
       const uploadedFiles = await startUpload(files);
-
+      console.log({ uploadedFiles });
       if (!uploadedFiles) {
         throw new Error("File upload failed");
       }

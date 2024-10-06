@@ -131,7 +131,8 @@ export const chatAi = async (
 export const chatWithBot = async (
   id: string,
   chat: { role: "assistant" | "user"; content: string }[],
-  message: string
+  message: string,
+  roomId?: string
 ) => {
   try {
     const chatbot = await db.chatBot.findFirst({
@@ -159,15 +160,6 @@ export const chatWithBot = async (
       chat
     );
 
-    // Create a new query entry
-    // await db.query.create({
-    //   data: {
-    //     query: message,
-    //     answer: chatbotResponse??"",
-    //     chatBotId: chatbot.id,
-    //   },
-    // });
-
     await db.chatBot.update({
       where: {
         id: chatbot.id,
@@ -181,6 +173,15 @@ export const chatWithBot = async (
         },
       },
     });
+
+    // Add messages to chat room if roomId is provided
+    if (roomId) {
+      await addMessagesToChatRoom(roomId, [
+        { role: "user", content: message },
+        { role: "assistant", content: chatbotResponse ?? "" },
+      ]);
+    }
+
     return { status: 200, response: chatbotResponse };
     //eslint-disable-next-line
   } catch (err: any) {
@@ -188,6 +189,44 @@ export const chatWithBot = async (
     return { message: err.message, isError: true, status: 500 };
   }
 };
+
+export const addMessagesToChatRoom = async (
+  roomId: string,
+  messages: { role: "assistant" | "user"; content: string; isImage?: boolean }[]
+) => {
+  try {
+    const chatRoom = await db.chatRoom.findUnique({
+      where: { id: roomId },
+    });
+
+    if (!chatRoom) {
+      throw new Error("Chat room not found");
+    }
+
+    await db.chatRoom.update({
+      where: { id: roomId },
+      data: {
+        chatRead: false,
+        message: {
+          createMany: {
+            data: messages.map((msg) => ({
+              message: msg.content,
+              role: msg.role,
+              isImage: msg.isImage ?? false,
+            })),
+          },
+        },
+      },
+    });
+
+    return { status: 200, message: "Messages added to chat room successfully" };
+    //eslint-disable-next-line
+  } catch (err: any) {
+    console.error({ err });
+    return { message: err.message, isError: true, status: 500 };
+  }
+};
+
 export const createChatRoom = async (
   chatbotId: string,
   email: string,
@@ -219,6 +258,7 @@ export const createChatRoom = async (
           id: existingChatRoom.id,
         },
         data: {
+          live: type !== "history",
           message: {
             createMany: {
               data: onChats.map((chat) => ({
@@ -252,6 +292,7 @@ export const createChatRoom = async (
         data: {
           email: email,
           chatBotId: chatbotId,
+          live: type === "live",
           message: {
             createMany: {
               data: onChats.map((chat) => ({
@@ -286,4 +327,85 @@ export const createChatRoom = async (
       mode: false,
     };
   }
+};
+
+export const retrieveChatAndMakeItLive = async (
+  chatbotId: string,
+  chatRoomId: string
+) => {
+  try {
+    const chatbot = await db.chatBot.findFirst({
+      where: {
+        id: chatbotId,
+      },
+    });
+    if (!chatbot) throw new Error("Chatbot not found!");
+
+    const existingChatRoom = await db.chatRoom.findFirst({
+      where: {
+        chatBotId: chatbotId,
+        id: chatRoomId,
+      },
+      include: {
+        message: true,
+      },
+    });
+
+    if (!existingChatRoom) throw new Error("Chat room not found!");
+
+    const updatedChatRoom = await db.chatRoom.update({
+      where: {
+        id: chatRoomId,
+      },
+      data: {
+        live: !existingChatRoom.live,
+      },
+      include: {
+        message: true,
+      },
+    });
+
+    return {
+      status: 200,
+      message: `Chat room mode toggled successfully. New mode: ${
+        updatedChatRoom.live ? "live" : "not live"
+      }.`,
+      chatRoomId: updatedChatRoom.id,
+      chatHistory: updatedChatRoom.message,
+      mode: updatedChatRoom.live,
+    };
+    //eslint-disable-next-line
+  } catch (err: any) {
+    console.error({ err });
+    return {
+      message: err.message,
+      isError: true,
+      status: 500,
+      chatRoomId: null,
+      chatHistory: null,
+      mode: false,
+    };
+  }
+};
+
+export const makeRoomLive = async (roomId: string, mode: boolean) => {
+  await db.chatRoom.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      live: mode,
+    },
+  });
+};
+
+export const makeChatReadsTrue = async (roomId: string, value: boolean) => {
+  await db.chatRoom.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      chatRead: value,
+    },
+  });
 };

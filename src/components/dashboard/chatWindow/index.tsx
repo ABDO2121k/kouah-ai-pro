@@ -6,7 +6,7 @@ import Image from "next/image";
 import TabsMenu from "@/components/tabs";
 import { TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { X, History } from "lucide-react";
+import { X, History, PhoneCall, PhoneOff } from "lucide-react";
 import { BOT_TABS_MENU } from "@/constants/menu";
 import { useChatbot } from "@/hooks/chatbot/use-chatbot";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
     chatbot,
     loading,
     onRealTime,
+    setOnRealTime,
     messageWindowRef,
     onSuggestedQuestionClick,
     theme,
@@ -38,6 +39,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
     handleLiveSubmit,
     openHistory,
     setOpenHistory,
+    handleMakeRealTime,
   } = useChatbot(chatbotId);
 
   const searchParams = useSearchParams();
@@ -72,7 +74,6 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   const toggleHistory = () => {
     setOpenHistory(!openHistory);
   };
-
   return (
     <div className="h-full w-full bg-zinc-50 border-[1px] rounded-lg flex flex-col items-center overflow-hidden">
       <Loader loading={!loading && chatbot && theme ? false : true}>
@@ -149,29 +150,67 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                   {chatbot?.title}
                 </h3>
                 <p className="text-sm truncate">{chatbot?.subTitle}</p>
-                {onRealTime?.mode && (
+                {onRealTime?.chatroom && (
                   <RealTimeMode
                     setChats={setOnChats}
                     chatRoomId={onRealTime.chatroom}
+                    setOnRealTime={setOnRealTime}
+                    mode={onRealTime?.mode}
                   />
                 )}
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              {chatbot?.isRealTimeChat&&!onRealTime?.chatroom && (
-                <History
-                  className={cn("cursor-pointer h-4 w-4 text-zinc-500 opacity-70", {
-                    "text-white": chatbot?.theme === "dark",
-                  })}
-                  onClick={toggleHistory}
-                  style={
-                    chatbot?.theme === "customize"
-                      ? { color: theme?.textColor }
-                      : {}
-                  }
-                />
-              )}
+              {chatbot?.isRealTimeChat &&
+                (onRealTime?.chatroom ? (
+                  onRealTime.mode ? (
+                    <PhoneOff
+                      className={cn(
+                        "cursor-pointer h-4 w-4 text-zinc-500 opacity-70",
+                        {
+                          "text-white": chatbot?.theme === "dark",
+                        }
+                      )}
+                      onClick={handleMakeRealTime}
+                      style={
+                        chatbot?.theme === "customize"
+                          ? { color: theme?.textColor }
+                          : {}
+                      }
+                    />
+                  ) : (
+                    <PhoneCall
+                      className={cn(
+                        "cursor-pointer h-4 w-4 text-zinc-500 opacity-70",
+                        {
+                          "text-white": chatbot?.theme === "dark",
+                        }
+                      )}
+                      onClick={handleMakeRealTime}
+                      style={
+                        chatbot?.theme === "customize"
+                          ? { color: theme?.textColor }
+                          : {}
+                      }
+                    />
+                  )
+                ) : (
+                  <History
+                    className={cn(
+                      "cursor-pointer h-4 w-4 text-zinc-500 opacity-70",
+                      {
+                        "text-white": chatbot?.theme === "dark",
+                      }
+                    )}
+                    onClick={toggleHistory}
+                    style={
+                      chatbot?.theme === "customize"
+                        ? { color: theme?.textColor }
+                        : {}
+                    }
+                  />
+                ))}
               <div className="relative w-10 h-10">
                 {opened !== null ? (
                   <Image
@@ -283,6 +322,8 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                   setWouldLive={setWouldLive}
                   wouldLive={wouldLive}
                   chatRoomId={onRealTime?.chatroom ?? ""}
+                  realTimeMode={onRealTime?.mode ?? false}
+                  handleMakeRealTime={handleMakeRealTime}
                 />
               </TabsContent>
               <TabsContent value="helpdesk">
@@ -303,6 +344,8 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
               setWouldLive={setWouldLive}
               wouldLive={wouldLive}
               chatRoomId={onRealTime?.chatroom ?? ""}
+              realTimeMode={onRealTime?.mode ?? false}
+              handleMakeRealTime={handleMakeRealTime}
             />
           )}
           <div

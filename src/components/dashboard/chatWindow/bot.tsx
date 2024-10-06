@@ -16,11 +16,13 @@ type BotProps = {
   onChats: ReturnType<typeof useChatbot>["onChats"];
   onStartChatting: ReturnType<typeof useChatbot>["onStartChatting"];
   register: ReturnType<typeof useChatbot>["register"];
+  realTimeMode: boolean;
   onSuggestedQuestionClick: ReturnType<
     typeof useChatbot
   >["onSuggestedQuestionClick"];
   usedSuggestedQuestions: string[];
   chatRoomId: string | null;
+  handleMakeRealTime: () => Promise<void>;
 };
 const Bot = forwardRef<HTMLDivElement, BotProps>(
   (
@@ -35,7 +37,9 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
       usedSuggestedQuestions,
       setWouldLive,
       wouldLive,
-      chatRoomId
+      chatRoomId,
+      realTimeMode,
+      handleMakeRealTime,
     },
     ref
   ) => {
@@ -70,6 +74,8 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
             wouldLive={wouldLive}
             showRealtime={chatbot?.isRealTimeChat ?? false}
             chatRoomId={chatRoomId}
+            realTimeMode={realTimeMode}
+            handleMakeRealTime={handleMakeRealTime}
           />
           <SuggestedQ
             suggestQ={chatbot?.suggestQ ?? []}
@@ -109,6 +115,8 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
               wouldLive={wouldLive}
               showRealtime={chatbot?.isRealTimeChat ?? false}
               chatRoomId={chatRoomId}
+              realTimeMode={realTimeMode}
+              handleMakeRealTime={handleMakeRealTime}
             />
           ))}
           {onAiTyping && <Responding theme={chatbot?.theme ?? ""} />}
@@ -129,6 +137,7 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
             onAiTyping={onAiTyping}
             onStartChatting={onStartChatting}
             register={register}
+            realTimeMode={realTimeMode}
           />
         </div>
       </div>

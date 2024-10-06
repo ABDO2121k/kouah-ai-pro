@@ -3,8 +3,9 @@
 import { Server } from "socket.io";
 
 let io: Server;
+
 //eslint-disable-next-line
-export function initializeSocket(server: any) {
+export async function initializeSocket(server: any) {
   if (!io) {
     io = new Server(server, {
       cors: {
@@ -12,21 +13,21 @@ export function initializeSocket(server: any) {
         methods: ["GET", "POST"],
       },
     });
-    //eslint-disable-next-line
-    io.on("connection", (socket: any) => {
+
+    io.on("connection", (socket) => {
       console.log("A user connected");
-      //eslint-disable-next-line
-      socket.on("join", (room: any) => {
+
+      socket.on("join", (room) => {
         socket.join(room);
         console.log(`User joined room: ${room}`);
       });
-    //eslint-disable-next-line
-      socket.on("leave", (room:any) => {
+
+      socket.on("leave", (room) => {
         socket.leave(room);
         console.log(`User left room: ${room}`);
       });
-     //eslint-disable-next-line
-      socket.on("send_message", (data:any) => {
+
+      socket.on("send_message", (data) => {
         io.to(data.room).emit("realtime-mode", { chat: data.message });
       });
 
@@ -35,5 +36,6 @@ export function initializeSocket(server: any) {
       });
     });
   }
-  return io;
+  // Return a boolean indicating whether the server was initialized
+  return !!io;
 }

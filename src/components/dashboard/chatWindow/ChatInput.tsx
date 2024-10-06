@@ -14,12 +14,14 @@ const ChatInput = ({
   onAiTyping,
   onStartChatting,
   register,
+  realTimeMode,
 }: {
   chatbot: ChatbotType;
   theme: ThemeType;
   onAiTyping: boolean;
   onStartChatting: ReturnType<typeof useChatbot>["onStartChatting"];
   register: ReturnType<typeof useChatbot>["register"];
+  realTimeMode: boolean;
 }) => {
 
   return (
@@ -44,28 +46,30 @@ const ChatInput = ({
           {/* File Input and Textarea in one line */}
           <div className="flex flex-grow items-center space-x-2">
             {/* File input for uploading images */}
-            <Label
-              htmlFor="bot-image"
-              className="flex items-center cursor-pointer w-[5%]" // Reduced width for icon
-            >
-              <Paperclip
-                className={cn("mr-1 w-full", {
-                  "text-white": chatbot?.theme == "dark",
-                })}
-                style={
-                  chatbot?.theme === "customize"
-                    ? { color: theme?.primaryBackground }
-                    : {}
-                }
-              />
-              <Input
-                type="file"
-                id="bot-image"
-                className="hidden"
-                accept="image/*"
-                {...register("image")}
-              />
-            </Label>
+            {realTimeMode && (
+              <Label
+                htmlFor="bot-image"
+                className="flex items-center cursor-pointer w-[5%]" // Reduced width for icon
+              >
+                <Paperclip
+                  className={cn("mr-1 w-full", {
+                    "text-white": chatbot?.theme == "dark",
+                  })}
+                  style={
+                    chatbot?.theme === "customize"
+                      ? { color: theme?.primaryBackground }
+                      : {}
+                  }
+                />
+                <Input
+                  type="file"
+                  id="bot-image"
+                  className="hidden"
+                  accept="image/*"
+                  {...register("image")}
+                />
+              </Label>
+            )}
 
             {/* Resizable TextArea */}
             <Textarea
@@ -73,7 +77,7 @@ const ChatInput = ({
               rows={1}
               maxRows={4}
               placeholder={chatbot?.placeHolder}
-              className={`flex-1 resize-y text-base py-1 pr-10 w-[85%] scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch placeholder-[${
+              className={`flex-1 resize-y text-base py-1 pr-10 ${realTimeMode ? 'w-[85%]' : 'w-[90%]'} scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch placeholder-[${
                 chatbot?.theme === "customize"
                   ? theme?.primaryTextColor
                   : "#06b6d4"

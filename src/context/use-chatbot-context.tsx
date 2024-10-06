@@ -15,6 +15,7 @@ const initialChatContextValue: ChatContextType = {
   currentlyDeleting: "",
   setCurrentlyDeleting: () => {},
   setActions: () => {},
+  actions:0
 };
 
 //eslint-disable-next-line
@@ -35,6 +36,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     currentlyDeleting,
     setCurrentlyDeleting,
     setActions,
+    actions
   } = useChatbots();
 
   useEffect(() => {
@@ -50,7 +52,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     deletechatbot,
     currentlyDeleting,
     setCurrentlyDeleting,
-    setActions
+    setActions,
+    actions
   };
 
   return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;

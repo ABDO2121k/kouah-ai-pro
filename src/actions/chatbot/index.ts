@@ -25,12 +25,12 @@ export const getAccountChatBots = async () => {
         },
         ChatRoom: {
           orderBy: {
-            createdAt: 'desc',
+            createdAt: 'asc',
           },
           include: {
             message: {
               orderBy: {
-                createdAt: 'desc',
+                createdAt: 'asc',
               },
             }, // لجلب الرسائل المرتبطة بكل غرفة دردشة
           },
