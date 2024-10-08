@@ -4,7 +4,7 @@ import { WobbleCard } from "@/components/ui/wobble-card";
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import {KouahAiBotEmbeddLocal} from "@kouahai/embed"
+import {KouahAiBotEmbedd} from "@kouahai/embed"
 
 export default function HeroSection() {
   const [isMounted, setIsMounted] = useState(false);
@@ -15,7 +15,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     if (isMounted) {
-      KouahAiBotEmbeddLocal('cm1lghktm0001br0k599pwsvf');
+      KouahAiBotEmbedd('cm1lghktm0001br0k599pwsvf');
     }
   }, [isMounted]);
   return (
