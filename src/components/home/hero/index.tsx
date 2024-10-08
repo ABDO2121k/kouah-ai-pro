@@ -3,9 +3,21 @@ import { Button } from "@/components/ui/moving-border";
 import { WobbleCard } from "@/components/ui/wobble-card";
 import { Sparkles } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {KouahAiBotEmbeddLocal} from "@kouahai/embed"
 
 export default function HeroSection() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      KouahAiBotEmbeddLocal('cm1lghktm0001br0k599pwsvf');
+    }
+  }, [isMounted]);
   return (
     <div className="mt-5">
       <div className="flex items-center justify-center gap-5 flex-col">

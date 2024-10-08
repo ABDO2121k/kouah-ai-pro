@@ -1,10 +1,4 @@
-"use server";
-import Features from "@/components/home/features";
-import Flow from "@/components/home/flow";
 import Footer from "@/components/home/footer";
-import Header from "@/components/home/header";
-import HeroSection from "@/components/home/hero";
-import Value from "@/components/home/value";
 import NavBar from "@/components/Nav";
 import { currentUser } from "@clerk/nextjs";
 import React from "react";
@@ -18,10 +12,13 @@ interface User {
   picture: string | null;
 }
 
-const page = async () => {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const user = await currentUser();
 
-  // If user is `null`, handle the undefined case or pass null to NavBar
   const userData: User | null = user
     ? {
         id: user.id,
@@ -36,14 +33,8 @@ const page = async () => {
   return (
     <main className="grainy  h-full">
       <NavBar user={userData} isDashboard={false} />
-      <Header />
-      <HeroSection />
-      <Features />
-      <Flow />
-      <Value />
+      {children}
       <Footer />
     </main>
   );
-};
-
-export default page;
+}

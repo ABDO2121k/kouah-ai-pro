@@ -1,3 +1,4 @@
+import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import { currentUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -37,15 +38,18 @@ const Layout = async ({ children }: Props) => {
           <br />
           something never done before 😉
         </p>
-        <Image
-          src="/images/loginP.png"
-          alt="Kouah AI interface"
-          loading="lazy"
-          sizes="30"
-          className="absolute shrink-0 !w-[1600px] top-48 mt-5 overflow-hidden rounded-lg border-8 border-[#06b6d4]"
-          width={100}
-          height={100}
-        />
+        {/* <ContainerScroll> */}
+          <Image
+            src="/images/loginP.png"
+            alt="Kouah AI interface"
+            loading="lazy"
+            sizes="30"
+            className="absolute shrink-0 !w-[1600px] top-48 mt-5 overflow-hidden rounded-lg border-8 border-[#06b6d4]"
+            width={100}
+            height={100}
+            draggable={false}
+          />
+        {/* </ContainerScroll> */}
       </div>
     </div>
   );

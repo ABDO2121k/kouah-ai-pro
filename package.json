@@ -13,6 +13,8 @@
     "@clerk/nextjs": "^4.31.5",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.9.0",
+    "@kouahai/embed": "^2.0.38",
+    "@kouahai/frame": "^2.0.31",
     "@langchain/community": "^0.3.0",
     "@langchain/openai": "^0.3.0",
     "@langchain/pinecone": "^0.1.0",

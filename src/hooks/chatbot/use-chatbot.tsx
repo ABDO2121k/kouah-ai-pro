@@ -20,8 +20,8 @@ type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 export type ChatbotType = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 
 export const useChatbot = (chatbotId: string) => {
-  // const { startUpload } = useUploadThing("logoUploader");
-  const { startUpload } = useUploadThing("fileUploader");
+  const { startUpload } = useUploadThing("logoUploader");
+  // const { startUpload } = useUploadThing("fileUploader");
 
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);

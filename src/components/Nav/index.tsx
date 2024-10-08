@@ -9,6 +9,8 @@ import Image from "next/image";
 import { useWindowScroll } from "@mantine/hooks";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "../theme/button";
+import { HoveredLink, MenuItem } from "../ui/navbar-menu";
+import { useState } from "react";
 
 interface User {
   id: string;
@@ -27,7 +29,7 @@ const Navbar = ({
   isDashboard: boolean;
 }) => {
   const [scroll] = useWindowScroll();
-
+  const [active, setActive] = useState("");
   return (
     <nav
       className={cn(
@@ -61,7 +63,14 @@ const Navbar = ({
             isAuth={user && user?.id ? true : false}
             isDashboard={isDashboard}
           />
-          <div className="hidden sm:flex items-center space-x-4">
+          <div className="hidden sm:flex items-center space-x-4 gap-10">
+            <MenuItem active={active} setActive={setActive} item="Resources">
+              <div className="flex flex-col space-y-4 text-sm">
+                <HoveredLink href="/blog">Blog</HoveredLink>
+                <HoveredLink href="/docs">Docs</HoveredLink>
+                <HoveredLink href="/about">About Us</HoveredLink>
+              </div>
+            </MenuItem>
             {!user || !user.email ? (
               <>
                 <Link
@@ -97,15 +106,6 @@ const Navbar = ({
               </>
             ) : (
               <>
-                {/* <Link
-                  href={"/dashboard"}
-                  className={buttonVariants({
-                    variant: "ghost",
-                    size: "sm",
-                  })}
-                >
-                  Dashboard
-                </Link> */}
                 <UserAccountNav
                   name={
                     !user.given_name || !user.family_name

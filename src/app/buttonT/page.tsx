@@ -9,9 +9,9 @@ const ChatbotToggleButton = () => {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data === "openChat") {
-        setIsOpen(true);
+        setIsOpen(prev=>!prev);
       } else if (event.data === "closeChat") {
-        setIsOpen(false);
+        setIsOpen(prev=>!prev);
       }
     };
 

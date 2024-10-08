@@ -41,6 +41,8 @@ const nextConfig = {
     domains: ['images.clerk.dev', "img.clerk.com", 'pbs.twimg.com', 'www.gravatar.com', "ucarecdn.com", "utfs.io"],
 
   },
+  // reactStrictMode: true,
+  // transpilePackages: ['@kouahai/frame'],
 };
 
 export default nextConfig;

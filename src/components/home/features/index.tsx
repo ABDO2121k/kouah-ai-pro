@@ -162,11 +162,10 @@ const SkeletonThree = () => {
         variants={first}
       >
         <code className="text-white w-full h-full p-3 ">
-          {`         import Chatbot from "@denserai/embed-chat";
-
-                       Chatbot.init({
-                      chatbotId: "<chatbotId>"
-                       });
+          {`        <script type="module">
+              import { KouahAiBotEmbedd } from "https://cdn.jsdelivr.net/npm/@kouahai/frame@2.0.18";
+              KouahAiBotEmbedd("your kouahAIBot Id");
+            </script>
           `}
         </code>
       </motion.div>
