@@ -47,13 +47,14 @@ model LeadField {
 
 model File {
   id        String   @id @default(cuid())
-  fileName  String
-  size      String
-  type      String   @default("File")
-  key       String
+  fileName  String?
+  size      BigInt?
+  type      String   @default("file")
+  key       String?
   chatBotId String?
-  url       String
+  url       String?
   chatBot   ChatBot? @relation(fields: [chatBotId], references: [id], onDelete: Cascade)
+  step      String?  @default("PENDING")
 }
 
 model Query {

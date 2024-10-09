@@ -30,14 +30,14 @@ export const ourFileRouter = {
     image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
     .middleware(async () => {
-      const user = await currentUser();
-      if (!user) throw new UploadThingError("Unauthorized");
-      const dbUser = await db.user.findFirst({ where: { clerkId: user.id } });
-      return { userId: dbUser?.id };
+      // const user = await currentUser();
+      // if (!user) throw new UploadThingError("Unauthorized");
+      // const dbUser = await db.user.findFirst({ where: { clerkId: user.id } });
+      return { middleware: true };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Logo upload complete:", file);
-      return { userId: metadata.userId };
+      return { completed: true };
     }),
 } satisfies FileRouter;
 

@@ -10,36 +10,45 @@ import { Document } from "langchain/document";
 import * as cheerio from "cheerio";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
+import { YoutubeLoader } from "@langchain/community/document_loaders/web/youtube";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 export interface FileUpload {
   name: string;
   size: number;
   key: string;
   lastModified: number;
-  serverData: {
-    userId: string;
-  };
   url: string;
   appUrl: string;
   customId: string | null;
   type: string;
 }
-
 export const uploadFile = async (bot: string | undefined, file: FileUpload) => {
   try {
     const createdFile = await db.file.create({
       data: {
         fileName: file.name,
         key: file.key,
-        size: String(file.size),
+        size: file.size,
         chatBotId: bot,
         url: file.url,
       },
     });
-    return createdFile;
+    if (createdFile) {
+      await db.chatBot.update({
+        where: { id: bot },
+        data: {
+          fileUsage: {
+            increment: file.size,
+          },
+        },
+      });
+    }
+
+    return { status: 200, message: "file uploaded with success", createdFile };
   } catch (err) {
     console.error("Error uploading file:", err);
-    return { status: 500, message: "External server error" };
+    return { status: 500, message: "External server error", createdFile: null };
   }
 };
 
@@ -102,7 +111,7 @@ export const storePinecone = async (bot: string, file: FileUpload) => {
       pineconeIndex,
       namespace: bot,
     });
-    console.log("file stored with success")
+    console.log("file stored with success");
     return { status: 200, message: "File processed and stored with success" };
   } catch (err) {
     console.error("Error storing in Pinecone:", err);
@@ -117,7 +126,18 @@ export const uploadFiles = async (bot: string, files: FileUpload[]) => {
       if ("status" in createdFile && createdFile.status === 500) {
         throw new Error(createdFile.message);
       }
-      await storePinecone(bot, file);
+      const response = await storePinecone(bot, file);
+      if (response.status == 200) {
+        await UpdateFileState(
+          createdFile.createdFile?.id ?? "unknown",
+          "SUCCESS"
+        );
+      } else {
+        await UpdateFileState(
+          createdFile.createdFile?.id ?? "unknown",
+          "Failed"
+        );
+      }
     }
     return {
       status: 200,
@@ -150,5 +170,128 @@ export const removePinecone = async (namespace: string) => {
     throw new Error(
       err instanceof Error ? err.message : "Unknown error occurred"
     );
+  }
+};
+
+export const UpdateFileState = async (fileId: string, step: string) => {
+  await db.file.update({
+    where: {
+      id: fileId,
+    },
+    data: {
+      step: step,
+    },
+  });
+};
+
+const loadHTMLContent = async (url: string): Promise<string> => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const text = await blob.text();
+  const $ = cheerio.load(text);
+  return $("body").text().trim();
+};
+
+const getYoutubeContent = async (url: string) => {
+  const loader = YoutubeLoader.createFromUrl(url, {
+    addVideoInfo: true,
+    detectLanguage: true,
+    //eslint-disable-next-line
+  } as any);
+  const docs = await loader.load();
+  return docs.map((doc) => doc.pageContent).join("\n");
+};
+export const uploadUrls = async (
+  bot: string,
+  urls: string[],
+  type: "web" | "youtube"
+) => {
+  try {
+    for (const url of urls) {
+      let content: string;
+      const createdFile = await db.file.create({
+        data: {
+          type: type,
+          fileName: url,
+        },
+      });
+      if (type === "web") {
+        content = await loadHTMLContent(url);
+        await db.chatBot.update({
+          where: { id: bot },
+          data: {
+            webUsage: {
+              increment: 1,
+            },
+          },
+        });
+      } else if (type === "youtube") {
+        content = await getYoutubeContent(url);
+        await db.chatBot.update({
+          where: { id: bot },
+          data: {
+            videosUsage: {
+              increment: 1,
+            },
+          },
+        });
+      } else {
+        throw new Error(`Unsupported type: ${type}`);
+      }
+
+      const response = await storeUrlPinecone(bot, content);
+      if (response.status == 200) {
+        await UpdateFileState(createdFile?.id ?? "unknown", "SUCCESS");
+      } else {
+        await UpdateFileState(createdFile?.id ?? "unknown", "Failed");
+      }
+    }
+    return {
+      status: 200,
+      message: "Urls uploaded and processed successfully",
+    };
+  } catch (err) {
+    console.error("Error uploading files:", err);
+    return { status: 500, message: "External server error" };
+  }
+};
+
+export const storeUrlPinecone = async (bot: string, text: string) => {
+  try {
+    const pinecone = new Pinecone({
+      apiKey: process.env.PINECONE_API_KEY!,
+    });
+    const pineconeIndex = pinecone.Index("kouah-ai");
+
+    // Create a text splitter
+    const textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1000,
+      chunkOverlap: 200,
+    });
+
+    // Split the text into chunks
+    const chunks = await textSplitter.splitText(text);
+
+    // Create documents from chunks
+    const documents = chunks.map(
+      (chunk) => new Document({ pageContent: chunk })
+    );
+
+    const embeddings = new OpenAIEmbeddings({
+      openAIApiKey: process.env.OPENAI_API_KEY_A,
+    });
+
+    await PineconeStore.fromDocuments(documents, embeddings, {
+      pineconeIndex,
+      namespace: bot,
+    });
+    console.log("Content stored with success");
+    return {
+      status: 200,
+      message: "Content processed, chunked, and stored with success",
+    };
+  } catch (err) {
+    console.error("Error storing in Pinecone:", err);
+    return { status: 500, message: "External server error" };
   }
 };

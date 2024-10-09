@@ -37,6 +37,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@react-three/drei": "^9.112.0",
     "@react-three/fiber": "^8.17.7",
+    "@tabler/icons-react": "^3.19.0",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/react-table": "^8.20.5",
     "@types/lodash": "^4.17.7",
@@ -47,6 +48,7 @@
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cobe": "^0.6.3",
     "d3-dsv": "2",
     "dayjs": "^1.11.13",
     "framer-motion": "^11.5.4",
@@ -75,6 +77,8 @@
     "three-globe": "^2.31.1",
     "uploadthing": "^7.0.1",
     "vaul": "^0.9.4",
+    "youtube-transcript": "^1.2.1",
+    "youtubei.js": "10.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
