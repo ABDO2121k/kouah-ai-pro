@@ -40,7 +40,7 @@ const ChatbotToggleButton = () => {
         <motion.div
           animate={{ rotate: isOpen ? 90 : 0 }}
           transition={{ duration: 0.3 }}
-        >
+        > 
           {isOpen ? (
             <X className="text-slate-600 h-8 w-8" />
           ) : (
