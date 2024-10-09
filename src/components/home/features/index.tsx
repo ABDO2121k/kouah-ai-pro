@@ -161,8 +161,8 @@ const SkeletonThree = () => {
         className="h-full w-full  bg-black p-4 dark:bg-black dark:border-white/[0.1] border border-neutral-200 "
         variants={first}
       >
-        <code className="text-white w-full h-full p-3 ">
-          {`        <script type="module">
+        <code className="text-white w-full h-full p-3 break-words overflow-x-hidden">
+          {` <script type="module">
               import { KouahAiBotEmbedd } from "https://cdn.jsdelivr.net/npm/@kouahai/frame@2.0.18";
               KouahAiBotEmbedd("your kouahAIBot Id");
             </script>

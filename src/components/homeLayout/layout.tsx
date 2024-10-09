@@ -12,7 +12,7 @@ interface User {
   picture: string | null;
 }
 
-export default async function RootLayout({
+export default async function HomeLayout({
   children,
 }: {
   children: React.ReactNode;

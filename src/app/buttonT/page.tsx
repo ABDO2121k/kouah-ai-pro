@@ -27,7 +27,7 @@ const ChatbotToggleButton = () => {
 
   return (
     <motion.div
-      className="h-screen w-screen flex justify-center items-center overflow-hidden"
+      className="h-screen w-screen flex justify-center items-center overflow-hidden background-transparent"
       initial={{ scale: 0 }}
       animate={{ scale: 0.92 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}

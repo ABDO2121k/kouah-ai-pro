@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Gem, User } from "lucide-react";
+import { Gem, User, LogOut } from "lucide-react"; // Import LogOut icon
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,10 +82,25 @@ const UserAccountNav = ({ email, imageUrl, name }: UserAccountNavProps) => {
           )}
         </DropdownMenuItem>
 
+        <DropdownMenuSeparator className="sm:hidden" />
+        <DropdownMenuItem className="sm:hidden" asChild>
+          <Link href="/blog">Blog</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="sm:hidden" asChild>
+          <Link href="/docs">Docs</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="sm:hidden" asChild>
+          <Link href="/about">About</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer">
-          <span onClick={handleSignOut}>Log out</span>
+          <span
+            className="text-red-600 font-bold flex items-center"
+            onClick={handleSignOut}
+          >
+            <LogOut className="h-4 w-4 mr-1" /> Log out
+          </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

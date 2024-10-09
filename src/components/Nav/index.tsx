@@ -33,9 +33,10 @@ const Navbar = ({
   return (
     <nav
       className={cn(
-        "sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all animate-out dark:bg-black dark:text-white",
+        "sticky h-14 inset-x-0 top-0 w-full z-30  border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all animate-out text-black",
         {
-          "w-[80%] m-auto rounded-xl mt-3 bg-zinc-400/20 shadow-lg backdrop-blur-xl top-[20px] animate-in":
+          "dark:text-white": isDashboard, // Apply dark style only if isDashboard is true
+          "w-[80%] m-auto rounded-xl mt-3 dark:bg-zinc-900 shadow-lg backdrop-blur-xl top-[20px] animate-in":
             scroll.y != 0 && !isDashboard,
         }
       )}
@@ -59,13 +60,33 @@ const Navbar = ({
             />
           </Link>
           {/* mobile Navbar here */}
-          <MobileNav
-            isAuth={user && user?.id ? true : false}
-            isDashboard={isDashboard}
-          />
+          {!user || !user.email ? (
+            <MobileNav
+              isAuth={user && user?.id ? true : false}
+              isDashboard={isDashboard}
+            />
+          ) : (
+            <div className="sm:hidden">
+              <UserAccountNav
+                name={
+                  !user.given_name || !user.family_name
+                    ? "Your account"
+                    : `${user.given_name} ${user.family_name}`
+                }
+                email={user.email ?? ``}
+                imageUrl={user.picture ?? ``}
+              />
+            </div>
+          )}
+
           <div className="hidden sm:flex items-center space-x-4 gap-10">
-            <MenuItem active={active} setActive={setActive} item="Resources">
-              <div className="flex flex-col space-y-4 text-sm">
+            <MenuItem
+              active={active}
+              setActive={setActive}
+              item="Resources"
+              isDashboard={isDashboard}
+            >
+              <div className="flex flex-col space-y-4 text-sm text-black dark:text-white">
                 <HoveredLink href="/blog">Blog</HoveredLink>
                 <HoveredLink href="/docs">Docs</HoveredLink>
                 <HoveredLink href="/about">About Us</HoveredLink>
