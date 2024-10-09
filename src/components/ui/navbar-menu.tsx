@@ -54,8 +54,8 @@ export const MenuItem = ({
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 pt-2"> {/* Adjusted top position */}
               <motion.div
                 transition={transition}
-                layoutId="active" // layoutId ensures smooth animation
-                className="bg-white backdrop-blur-sm rounded-2xl overflow-hidden border border-black/[0.2] shadow-xl" // Always white background
+                layoutId="active"
+                className={`bg-white ${isDashboard ? "dark:bg-zinc-800" : ""} backdrop-blur-sm rounded-2xl overflow-hidden border border-black/[0.2] ${isDashboard ? "dark:border-white/[0.2]" : ""} shadow-xl`} // Added dark mode styles conditionally
               >
                 <motion.div
                   layout // layout ensures smooth animation
@@ -84,7 +84,7 @@ export const Menu = ({
   return (
     <nav
       onMouseLeave={() => setActive(null)} // resets the state
-      className="relative rounded-full border border-transparent dark:bg-black dark:border-white/[0.2] bg-white shadow-input flex justify-center space-x-4 px-8 py-6"
+      className={`relative rounded-full border border-transparent ${isDashboard ? "dark:bg-black dark:border-white/[0.2]" : "bg-white"} shadow-input flex justify-center space-x-4 px-8 py-6`}
     >
       {children}
     </nav>
@@ -115,7 +115,7 @@ export const ProductItem = ({
         <h4 className="text-xl font-bold mb-1 text-black dark:text-white">
           {title}
         </h4>
-        <p className="text-neutral-700 text-sm max-w-[10rem] dark:text-neutral-300">
+        <p className="text-zinc-900 text-sm max-w-[10rem] dark:text-neutral-300">
           {description}
         </p>
       </div>
@@ -127,7 +127,7 @@ export const HoveredLink = ({ children, ...rest }: any) => {
   return (
     <Link
       {...rest}
-      className="text-neutral-700 dark:text-neutral-200 hover:text-black"
+      className={`${rest.className} ${rest.isDashboard ? "dark:text-neutral-200 dark:hover:text-white" : "hover:text-black"}`} // Added dark mode hover effect conditionally
     >
       {children}
     </Link>
