@@ -1,5 +1,5 @@
 import React from "react";
-import { cn, extractUUIDFromString, getMonthName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Bot, User } from "lucide-react";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
