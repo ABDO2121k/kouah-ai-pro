@@ -63,6 +63,12 @@ export const links1: {
     variant: "ghost",
     navigation: "/dashboard/realtime-conversation",
   },
+  {
+    title: "Data Store",
+    icon: File,
+    variant: "ghost",
+    navigation: "/dashboard/data-store",
+  },
   // {
   //   title: "Drafts",
   //   label: "9",

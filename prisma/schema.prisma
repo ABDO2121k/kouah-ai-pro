@@ -31,7 +31,7 @@ model User {
 
 model Billings {
   id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  plan    Plans   @default(STANDARD)
+  plan    Plans   @default(FREE)
   credits Int     @default(10)
   User    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String? @unique @db.Uuid
@@ -47,9 +47,10 @@ model LeadField {
 
 model File {
   id        String   @id @default(cuid())
-  fileName  String?
+  fileName  String
   size      BigInt?
   type      String   @default("file")
+  fileType  String?
   key       String?
   chatBotId String?
   url       String?
@@ -107,11 +108,11 @@ model ChatBot {
   leadsTitle     String         @default("Tell us how to reach you")
   queriesNumber  Int            @default(0)
   HelpDesk       HelpDesk[]
-  isRealTimeChat Boolean        @default(true)
-  isHelpDisk     Boolean        @default(true)
+  isRealTimeChat Boolean        @default(false)
+  isHelpDisk     Boolean        @default(false)
   isLead         Boolean        @default(false)
   videosUsage    Int            @default(0)
-  fileUsage      Int            @default(0)
+  fileUsage      BigInt         @default(0)
   webUsage       Int            @default(0)
   useTheme       Boolean        @default(false)
   chatbotTheme   ChatbotTheme?  @relation(fields: [chatbotThemeId], references: [id])
@@ -172,6 +173,7 @@ model ChatMessage {
 }
 
 enum Plans {
+  FREE
   STANDARD
   PRO
   ULTIMATE

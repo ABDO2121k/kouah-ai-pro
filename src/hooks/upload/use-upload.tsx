@@ -10,12 +10,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useGetChatbot } from "../chatbot/use-chatbot";
 
-export const useUpload = (botId?: string) => {
+export const useUpload = (botId?: string, NotAddVector?: boolean) => {
   const [files, setFiles] = useState<File[]>([]);
   const { startUpload } = useUploadThing("fileUploader");
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
-  const {setActions}=useGetChatbot()
+  const { setActions } = useGetChatbot();
 
   const handleFileUpload = (files: File[]) => {
     setFiles(files);
@@ -31,20 +31,20 @@ export const useUpload = (botId?: string) => {
       }
 
       const res: FileUpload[] = uploadedFiles.map((file) => ({
-        name: file.name,
-        size: file.size,
+        fileName: file.name,
+        size: BigInt(file.size),
         key: file.key,
         url: file.url,
         lastModified: file.lastModified ?? Date.now(),
         appUrl: "",
-        customId: file.customId || null,
-        type: file.type || "",
+        fileType: file.type || "",
+        type: "file",
       }));
 
       let bot: string | undefined;
       if (!botId) {
         const createdBot = await createChatBot();
-        console.log({ createdBot });
+        // console.log({ createdBot });
         if (createdBot.status === 200 && createdBot.chatbot) {
           bot = createdBot.chatbot.id;
         } else {
@@ -64,16 +64,18 @@ export const useUpload = (botId?: string) => {
       }
 
       // console.log({ res });
-      const fileUploaded = await uploadFiles(bot, res);
+      const fileUploaded = await uploadFiles(bot, res, NotAddVector);
       // console.log({ fileUploaded });
-      setActions(prev=>prev+1)
+      setActions((prev) => prev + 1);
       toast({
         title: "Files uploaded successfully",
         description: "Your files have been uploaded and processed.",
         variant: "default",
       });
-      localStorage.setItem("selectedChatbot", bot);
-      router.push("/dashboard/bot");
+      if (NotAddVector !== true) {
+        localStorage.setItem("selectedChatbot", bot);
+        router.push("/dashboard/bot");
+      }
     } catch (err) {
       console.error("Upload error:", err);
       toast({
@@ -93,12 +95,15 @@ export const useUpload = (botId?: string) => {
   };
 };
 
-export const useUploadUrl = (type: "youtube" | "web", botId?: string) => {
+export const useUploadUrl = (
+  type: "youtube" | "web",
+  botId?: string,
+  NotAddVector?: boolean
+) => {
   const [loading, setLoading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
   const router = useRouter();
-  const {setActions}=useGetChatbot()
-
+  const { setActions } = useGetChatbot();
 
   const schema = z.object({
     url: z.string().url({ message: "Please enter a valid URL" }),
@@ -144,16 +149,18 @@ export const useUploadUrl = (type: "youtube" | "web", botId?: string) => {
     if (!bot) {
       throw new Error("Bot ID is undefined");
     }
-    const response = await uploadUrls(bot, urls, type);
+    const response = await uploadUrls(bot, urls, type, NotAddVector);
     toast({
       title: response.status == 200 ? "Success" : "Error",
       description: response.message,
       variant: response.status == 200 ? "default" : "destructive",
     });
-    setActions(prev=>prev+1)
+    setActions((prev) => prev + 1);
     setLoading(false);
-    localStorage.setItem("selectedChatbot", bot);
-    router.push("/dashboard/bot");
+    if (NotAddVector !== true) {
+      localStorage.setItem("selectedChatbot", bot);
+      router.push("/dashboard/bot");
+    }
   };
 
   const removeUrl = (index: number) => {

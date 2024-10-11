@@ -6,7 +6,6 @@ import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import { CSVLoader } from "@langchain/community/document_loaders/fs/csv";
 import { Document } from "langchain/document";
-// import { createWorker  } from "tesseract.js";
 import * as cheerio from "cheerio";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
@@ -14,24 +13,25 @@ import { YoutubeLoader } from "@langchain/community/document_loaders/web/youtube
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 export interface FileUpload {
-  name: string;
-  size: number;
-  key: string;
-  lastModified: number;
-  url: string;
-  appUrl: string;
-  customId: string | null;
+  fileName: string;
+  size: bigint | null;
   type: string;
+  key: string | null;
+  url: string | null;
+  step?: string | null;
+  fileType?: string | null;
 }
+
 export const uploadFile = async (bot: string | undefined, file: FileUpload) => {
   try {
     const createdFile = await db.file.create({
       data: {
-        fileName: file.name,
+        fileName: file.fileName,
         key: file.key,
         size: file.size,
         chatBotId: bot,
         url: file.url,
+        fileType: file.fileType,
       },
     });
     if (createdFile) {
@@ -39,7 +39,7 @@ export const uploadFile = async (bot: string | undefined, file: FileUpload) => {
         where: { id: bot },
         data: {
           fileUsage: {
-            increment: file.size,
+            increment: file.size ?? 0,
           },
         },
       });
@@ -69,7 +69,7 @@ async function loadHTML(blob: Blob): Promise<Document[]> {
 
 export const storePinecone = async (bot: string, file: FileUpload) => {
   try {
-    const response = await fetch(file.url);
+    const response = await fetch(file?.url ?? "");
     const blob = await response.blob();
     let documents: Document[];
 
@@ -78,7 +78,7 @@ export const storePinecone = async (bot: string, file: FileUpload) => {
     });
     const pineconeIndex = pinecone.Index("kouah-ai");
 
-    switch (file.type) {
+    switch (file.fileType) {
       case "application/pdf":
         const pdfLoader = new PDFLoader(blob);
         documents = await pdfLoader.load();
@@ -119,24 +119,30 @@ export const storePinecone = async (bot: string, file: FileUpload) => {
   }
 };
 
-export const uploadFiles = async (bot: string, files: FileUpload[]) => {
+export const uploadFiles = async (
+  bot: string,
+  files: FileUpload[],
+  NotAddVector?: boolean //drtha 3la 7sab upload files only
+) => {
   try {
     for (const file of files) {
       const createdFile = await uploadFile(bot, file);
       if ("status" in createdFile && createdFile.status === 500) {
         throw new Error(createdFile.message);
       }
-      const response = await storePinecone(bot, file);
-      if (response.status == 200) {
-        await UpdateFileState(
-          createdFile.createdFile?.id ?? "unknown",
-          "SUCCESS"
-        );
-      } else {
-        await UpdateFileState(
-          createdFile.createdFile?.id ?? "unknown",
-          "Failed"
-        );
+      if (NotAddVector !== true) {
+        const response = await storePinecone(bot, file);
+        if (response.status == 200) {
+          await UpdateFileState(
+            createdFile.createdFile?.id ?? "unknown",
+            "SUCCESS"
+          );
+        } else {
+          await UpdateFileState(
+            createdFile.createdFile?.id ?? "unknown",
+            "Failed"
+          );
+        }
       }
     }
     return {
@@ -201,10 +207,12 @@ const getYoutubeContent = async (url: string) => {
   const docs = await loader.load();
   return docs.map((doc) => doc.pageContent).join("\n");
 };
+
 export const uploadUrls = async (
   bot: string,
   urls: string[],
-  type: "web" | "youtube"
+  type: "web" | "youtube",
+  NotAddVector?: boolean
 ) => {
   try {
     for (const url of urls) {
@@ -213,6 +221,7 @@ export const uploadUrls = async (
         data: {
           type: type,
           fileName: url,
+          chatBotId: bot,
         },
       });
       if (type === "web") {
@@ -238,12 +247,13 @@ export const uploadUrls = async (
       } else {
         throw new Error(`Unsupported type: ${type}`);
       }
-
-      const response = await storeUrlPinecone(bot, content);
-      if (response.status == 200) {
-        await UpdateFileState(createdFile?.id ?? "unknown", "SUCCESS");
-      } else {
-        await UpdateFileState(createdFile?.id ?? "unknown", "Failed");
+      if (NotAddVector !== true) {
+        const response = await storeUrlPinecone(bot, content);
+        if (response.status == 200) {
+          await UpdateFileState(createdFile?.id ?? "unknown", "SUCCESS");
+        } else {
+          await UpdateFileState(createdFile?.id ?? "unknown", "Failed");
+        }
       }
     }
     return {
@@ -292,6 +302,125 @@ export const storeUrlPinecone = async (bot: string, text: string) => {
     };
   } catch (err) {
     console.error("Error storing in Pinecone:", err);
+    return { status: 500, message: "External server error" };
+  }
+};
+
+const updateChatBotUsage = async (
+  bot: string | undefined,
+  file: { type: string; size?: bigint }
+) => {
+  const updateData: {
+    videosUsage?: { decrement: number };
+    fileUsage?: { decrement: number };
+    webUsage?: { decrement: number };
+  } = {};
+
+  switch (file.type) {
+    case "youtube":
+      updateData.videosUsage = { decrement: 1 };
+      break;
+    case "file":
+      if (file.size) {
+        updateData.fileUsage = { decrement: Number(file.size) }; // Assuming size is a BigInt
+      }
+      break;
+    case "web":
+      updateData.webUsage = { decrement: 1 };
+      break;
+    default:
+      throw new Error(`Unsupported file type: ${file.type}`);
+  }
+
+  await db.chatBot.update({
+    where: { id: bot },
+    data: updateData,
+  });
+};
+
+export const deleteFileDb = async (bot: string | undefined, fileId: string) => {
+  try {
+    const fileToDelete = await db.file.findUnique({
+      where: { id: fileId },
+    });
+
+    if (!fileToDelete) {
+      return { status: 404, message: "File not found" };
+    }
+
+    await db.file.delete({
+      where: { id: fileId },
+    });
+
+    await updateChatBotUsage(bot, {
+      type: fileToDelete.type,
+      size: fileToDelete.size ?? undefined,
+    });
+
+    return { status: 200, message: "File deleted successfully" };
+  } catch (err) {
+    console.error("Error deleting file:", err);
+    return { status: 500, message: "External server error" };
+  }
+};
+
+export const deleteMultipleFilesDb = async (
+  bot: string | undefined,
+  fileIds: string[]
+) => {
+  try {
+    const filesToDelete = await db.file.findMany({
+      where: { id: { in: fileIds } },
+    });
+
+    await db.file.deleteMany({
+      where: { id: { in: fileIds } },
+    });
+
+    for (const file of filesToDelete) {
+      await updateChatBotUsage(bot, {
+        type: file.type,
+        size: file.size ?? undefined,
+      });
+    }
+
+    return { status: 200, message: "Files deleted successfully" };
+  } catch (err) {
+    console.error("Error deleting multiple files:", err);
+    return { status: 500, message: "External server error" };
+  }
+};
+
+export const rebuild = async (chatbotId: string) => {
+  try {
+    await removePinecone(chatbotId);
+
+    const files = await db.file.findMany({
+      where: { chatBotId: chatbotId },
+    });
+    for (const file of files) {
+      let response;
+      if (file.type === "youtube") {
+        const content = await getYoutubeContent(file.fileName ?? "");
+        response = await storeUrlPinecone(chatbotId, content);
+      } else if (file.type === "web") {
+        const content = await loadHTMLContent(file.fileName ?? "");
+        response = await storeUrlPinecone(chatbotId, content);
+      } else if (file.type === "file") {
+        response = await storePinecone(chatbotId, file);
+      } else {
+        console.warn(`Unsupported file type: ${file.type}`);
+      }
+      if (response && response.status == 200) {
+        await UpdateFileState(file.id ?? "unknown", "SUCCESS");
+      } else {
+        await UpdateFileState(file.id ?? "unknown", "Failed");
+      }
+    }
+
+    return { status: 200, message: "Chatbot files rebuilt successfully" };
+  } catch (err) {
+    console.error("Error rebuilding chatbot files:", err);
     return { status: 500, message: "External server error" };
   }
 };

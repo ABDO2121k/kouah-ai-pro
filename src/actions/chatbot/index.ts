@@ -36,6 +36,11 @@ export const getAccountChatBots = async () => {
           },
         },
         HelpDesk: true, // لجلب بيانات المساعدة
+        User: {
+          include: {
+            subscription: true, // Include user billings
+          },
+        },
       },
     });
     // console.log({ chatbots });
@@ -154,6 +159,11 @@ export const getChatBot = async (chatbotId: string) => {
           },
         },
         HelpDesk: true, // لجلب بيانات المساعدة
+        User: {
+          include: {
+            subscription: true, // Include user billings
+          },
+        },
       },
     });
     if (!chatbot) {
@@ -161,7 +171,7 @@ export const getChatBot = async (chatbotId: string) => {
     }
     return {
       status: 200,
-      message: "Kouah Chatbot deleted with success",
+      message: "Kouah Chatbot retrieved successfully",
       chatbot,
     };
   } catch (err) {

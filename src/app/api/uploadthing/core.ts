@@ -1,7 +1,4 @@
-import { db } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -13,29 +10,14 @@ export const ourFileRouter = {
     "text/html": { maxFileSize: "16MB", maxFileCount: 10 },
     "text/csv": { maxFileSize: "16MB", maxFileCount: 10 },
   })
-    .middleware(async () => {
-      const user = await currentUser();
-      if (!user) throw new UploadThingError("Unauthorized");
-      const dbUser = await db.user.findFirst({ where: { clerkId: user.id } });
-      return { userId: dbUser?.id };
-    })
-    .onUploadComplete(async ({ metadata }) => {
-      // console.log("Upload complete for userId:", metadata.userId);
-      // console.log("file url", file.url);
-      // console.log("file name", file.name);
-      // console.log("file size", file.size);
-      return { userId: metadata.userId };
+    .onUploadComplete(async ({ file }) => {
+      console.log("File upload complete:", file);
+      return { uploadedFile: file };
     }),
   logoUploader: f({
     image: { maxFileSize: "16MB", maxFileCount: 1 },
   })
-    .middleware(async () => {
-      // const user = await currentUser();
-      // if (!user) throw new UploadThingError("Unauthorized");
-      // const dbUser = await db.user.findFirst({ where: { clerkId: user.id } });
-      return { middleware: true };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ file }) => {
       console.log("Logo upload complete:", file);
       return { completed: true };
     }),

@@ -60,9 +60,7 @@ export const onLoginUser = async () => {
   }
 };
 
-
-
-export const onCompleteUserRegistrationGoogle = async(
+export const onCompleteUserRegistrationGoogle = async (
   email: string,
   fullName: string,
   clerkId: string,
@@ -73,16 +71,26 @@ export const onCompleteUserRegistrationGoogle = async(
       where: { email: email },
     });
     if (!userExists) {
-      await onCompleteUserRegistration(
-        email,
-        fullName,
-        clerkId,
-        userType 
-      );
-      return {status:200}
+      await onCompleteUserRegistration(email, fullName, clerkId, userType);
+      return { status: 200 };
     }
-    return {status:202}
+    return { status: 202 };
   } catch (err) {
     return { status: 400 };
   }
+};
+
+export const getCurrentUserFromDb = async () => {
+  const user = await currentUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const userFromDb = await client.user.findUnique({
+    where: { clerkId: user.id },
+    include: { subscription: true },
+  });
+
+  return userFromDb;
 };

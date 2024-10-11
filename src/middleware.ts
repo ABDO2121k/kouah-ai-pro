@@ -11,7 +11,7 @@ export default authMiddleware({
     "/noise.webp",
     "/api/auth-callback(.*)",
     "/redirectUrl",
-    "/api/uploadthing",
+    "/api/uploadthing(.*)", // Add this line
   ],
   ignoredRoutes: [
     "/embed(.*)",
@@ -24,7 +24,6 @@ export default authMiddleware({
     "/buttonT",
     "/frameT",
     "/favicon.ico",
-    "/api/uploadthing",
     "/_next/static/chunks/(.*)",
     "/_next/static/(.*)",
   ],

@@ -4,14 +4,15 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Trash2 } from "lucide-react";
 import { useUploadUrl } from "../../hooks/upload/use-upload";
-import FormGenerator from "../form-generator";
 
 const WebUrlUploader = ({
   chatbotId,
   type,
+  NotAddVector,
 }: {
   chatbotId?: string;
   type: "youtube" | "web";
+  NotAddVector?: boolean;
 }) => {
   const {
     loading,
@@ -21,7 +22,7 @@ const WebUrlUploader = ({
     handleAddToState,
     handleAddToDB,
     removeUrl,
-  } = useUploadUrl(type, chatbotId);
+  } = useUploadUrl(type, chatbotId, NotAddVector);
 
   return (
     <Card className="w-full px-5">
@@ -70,9 +71,9 @@ const WebUrlUploader = ({
               {urls.map((url, index) => (
                 <li
                   key={index}
-                  className="flex items-center justify-between bg-gray-100 p-2 rounded"
+                  className="flex items-center justify-between bg-gray-100 p-2 rounded overflow-hidden"
                 >
-                  <span className="truncate mr-2">{url}</span>
+                  <span className="truncate max-w-[10rem] ">{url}</span>
                   <Button
                     type="button"
                     variant="destructive"
