@@ -139,6 +139,13 @@ export const chatWithBot = async (
       where: {
         id: id,
       },
+      include: {
+        User: {
+          include: {
+            subscription: true,
+          },
+        },
+      },
     });
     if (!chatbot) throw new Error("chatbot not found !!!!!");
     await db.chatBot.update({
@@ -152,6 +159,18 @@ export const chatWithBot = async (
       },
     });
 
+    if (chatbot.User?.subscription) {
+      await db.billings.update({
+        where: {
+          id: chatbot.User.subscription.id,
+        },
+        data: {
+          queriesNumber: {
+            increment: 1,
+          },
+        },
+      });
+    }
     const chatbotResponse = await chatAi(
       id,
       message,
