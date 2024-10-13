@@ -415,6 +415,7 @@ export const rebuild = async (chatbotId: string) => {
         if (file.type === "youtube") {
           const content = (await getYoutubeContent(file.fileName ?? "")) ?? "";
           response = (await storeUrlPinecone(chatbotId, content)) ?? "";
+          console.log({ response });
         } else if (file.type === "web") {
           const content = await loadHTMLContent(file.fileName ?? "");
           if (content) {
