@@ -199,13 +199,17 @@ const loadHTMLContent = async (url: string): Promise<string> => {
 };
 
 const getYoutubeContent = async (url: string) => {
-  const loader = YoutubeLoader.createFromUrl(url, {
-    addVideoInfo: true,
-    detectLanguage: true,
-    //eslint-disable-next-line
-  } as any);
-  const docs = await loader.load();
-  return docs.map((doc) => doc.pageContent).join("\n");
+  try {
+    const loader = YoutubeLoader.createFromUrl(url, {
+      addVideoInfo: true,
+      detectLanguage: true,
+      //eslint-disable-next-line
+    } as any);
+    const docs = await loader.load();
+    return docs.map((doc) => doc.pageContent).join("\n");
+  } catch (error) {
+    console.error("Error loading YouTube content:", error);
+  }
 };
 
 export const uploadUrls = async (
