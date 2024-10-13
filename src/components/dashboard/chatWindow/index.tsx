@@ -44,7 +44,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   } = useChatbot(chatbotId);
 
   const searchParams = useSearchParams();
-  const opened = searchParams.get("opened");
+  const opened = searchParams ? searchParams.get("opened") : null;
   const [isOpen, setIsOpen] = useState(opened == "true" ? true : false);
 
   useEffect(() => {
