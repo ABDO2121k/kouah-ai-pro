@@ -239,7 +239,7 @@ export const uploadUrls = async (
           },
         });
       } else if (type === "youtube") {
-        content = await getYoutubeContent(url);
+        content = (await getYoutubeContent(url)) ?? "";
         await db.chatBot.update({
           where: { id: bot },
           data: {
@@ -405,8 +405,8 @@ export const rebuild = async (chatbotId: string) => {
     for (const file of files) {
       let response;
       if (file.type === "youtube") {
-        const content = await getYoutubeContent(file.fileName ?? "");
-        response = await storeUrlPinecone(chatbotId, content);
+        const content = (await getYoutubeContent(file.fileName ?? "")) ?? "";
+        response = (await storeUrlPinecone(chatbotId, content)) ?? "";
       } else if (file.type === "web") {
         const content = await loadHTMLContent(file.fileName ?? "");
         response = await storeUrlPinecone(chatbotId, content);
