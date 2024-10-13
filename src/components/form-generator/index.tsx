@@ -9,6 +9,7 @@ import {
 } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 // import {
 //   Select,
 //   SelectContent,
@@ -34,6 +35,7 @@ type Props = {
   control?: any;
   required?: boolean;
   labelStyle?: React.CSSProperties;
+  theme?: string;
 };
 
 const FormGenerator = ({
@@ -51,6 +53,7 @@ const FormGenerator = ({
   control,
   required = false,
   labelStyle,
+  theme,
 }: Props) => {
   const renderLabel = (labelText?: string) => {
     if (!labelText) return null;
@@ -65,7 +68,12 @@ const FormGenerator = ({
   switch (inputType) {
     case "input":
       return (
-        <Label className="flex flex-col gap-2" htmlFor={`input-${label}`}>
+        <Label
+          className={cn("flex flex-col gap-2", {
+            "text-white": theme && theme == "dark",
+          })}
+          htmlFor={`input-${label}`}
+        >
           {renderLabel(label)}
           <Input
             // id={`input-${label}`}

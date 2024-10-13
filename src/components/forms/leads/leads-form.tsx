@@ -72,7 +72,7 @@ export function LeadsForm({
   return (
     <div className="flex justify-center items-center w-full mt-2">
       <Card
-        className={cn("w-[65%] lg:w-[50%] md:w-[67%] sm:w-[65%]   relative", {
+        className={cn("w-[80%] lg:w-[50%] md:w-[67%] sm:w-[80%]   relative", {
           "bg-black": chatbot?.theme == "dark",
         })}
         style={
@@ -91,7 +91,18 @@ export function LeadsForm({
           <X size={16} />
         </div>
         <CardHeader>
-          <CardTitle>{leadsTitle}</CardTitle>
+          <CardTitle
+            style={
+              chatbot?.theme === "customize"
+                ? { color: theme?.primaryTextColor }
+                : {}
+            }
+            className={cn({
+              "text-white": chatbot?.theme == "dark",
+            })}
+          >
+            {leadsTitle}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
@@ -111,6 +122,7 @@ export function LeadsForm({
                     ? { color: theme?.suggestedQuestionTextColor }
                     : {}
                 }
+                theme={chatbot?.theme}
               />
             ))}
             <CardFooter className="flex flex-col items-start mt-4">
@@ -137,8 +149,8 @@ export function LeadsForm({
                 )}
               </Button>
               <small
-                className={cn("text-left text-gray-500",{
-                  "text-white":chatbot?.theme === "dark"
+                className={cn("text-left text-gray-500", {
+                  "text-white": chatbot?.theme === "dark",
                 })}
                 style={
                   chatbot?.theme === "customize"

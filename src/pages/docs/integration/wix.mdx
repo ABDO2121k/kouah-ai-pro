@@ -1,0 +1,35 @@
+import { Steps, Callout } from "nextra/components";
+
+# **Wix Integration**
+
+Easily integrate **Kouah AI** with your **Wix** website using the following steps:
+
+---
+
+## **Steps for Integration**
+
+<Steps>
+
+### Step 1: Add Wix Code (Velo)
+Go to the **Wix** dashboard and enable **Velo** by Wix (previously known as Wix Code).
+
+### Step 2: Import Kouah AI Bot Script
+Add the **Kouah AI Embed** script to your Wix site:
+
+```javascript
+import { KouahAiBotEmbedd } from '@kouahai/embed';
+$w.onReady(function () {
+  KouahAiBotEmbedd('your-bot-id');
+});
+
+```
+
+### Step 3: Place the Bot on Your Website
+Once the code is added, the bot will be embedded and will appear automatically when your Wix site is loaded.
+
+</Steps>
+
+<Callout type="warning"> **Note:** Make sure you replace `your-bot-id` with the actual bot ID from the **Kouah AI dashboard**. </Callout> 
+
+
+This integration example explains how to add the Kouah AI bot to a Wix website using Velo code.

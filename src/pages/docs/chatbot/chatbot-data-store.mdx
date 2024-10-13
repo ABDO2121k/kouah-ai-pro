@@ -1,0 +1,69 @@
+# Chatbot Data Store
+
+To simplify chatbot creation, users can choose to build a new chatbot from a web URL, uploaded files, or YouTube video URLs. After creating the chatbot, the Chatbot Data Store enables users to add web URLs, files, and YouTube video URLs, allowing the chatbot to expand its knowledge and provide richer responses.
+
+<img
+  src="/docs/data1.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+
+First, make sure you enter the chatbot management page for a specific chatbot, and then select Data Store section on the side panel. As shown in the screenshot, Data Store page lists all the data source records used for your chatbot. You can use Search by source to find a particular data source, or use Select a type dropdown to filter by web page or file document types.
+
+## Edit Data Sources
+
+Adding data source is not limited to the same data source you used to create your chatbot. You can still add both web pages and file document data to your chatbot.
+
+### Add Web Page to Data Store
+
+Click New Record button and select Web Page from menu to open dialog window that looks like the screenshot below.
+
+<img
+  src="/docs/data2.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+
+"In the dialog window, you can enter multiple valid URLs to create a list of web pages to be added. Once you've entered all the URLs, click the **Save** button to add them as new data sources for the chatbot. Kouah AI sets a limit on the number of web pages allowed per chatbot. You can check your usage by clicking the **Usage** button, and if you've reached the limit, you can upgrade your subscription to increase your quota."
+
+### Add File to Data Store
+
+"Click the **New Record** button and select **File** from the menu to open the file upload dialog window. The dialog window will resemble the screenshot below. You can then choose a file from your local computer and upload it by clicking the **Add File** button in the dialog window."
+
+<img
+  src="/docs/data3.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+
+Similarly, adding new file would increase the file storage usage. After exceeding the quota, no more file can be added.
+
+### Add Youtube to Data Store
+
+Click New Record button and select Youtube from menu to open dialog window that looks like the screenshot below.
+
+<img
+  src="/docs/data4.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+
+"In the dialog window, you can enter multiple valid URLs to create a list of Youtube videos to be added. Once you've entered all the URLs, click the **Save** button to add them as new data sources for the chatbot. Kouah AI sets a limit on the number of youtube urls allowed per chatbot. You can check your usage by clicking the **Usage** button, and if you've reached the limit, you can upgrade your subscription to increase your quota."
+
+### Exclude Existing Data Source
+
+Data sources can be excluded from chatbot. As shown in the screenshot below, you can use Trash icon button at each table row to remove individual data source records. You can also select multiple records and then exclude multiple selected records by clicking Delete button next to New Record button.
+
+<img
+  src="/docs/data5.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+
+This feature can be useful if you do not want certain webpage content to be ingested by chatbot. By excluding data sources, it also reduces the web page usage and file storage usage in your account.
+
+### Rebuild Chatbot
+
+Data source edit does not apply the data to your chatbot immediately. To make sure modified data sources are applied to your chatbot, click Rebuild button to let chatbot to ingest the latest data sources.
+
+After starting rebuild, build progress is shown on the screen. After build is completed, chatbot is updated and ready to answer questions from newly added data sources.
+
+<img
+  src="/docs/data6.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>

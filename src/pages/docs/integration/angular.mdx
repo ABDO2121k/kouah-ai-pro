@@ -1,0 +1,48 @@
+import { Steps, Callout } from "nextra/components";
+
+# **Angular Integration**
+
+Easily integrate **Kouah AI** with your Angular application using the following steps:
+
+---
+
+## **Steps for Integration**
+
+<Steps>
+
+### Step 1: Installation
+
+Install the **Kouah AI Embed** package using npm:
+
+```sh npm2yarn
+npm install @kouahai/embed
+```
+
+### Step 2: Import and Use the Kouah AI Bot
+
+In your Angular component, import the KouahAiBotEmbedd method and initialize it when the component is loaded.
+
+```jsx
+import { Component, OnInit } from '@angular/core';
+import { KouahAiBotEmbedd } from '@kouahai/embed';
+
+@Component({
+  selector: 'app-root',
+  template: '<div>Your app content here</div>',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements OnInit {
+  ngOnInit() {
+    KouahAiBotEmbedd('your-bot-id');
+  }
+}
+```
+Step 3: Verify Bot Functionality
+Ensure that the bot is visible on your Angular application and is functioning as expected. The bot will appear on your app once the page loads.
+
+</Steps>
+
+<Callout type="warning"> **Note:** Make sure you initialize the bot inside `ngOnInit()` lifecycle hook so that it starts after the component is fully loaded. Replace `your-bot-id` with your actual bot ID from the **Kouah AI dashboard**. </Callout> 
+
+
+This guide explains how to integrate Kouah AI with Angular, covering installation, usage, and important notes regarding where to place the bot initialization code.

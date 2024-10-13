@@ -1,0 +1,38 @@
+# **HTML (Vanilla JavaScript) Integration**
+
+## **Overview**
+
+Kouah AI can be **easily embedded** into any HTML page using vanilla JavaScript. This method is perfect for simple websites where no advanced frameworks are needed. You only need to add a **script** to your page, and the chatbot will be functional.
+
+---
+
+## **Steps**
+
+1. **Add** the Kouah AI script to your HTML file.
+2. **Call** the `KouahAiBotEmbedd()` function when the document has fully loaded.
+3. Replace `'**your-bot-id**'` with your actual bot ID.
+
+---
+
+## **Example**
+
+### **Here's a basic HTML example:**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kouah AI Bot</title>
+  </head>
+  <body>
+    <h1>Welcome to My Website</h1>
+    <p>Feel free to chat with our AI-powered assistant below:</p>
+
+    <!-- Kouah AI bot will be embedded here -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/@kouahai/embed"></script>
+    <script type="module">
+        KouahAiBotEmbedd('your-bot-id');
+    </script>
+  </body>
+</html>

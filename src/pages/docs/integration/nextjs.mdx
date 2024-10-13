@@ -1,0 +1,59 @@
+import { Tabs, Steps, Callout } from "nextra/components";
+
+# **Next.js Integration**
+
+Easily integrate **Kouah AI** with your Next.js application using the following steps:
+
+---
+
+## **Steps for Integration**
+
+<Steps>
+
+### Step 1: Installation
+
+```sh npm2yarn
+npm install @kouahai/embed
+```
+
+### Step 2: Add Kouah AI Bot
+
+```jsx
+"use client";
+import { useEffect, useState } from "react";
+import { KouahAiBotEmbedd } from "@kouahai/embed";
+
+const MyApp = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      KouahAiBotEmbedd("your-bot-id");
+    }
+  }, [isMounted]);
+
+  return (
+    <div>
+      <h1>Welcome to My Website</h1>
+      <p>Feel free to chat with our AI assistant!</p>
+    </div>
+  );
+};
+
+export default MyApp;
+```
+
+</Steps>
+
+<Callout type="warning">
+  {" "}
+  **Important:** Due to how Next.js handles server-side rendering (SSR), ensure that
+  you only embed the chatbot client-side. The `useEffect` hook here ensures the bot
+  is loaded after the component mounts, preventing issues with SSR.{" "}
+</Callout>
+Note: Replace your-bot-id with the actual bot ID from the Kouah AI dashboard to activate
+your bot.

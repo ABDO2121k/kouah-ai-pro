@@ -1,0 +1,62 @@
+import { Callout } from "nextra/components";
+
+# **Integration Overview**
+
+This page provides an overview of how to integrate the **Kouah AI** chatbot into your application and details regarding the `chatbotId`.
+
+## **What is Chatbot ID?**
+
+The **Chatbot ID** is a unique identifier for your specific chatbot instance. You will need this ID to successfully embed the chatbot in your application.
+
+## **Where to Find Your Chatbot ID?**
+
+You can obtain your **Chatbot ID** from two locations in the **Kouah AI dashboard**:
+
+1. **Dashboard Home:**
+   - Navigate to your **Kouah AI dashboard**.
+   - Locate your chatbot listed there.
+   - Copy the **Chatbot ID** directly from the displayed information.
+
+<img
+  src="/docs/card.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+
+---
+
+2. **Chatbot Settings:**
+   - Go to **/dashboard/bot**.
+   - Select the desired chatbot.
+   - You can also copy the **Chatbot ID** from this section.
+
+<img
+  src="/docs/copy.png"
+  className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+/>
+---
+
+<Callout type="warning">
+  **Confidentiality Notice:** The **Chatbot ID** should be kept confidential. If someone else gains access to your ID, they can use it to interact with your chatbot, potentially leading to misuse and unexpected billing.
+</Callout>
+
+---
+
+## **Billing Information**
+
+Your usage of the **Kouah AI** chatbot is subject to request limits based on your subscription plan. Please refer to your plan details for specific limits and pricing. 
+
+### **Request Limits:**
+- **Free Tier:** Limited to a specific number of requests per month.
+- **Starter Tier:** Increased limits per month.
+- **Standard Tier:** Further increased limits with additional features.
+- **Business Tier:** Highest limits with premium features.
+
+## **Success and Error Handling**
+
+When integrating the chatbot, it's important to handle both successful interactions and errors gracefully. Here are examples of how you might implement success and error handling:
+
+### **Success Example:**
+Upon successfully loading the chatbot, you might want to log a success message:
+```javascript
+console.log("Kouah AI chatbot loaded successfully!");
+```

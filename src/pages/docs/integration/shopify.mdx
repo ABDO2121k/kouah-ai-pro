@@ -1,0 +1,38 @@
+import { Steps, Callout } from "nextra/components";
+
+# **Shopify Integration**
+
+Easily integrate **Kouah AI** with your **Shopify** store using the following steps:
+
+---
+
+## **Steps for Integration**
+
+<Steps>
+
+### Step 1: Access Your Shopify Theme
+Log in to your **Shopify** admin panel and go to **Online Store > Themes**.
+
+### Step 2: Edit Your Theme Code
+Click on the **Actions** dropdown menu next to your active theme and select **Edit code**.
+
+### Step 3: Add Kouah AI Embed Script
+In the **Layout** section, find and open the **theme.liquid** file. Just before the closing `</body>` tag, add the following code:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@kouahai/embed"></script>
+<script>
+  KouahAiBotEmbedd('your-bot-id');
+</script>
+```
+### Step 4: Save Changes
+After adding the script, click the Save button to apply the changes to your theme.
+
+</Steps>
+
+
+<Callout type="warning"> **Important:** Ensure you replace `your-bot-id` with the actual bot ID from the **Kouah AI dashboard**. This integration should be added to the **theme.liquid** file to ensure it loads on all pages of your store. </Callout>
+
+
+### Example Usage
+After completing the above steps, your bot should be fully functional on your Shopify store. You can customize the bot's appearance and settings through the Kouah AI dashboard.

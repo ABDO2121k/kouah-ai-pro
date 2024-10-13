@@ -1,11 +1,18 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Rocket } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { buttonVariants } from "../ui/button";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import UpgradePlanCard from "./upgradePlan";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 interface NavProps {
   isCollapsed: boolean;
@@ -15,9 +22,11 @@ interface NavProps {
     navigation?: string;
   }[];
 }
+
 export function Nav({ links, isCollapsed }: NavProps) {
   const path = usePathname();
   const router = useRouter();
+
   return (
     <div
       data-collapsed={isCollapsed}
@@ -56,7 +65,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 buttonVariants({
                   variant: link.navigation === path ? "default" : "ghost",
                   size: isCollapsed ? "icon" : "sm",
-                  className:"cursor-pointer"
+                  className: "cursor-pointer",
                 }),
                 isCollapsed
                   ? "h-9 w-9 dark:bg-muted m-auto dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
@@ -67,6 +76,21 @@ export function Nav({ links, isCollapsed }: NavProps) {
               {!isCollapsed && link.title}
             </span>
           )
+        )}
+        <Separator />
+        {isCollapsed ? (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center justify-center h-9 w-9 rounded-lg shadow-lg mt-5">
+                <Rocket className="h-4 w-4" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <UpgradePlanCard />
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <UpgradePlanCard />
         )}
       </nav>
     </div>

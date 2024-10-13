@@ -1,0 +1,41 @@
+import { Steps, Callout } from "nextra/components";
+
+# **WordPress Integration**
+
+Easily integrate **Kouah AI** with your WordPress website using the following steps:
+
+---
+
+## **Steps for Integration**
+
+<Steps>
+
+### Step 1: Add Kouah AI Bot to Your Theme
+
+You need to add the Kouah AI bot embed script to your theme's `footer.php` file or create a custom plugin.
+
+```php
+add_action('wp_footer', 'add_kouah_ai_bot');
+function add_kouah_ai_bot() {
+  ?>
+     <script src="https://cdn.jsdelivr.net/npm/@kouahai/embed"></script>
+    <script type="module">
+        KouahAiBotEmbedd('your-bot-id');
+    </script>
+  <?php
+}
+```
+
+### Step 2: Verify the Bot Appears on Your Site
+
+Once you've added the code, visit your WordPress site to confirm that the chatbot is showing up as expected. The bot should appear and be ready for use on all pages.
+
+</Steps>
+<Callout type="warning"> **Important:** Ensure that your WordPress theme supports inserting custom scripts in the footer, or use a plugin like **Insert Headers and Footers** to include the Kouah AI bot script. </Callout>
+
+
+
+Note: Replace your-bot-id with the actual bot ID from the Kouah AI dashboard to activate your bot.
+
+
+This guide shows how to integrate **Kouah AI** with WordPress by adding the bot’s embed code to the theme’s `footer.php` or using a custom plugin. The warning highlights the need for the right theme or plugin to include scripts.

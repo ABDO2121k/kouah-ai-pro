@@ -11,6 +11,7 @@ export default authMiddleware({
     "/noise.webp",
     "/api/auth-callback(.*)",
     "/redirectUrl",
+    "/docs(.*)",
     "/api/uploadthing(.*)", // Add this line
   ],
   ignoredRoutes: [

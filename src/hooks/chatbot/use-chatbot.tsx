@@ -384,5 +384,6 @@ export const useGetChatbot = () => {
     setActions,
     setChatbot,
     actions,
+    chatbots
   };
 };

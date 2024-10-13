@@ -1,0 +1,71 @@
+import { Callout } from "nextra-theme-docs";
+import { Tabs, Steps, Cards, Card } from "nextra/components";
+
+# Chatbot Query Logs
+
+The **Chatbot Query Logs** feature allows **Kouah AI** bot owners to monitor customer interactions by tracking the questions asked and the corresponding answers provided by the chatbot. This functionality is crucial for analyzing user behavior, improving chatbot responses, and ensuring optimal user engagement.
+
+## Accessing Query Logs
+
+<Tabs items={["Accessing Query Logs"]}>
+  <Tabs.Tab>
+    ### Step 1 Navigate to the <strong>Chatbot Management</strong> page for a
+    specific chatbot. ### Step 2 Select the <strong>Query Logs</strong> section
+    from the side panel. ### Step 3 You will see a table listing queries and
+    answers, with the most recent records displayed first.
+    {/* ![Query Logs Section](attachment://query-logs-image.png) */}
+    <img
+      src="/docs/query1.png"
+      className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+    />
+  </Tabs.Tab>
+</Tabs>
+
+### Date Range Selector
+
+A date range selector is available above the table to filter query logs based on specific periods. This feature allows you to narrow down the displayed queries and responses to a more manageable dataset.
+
+## Query Log Retention
+
+As the number of queries increases, the storage occupied by query logs can grow significantly. **Kouah AI** has a data retention policy that varies based on the user’s subscription tier. Here is the retention period for each tier:
+
+The following table outlines the data retention policy based on your subscription tier:
+
+| **User Tier** | **Retention Period**                                   |
+| ------------- | ------------------------------------------------------ |
+| Free Trial    | Limited to only 20 queries; thus, will not be deleted. |
+| Starter       | 30 Days                                                |
+| Standard      | 90 Days                                                |
+| Business      | 360 Days                                               |
+
+<Callout type="info">
+  Please note that queries beyond the specified retention period will be deleted
+  automatically.
+</Callout>
+
+## Exporting Query Logs as CSV
+
+**Kouah AI** provides a feature to export query logs as CSV files, enabling users to retain copies of their logs for longer than the data retention period. Here’s how to export your query logs:
+
+### Step 1
+
+**Select Date Range**: Ensure you select the date range for the query logs you wish to export.
+
+### Step 2
+
+**Click Export CSV**: This action will directly export the query logs as a CSV file.
+
+### Step 3
+
+**Download Immediately**: You can download the CSV file without any storage delay.
+
+{/* ![Export Query Logs](attachment://export-query-logs-image.png) */}
+  <img
+      src="/docs/query2.png"
+      className="w-[40rem] h-[25rem] mt-10 shadow-lg rounded-md"
+    />
+## Conclusion
+
+The **Chatbot Query Logs** section is an invaluable tool for chatbot owners, providing insights into user interactions and facilitating improvements to the chatbot's performance. By understanding and utilizing this feature, users can better manage their chatbot’s responses and enhance overall user satisfaction.
+
+

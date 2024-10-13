@@ -1,0 +1,37 @@
+import { Tabs, Steps, Cards, Card } from "nextra/components";
+
+# **React Integration**
+
+Easily integrate **Kouah AI** with your React application using the following steps:
+
+---
+
+## **Steps for Integration**
+
+<Steps>
+  ### Step 1: Installation
+   ```sh npm2yarn 
+   npm install @kouahai/embed 
+   ```
+   ### Step 2: Add Kouah AI Bot
+   ```jsx
+   import React, { useEffect } from 'react';
+import { KouahAiBotEmbedd } from '@kouahai/embed';
+
+const MyApp = () => {
+  useEffect(() => {
+    KouahAiBotEmbedd('your-bot-id');
+  }, []);
+
+  return (
+    <div>
+      <h1>Welcome to My Website</h1>
+      <p>Feel free to chat with our AI assistant!</p>
+    </div>
+  );
+};
+
+export default MyApp;
+
+   ```
+</Steps>
