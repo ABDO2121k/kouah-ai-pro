@@ -171,11 +171,10 @@ export const removePinecone = async (namespace: string) => {
       status: 200,
       message: "Vectors in namespace successfully deleted from Pinecone",
     };
-  } catch (err) {
+    //eslint-disable-next-line
+  } catch (err:any) {
     console.error("Error deleting vectors from Pinecone:", err);
-    throw new Error(
-      err instanceof Error ? err.message : "Unknown error occurred"
-    );
+     return {status:500,message:err.message}
   }
 };
 
@@ -220,7 +219,7 @@ export const uploadUrls = async (
 ) => {
   try {
     for (const url of urls) {
-      let content: string;
+      let content: string | null = null;
       const createdFile = await db.file.create({
         data: {
           type: type,
@@ -229,7 +228,9 @@ export const uploadUrls = async (
         },
       });
       if (type === "web") {
-        content = await loadHTMLContent(url);
+        if (NotAddVector !== true) {
+          content = await loadHTMLContent(url);
+        }
         await db.chatBot.update({
           where: { id: bot },
           data: {
@@ -239,7 +240,9 @@ export const uploadUrls = async (
           },
         });
       } else if (type === "youtube") {
-        content = (await getYoutubeContent(url)) ?? "";
+        if (NotAddVector !== true) {
+          content = (await getYoutubeContent(url)) ?? null;
+        }
         await db.chatBot.update({
           where: { id: bot },
           data: {
@@ -252,9 +255,13 @@ export const uploadUrls = async (
         throw new Error(`Unsupported type: ${type}`);
       }
       if (NotAddVector !== true) {
-        const response = await storeUrlPinecone(bot, content);
-        if (response.status == 200) {
-          await UpdateFileState(createdFile?.id ?? "unknown", "SUCCESS");
+        if (content !== null) {
+          const response = await storeUrlPinecone(bot, content);
+          if (response.status == 200) {
+            await UpdateFileState(createdFile?.id ?? "unknown", "SUCCESS");
+          } else {
+            await UpdateFileState(createdFile?.id ?? "unknown", "Failed");
+          }
         } else {
           await UpdateFileState(createdFile?.id ?? "unknown", "Failed");
         }

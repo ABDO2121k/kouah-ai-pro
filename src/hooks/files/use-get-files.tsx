@@ -58,13 +58,14 @@ export const useGetFiles = () => {
   const Rebuild = async () => {
     setBuildLoading(true);
     const response = await rebuild(chatbot?.id);
+    console.log({ response });
+    setBuildLoading(false);
     toast({
       title: response.status == 200 ? "Success" : "Error",
       description: response.message,
       variant: response.status == 200 ? "default" : "destructive",
     });
     setActions((prev) => prev + 1);
-    setBuildLoading(false);
     setSelectedFiles([]);
   };
   return {
