@@ -172,9 +172,9 @@ export const removePinecone = async (namespace: string) => {
       message: "Vectors in namespace successfully deleted from Pinecone",
     };
     //eslint-disable-next-line
-  } catch (err:any) {
+  } catch (err: any) {
     console.error("Error deleting vectors from Pinecone:", err);
-     return {status:500,message:err.message}
+    return { status: 500, message: err.message };
   }
 };
 
@@ -205,7 +205,7 @@ const getYoutubeContent = async (url: string) => {
       //eslint-disable-next-line
     } as any);
     const docs = await loader.load();
-    return docs.map((doc) => doc.pageContent).join("\n");
+    return docs.length > 0 ? docs.map((doc) => doc.pageContent).join("\n") : "";
   } catch (error) {
     console.error("Error loading YouTube content:", error);
   }
@@ -409,23 +409,27 @@ export const rebuild = async (chatbotId: string) => {
     const files = await db.file.findMany({
       where: { chatBotId: chatbotId },
     });
-    for (const file of files) {
-      let response;
-      if (file.type === "youtube") {
-        const content = (await getYoutubeContent(file.fileName ?? "")) ?? "";
-        response = (await storeUrlPinecone(chatbotId, content)) ?? "";
-      } else if (file.type === "web") {
-        const content = await loadHTMLContent(file.fileName ?? "");
-        response = await storeUrlPinecone(chatbotId, content);
-      } else if (file.type === "file") {
-        response = await storePinecone(chatbotId, file);
-      } else {
-        console.warn(`Unsupported file type: ${file.type}`);
-      }
-      if (response && response.status == 200) {
-        await UpdateFileState(file.id ?? "unknown", "SUCCESS");
-      } else {
-        await UpdateFileState(file.id ?? "unknown", "Failed");
+    if (files.length > 0) {
+      for (const file of files) {
+        let response;
+        if (file.type === "youtube") {
+          const content = (await getYoutubeContent(file.fileName ?? "")) ?? "";
+          response = (await storeUrlPinecone(chatbotId, content)) ?? "";
+        } else if (file.type === "web") {
+          const content = await loadHTMLContent(file.fileName ?? "");
+          if (content) {
+            response = await storeUrlPinecone(chatbotId, content);
+          }
+        } else if (file.type === "file") {
+          response = await storePinecone(chatbotId, file);
+        } else {
+          console.warn(`Unsupported file type: ${file.type}`);
+        }
+        if (response && response.status == 200) {
+          await UpdateFileState(file.id ?? "unknown", "SUCCESS");
+        } else {
+          await UpdateFileState(file.id ?? "unknown", "Failed");
+        }
       }
     }
 

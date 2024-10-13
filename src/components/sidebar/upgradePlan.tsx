@@ -17,8 +17,8 @@ const UpgradePlanCard = () => {
   const router = useRouter();
   const { chatbot, chatbots } = useGetChatbot();
   const userPlan = getUserPlan(chatbot);
-
-  const queriesUsed = chatbot?.queriesNumber || 0;
+  // console.log({ chatbot });
+  const queriesUsed = chatbot?.User?.subscription?.queriesNumber || 0;
   const queriesLimit = userPlan.features.queriesPerMonth || 0;
 
   const chatbotsUsed = chatbots?.length ?? 0;
@@ -42,12 +42,13 @@ const UpgradePlanCard = () => {
         <p>
           Chatbots: {chatbotsUsed} / {chatbotsLimit}
         </p>
-          <CustomProgress
+        <CustomProgress
           percentage={calculateUsagePercentage(chatbotsUsed, chatbotsLimit)}
           backgroundColor="bg-gray-200"
           fillColor={getBarColor(
             calculateUsagePercentage(chatbotsUsed, chatbotsLimit)
-          )}/>
+          )}
+        />
       </div>
       <Button className="mt-4 w-full" onClick={() => router.push("/billings")}>
         <ArrowUp className="mr-1" />
