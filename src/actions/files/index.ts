@@ -202,7 +202,6 @@ const getYoutubeContent = async (url: string) => {
   try {
     const loader = YoutubeLoader.createFromUrl(url, {
       addVideoInfo: true,
-      detectLanguage: true,
     });
 
     const docs = await loader.load();
