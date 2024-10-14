@@ -198,16 +198,29 @@ const loadHTMLContent = async (url: string): Promise<string> => {
 };
 
 const getYoutubeContent = async (url: string) => {
+  console.log(`Fetching YouTube content for URL: ${url}`);
   try {
     const loader = YoutubeLoader.createFromUrl(url, {
       addVideoInfo: true,
       detectLanguage: true,
-      //eslint-disable-next-line
     } as any);
+
     const docs = await loader.load();
-    return docs.length > 0 ? docs.map((doc) => doc.pageContent).join("\n") : "";
-  } catch (error) {
+
+    if (docs.length === 0) {
+      console.warn(`No content found for URL: ${url}`);
+      return ""; // Handle as needed
+    }
+
+    return docs.map((doc) => doc.pageContent).join("\n");
+    //eslint-disable-next-line
+  } catch (error: any) {
     console.error("Error loading YouTube content:", error);
+    if (error.message.includes("Transcript is disabled")) {
+      console.warn("Transcript is disabled for this video.");
+      return ""; // Return empty string or handle as needed
+    }
+    return null; // Return null or handle the error as needed
   }
 };
 
