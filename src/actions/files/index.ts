@@ -213,13 +213,8 @@ const getYoutubeContent = async (url: string) => {
     }
 
     return docs.map((doc) => doc.pageContent).join("\n");
-    //eslint-disable-next-line
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error loading YouTube content:", error);
-    if (error.message.includes("Transcript is disabled")) {
-      console.warn("Transcript is disabled for this video.");
-      return ""; // Return empty string or handle as needed
-    }
     return null; // Return null or handle the error as needed
   }
 };
