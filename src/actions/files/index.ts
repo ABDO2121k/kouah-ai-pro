@@ -173,7 +173,7 @@ export const removePinecone = async (namespace: string) => {
     };
     //eslint-disable-next-line
   } catch (err: any) {
-    console.error("Error deleting vectors from Pinecone:", err);
+    // console.error("Error deleting vectors from Pinecone:", err);
     return { status: 500, message: err.message };
   }
 };
