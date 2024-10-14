@@ -16,6 +16,7 @@
     "@kouahai/embed": "^2.0.38",
     "@kouahai/frame": "^2.0.31",
     "@langchain/community": "^0.3.0",
+    "@langchain/core": "^0.3.11",
     "@langchain/openai": "^0.3.0",
     "@langchain/pinecone": "^0.1.0",
     "@mantine/hooks": "^7.12.2",
