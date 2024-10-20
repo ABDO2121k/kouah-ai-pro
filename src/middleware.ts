@@ -14,6 +14,7 @@ export default authMiddleware({
     "/docs(.*)",
     "/pricing(.*)",
     "/api/uploadthing(.*)", // Add this line
+    "/api/webhooks/stripe(.*)",
   ],
   ignoredRoutes: [
     "/embed(.*)",
@@ -28,7 +29,6 @@ export default authMiddleware({
     "/favicon.ico",
     "/_next/static/chunks/(.*)",
     "/_next/static/(.*)",
-    "/api/webhooks/stripe(.*)"
   ],
 });
 
