@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
-import {handleInvoicePaymentFailed, handleInvoicePaymentSucceeded, handleSubscriptionChange, handleSubscriptionDeleted, handleCheckoutSessionCompleted, handleCheckoutSessionCanceled} from "@/actions/user"
+import {
+  handleInvoicePaymentFailed,
+  handleInvoicePaymentSucceeded,
+  handleSubscriptionChange,
+  handleSubscriptionDeleted,
+  handleCheckoutSessionCompleted,
+  handleCheckoutSessionCanceled,
+} from "@/actions/user";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -42,7 +49,7 @@ export async function POST(req: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
       await handleCheckoutSessionCompleted(session);
       break;
-    case "checkout.session.canceled":
+    case "checkout.session.expired":
       const canceledSession = event.data.object as Stripe.Checkout.Session;
       await handleCheckoutSessionCanceled(canceledSession);
       break;
