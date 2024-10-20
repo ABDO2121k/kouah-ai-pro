@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { pricingPackages } from "@/data/packages";
 import Stripe from "stripe";
 import { Plans } from "@prisma/client";
+import { currentUser } from "@clerk/nextjs";
 
 const findUserByStripeId = async (stripeId: string) => {
   return db.user.findFirst({
@@ -98,11 +99,27 @@ export const handleSubscriptionChange = async (
   subscription: Stripe.Subscription
 ) => {
   const customerId = subscription.customer as string;
-  const user = await findUserByStripeId(customerId);
+  console.log(`Handling subscription change for Stripe ID: ${customerId}`);
 
-  if (!user) {
-    console.error(`No user found with Stripe ID: ${customerId}`);
+  const clerkUser = await currentUser();
+  if (!clerkUser) {
+    console.error(`No Clerk user found for Stripe ID: ${customerId}`);
     return;
+  }
+
+  const user = await db.user.findUnique({ where: { id: clerkUser.id } });
+  if (!user) {
+    console.error(`No database user found for Clerk ID: ${clerkUser.id}`);
+    return;
+  }
+
+  // Update user's Stripe ID if it's not set
+  if (user.stripeId !== customerId) {
+    await db.user.update({
+      where: { id: user.id },
+      data: { stripeId: customerId },
+    });
+    console.log(`Updated Stripe ID for user ${user.id}`);
   }
 
   const packageIndication =
@@ -115,10 +132,6 @@ export const handleSubscriptionChange = async (
     packageIndication as Plans,
     getPackageCredits(packageIndication)
   );
-  await db.user.update({
-    where: { id: user.id },
-    data: { stripeId: customerId },
-  });
   await resetQueryNumber(user.id);
 
   console.log(`Subscription ${subscription.status} for user ${user.id}`);
