@@ -1,11 +1,16 @@
 "use server";
 
-import { db } from "@/lib/prisma";
+import { stripe } from "@/lib/stripe";
 import { pricingPackages } from "@/data/packages";
 import Stripe from "stripe";
 import { Plans } from "@prisma/client";
-import { currentUser } from "@clerk/nextjs";
+import { db } from "@/lib/prisma";
 
+/**
+ * Finds a user by their Stripe ID
+ * @param stripeId The Stripe ID of the user
+ * @returns The user object with subscription details, or null if not found
+ */
 const findUserByStripeId = async (stripeId: string) => {
   return db.user.findFirst({
     where: { stripeId },
@@ -13,6 +18,12 @@ const findUserByStripeId = async (stripeId: string) => {
   });
 };
 
+/**
+ * Updates or creates a user's billing information
+ * @param userId The ID of the user
+ * @param plan The subscription plan
+ * @param credits The number of credits for the user
+ */
 const updateUserBilling = async (
   userId: string,
   plan: Plans,
@@ -25,13 +36,23 @@ const updateUserBilling = async (
   });
 };
 
-const getPackageCredits = (packageIndication: string) => {
+/**
+ * Gets the number of credits for a given package
+ * @param packageIndication The package indication string
+ * @returns The number of credits for the package, or 0 if not found
+ */
+const getPackageCredits = (packageIndication: string): number => {
   return (
     pricingPackages.find((pkg) => pkg.indication === packageIndication)
       ?.features.queriesPerMonth || 0
   );
 };
 
+/**
+ * Retrieves a user's subscription
+ * @param userId The ID of the user
+ * @returns The user's subscription, or null if not found
+ */
 export const getUserSubscription = async (userId: string) => {
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -40,10 +61,16 @@ export const getUserSubscription = async (userId: string) => {
   return user?.subscription || null;
 };
 
+/**
+ * Updates a user's credits after usage
+ * @param userId The ID of the user
+ * @param creditsUsed The number of credits used
+ * @returns The updated number of credits
+ */
 export const updateUserCredits = async (
   userId: string,
   creditsUsed: number
-) => {
+): Promise<number> => {
   const user = await db.user.findUnique({
     where: { id: userId },
     include: { subscription: true },
@@ -60,66 +87,65 @@ export const updateUserCredits = async (
   return updatedCredits;
 };
 
-export const checkUserLimits = async (userId: string) => {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-    include: { subscription: true, chatBots: true },
-  });
+// /**
+//  * Checks a user's usage limits
+//  * @param userId The ID of the user
+//  * @returns An object containing limit information
+//  */
+// export const checkUserLimits = async (userId: string) => {
+//   const user = await db.user.findUnique({
+//     where: { id: userId },
+//     include: { subscription: true, chatBots: true },
+//   });
 
-  if (!user?.subscription) throw new Error("User or subscription not found");
+//   if (!user?.subscription) throw new Error("User or subscription not found");
 
-  const packageLimits = pricingPackages.find(
-    (pkg) => pkg.indication === user?.subscription?.plan
-  )?.features;
-  if (!packageLimits) throw new Error("Package limits not found");
+//   const packageLimits = pricingPackages.find(
+//     (pkg) => pkg.indication === user.subscription?.plan
+//   )?.features;
+//   if (!packageLimits) throw new Error("Package limits not found");
 
-  const totalFileUsage = user.chatBots.reduce(
-    (acc, bot) => acc + Number(bot.fileUsage),
-    0
-  );
+//   const totalFileUsage = user.chatBots.reduce(
+//     (acc, bot) => acc + Number(bot.fileUsage),
+//     0
+//   );
 
-  return {
-    isWithinQueryLimit: user.subscription.credits > 0,
-    isWithinBotLimit: user.chatBots.length < packageLimits.KouahAiBot,
-    isWithinStorageLimit: totalFileUsage < packageLimits.maxStoragePerBot,
-    remainingQueries: user.subscription.credits,
-    remainingBots: packageLimits.KouahAiBot - user.chatBots.length,
-    remainingStorage: packageLimits.maxStoragePerBot - totalFileUsage,
-  };
-};
+//   return {
+//     isWithinQueryLimit: user.subscription.credits > 0,
+//     isWithinBotLimit: user.chatBots.length < packageLimits.KouahAiBot,
+//     isWithinStorageLimit: totalFileUsage < packageLimits.maxStoragePerBot,
+//     remainingQueries: user.subscription.credits,
+//     remainingBots: packageLimits.KouahAiBot - user.chatBots.length,
+//     remainingStorage: packageLimits.maxStoragePerBot - totalFileUsage,
+//   };
+// };
 
-const resetQueryNumber = async (userId: string) => {
+/**
+ * Resets the query number for a user
+ * @param userId The ID of the user
+ */
+const resetQueryNumber = async (userId: string): Promise<void> => {
   await db.billings.update({
     where: { userId },
     data: { queriesNumber: 0 },
   });
 };
 
+/**
+ * Handles subscription changes
+ * @param subscription The Stripe subscription object
+ */
 export const handleSubscriptionChange = async (
   subscription: Stripe.Subscription
-) => {
+): Promise<void> => {
   const customerId = subscription.customer as string;
   console.log(`Handling subscription change for Stripe ID: ${customerId}`);
 
-  const clerkUser = await currentUser();
-  if (!clerkUser) {
-    console.error(`No Clerk user found for Stripe ID: ${customerId}`);
-    return;
-  }
+  const user = await db.user.findUnique({ where: { stripeId: customerId } });
 
-  const user = await db.user.findUnique({ where: { id: clerkUser.id } });
   if (!user) {
-    console.error(`No database user found for Clerk ID: ${clerkUser.id}`);
+    console.error(`No user found with Stripe ID: ${customerId}`);
     return;
-  }
-
-  // Update user's Stripe ID if it's not set
-  if (user.stripeId !== customerId) {
-    await db.user.update({
-      where: { id: user.id },
-      data: { stripeId: customerId },
-    });
-    console.log(`Updated Stripe ID for user ${user.id}`);
   }
 
   const packageIndication =
@@ -137,9 +163,13 @@ export const handleSubscriptionChange = async (
   console.log(`Subscription ${subscription.status} for user ${user.id}`);
 };
 
+/**
+ * Handles subscription deletions
+ * @param subscription The Stripe subscription object
+ */
 export const handleSubscriptionDeleted = async (
   subscription: Stripe.Subscription
-) => {
+): Promise<void> => {
   const user = await findUserByStripeId(subscription.customer as string);
 
   if (!user) {
@@ -152,9 +182,13 @@ export const handleSubscriptionDeleted = async (
   console.log(`Subscription deleted for user ${user.id}`);
 };
 
+/**
+ * Handles successful invoice payments
+ * @param invoice The Stripe invoice object
+ */
 export const handleInvoicePaymentSucceeded = async (
   invoice: Stripe.Invoice
-) => {
+): Promise<void> => {
   const user = await findUserByStripeId(invoice.customer as string);
 
   if (!user) {
@@ -170,7 +204,13 @@ export const handleInvoicePaymentSucceeded = async (
   console.log(`Payment succeeded for user ${user.id}`);
 };
 
-export const handleInvoicePaymentFailed = async (invoice: Stripe.Invoice) => {
+/**
+ * Handles failed invoice payments
+ * @param invoice The Stripe invoice object
+ */
+export const handleInvoicePaymentFailed = async (
+  invoice: Stripe.Invoice
+): Promise<void> => {
   const user = await findUserByStripeId(invoice.customer as string);
 
   if (!user) {
@@ -183,29 +223,50 @@ export const handleInvoicePaymentFailed = async (invoice: Stripe.Invoice) => {
   console.log(`Payment failed for user ${user.id}, moved to free plan.`);
 };
 
-export const handleCheckoutSessionCompleted = async (session: Stripe.Checkout.Session) => {
-  const customerId = session.customer as string;
-  const user = await findUserByStripeId(customerId);
+/**
+ * Handles completed checkout sessions
+ * @param session The Stripe Checkout Session object
+ */
+export const handleCheckoutSessionCompleted = async (
+  session: Stripe.Checkout.Session
+): Promise<void> => {
+  console.log(
+    `Handling checkout session completed for session ID: ${session.id}`
+  );
 
-  if (!user) {
-    console.error(`No user found with Stripe ID: ${customerId}`);
+  if (!session.metadata?.userId) {
+    console.error(`No userId found in session metadata`);
     return;
   }
 
-  const amountTotal = session.amount_total! / 100; // Convert cents to dollars
-  const packageIndication = pricingPackages.find(pkg => pkg.price === amountTotal)?.indication || "FREE";
+  const subscription = await stripe.subscriptions.retrieve(
+    session.subscription as string
+  );
+
+  const packageIndication =
+    pricingPackages.find(
+      (pkg) => pkg.price === subscription.items.data[0].price.unit_amount! / 100
+    )?.indication || "FREE";
 
   await updateUserBilling(
-    user.id,
+    session.metadata.userId,
     packageIndication as Plans,
     getPackageCredits(packageIndication)
   );
-  await resetQueryNumber(user.id);
+  await resetQueryNumber(session.metadata.userId);
 
-  console.log(`Checkout completed for user ${user.id}, updated to plan ${packageIndication}`);
+  console.log(
+    `Checkout completed for user ${session.metadata.userId}, updated to plan ${packageIndication}`
+  );
 };
 
-export const handleCheckoutSessionCanceled = async (session: Stripe.Checkout.Session) => {
+/**
+ * Handles canceled checkout sessions
+ * @param session The Stripe Checkout Session object
+ */
+export const handleCheckoutSessionCanceled = async (
+  session: Stripe.Checkout.Session
+): Promise<void> => {
   const customerId = session.customer as string;
   const user = await findUserByStripeId(customerId);
 
@@ -216,7 +277,13 @@ export const handleCheckoutSessionCanceled = async (session: Stripe.Checkout.Ses
 
   // Keep the user on their current plan or revert to FREE if there's an issue
   const currentPlan = user.subscription?.plan || "FREE";
-  await updateUserBilling(user.id, currentPlan as Plans, getPackageCredits(currentPlan));
+  await updateUserBilling(
+    user.id,
+    currentPlan as Plans,
+    getPackageCredits(currentPlan)
+  );
 
-  console.log(`Checkout canceled for user ${user.id}, plan unchanged or reverted to FREE`);
+  console.log(
+    `Checkout canceled for user ${user.id}, plan unchanged or reverted to FREE`
+  );
 };

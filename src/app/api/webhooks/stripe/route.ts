@@ -33,9 +33,9 @@ export async function POST(req: Request) {
       const subscription = event.data.object as Stripe.Subscription;
       await handleSubscriptionChange(subscription);
       break;
-    case "customer.subscription.deleted":
-      const deletedSubscription = event.data.object as Stripe.Subscription;
-      await handleSubscriptionDeleted(deletedSubscription);
+    case "checkout.session.completed":
+      const session = event.data.object as Stripe.Checkout.Session;
+      await handleCheckoutSessionCompleted(session);
       break;
     case "invoice.payment_succeeded":
       const invoice = event.data.object as Stripe.Invoice;
@@ -44,10 +44,6 @@ export async function POST(req: Request) {
     case "invoice.payment_failed":
       const failedInvoice = event.data.object as Stripe.Invoice;
       await handleInvoicePaymentFailed(failedInvoice);
-      break;
-    case "checkout.session.completed":
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutSessionCompleted(session);
       break;
     case "checkout.session.expired":
       const canceledSession = event.data.object as Stripe.Checkout.Session;

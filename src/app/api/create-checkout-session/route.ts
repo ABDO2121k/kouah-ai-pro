@@ -23,16 +23,7 @@ export async function POST(request: Request) {
 
     const { packageIndication } = await request.json();
 
-    // If user is already subscribed, create a billing portal session
-    if (user.subscription?.plan !== "FREE" && user.stripeId) {
-      const session = await stripe.billingPortal.sessions.create({
-        customer: user.stripeId,
-        return_url: `${request.headers.get("origin")}/dashboard/billing`,
-      });
-      return NextResponse.json({ url: session.url });
-    }
-
-    // Otherwise, create a new checkout session
+    // If user is already subscribed and not changing plans, create a billing portal session
     const selectedPackage = pricingPackages.find(
       (pkg) => pkg.indication === packageIndication
     );
@@ -41,6 +32,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid package" }, { status: 400 });
     }
 
+    // Check if user is already subscribed and not changing plans
+    if (user.subscription?.plan !== "FREE" && user.stripeId && user.subscription?.plan === selectedPackage.indication) {
+      const session = await stripe.billingPortal.sessions.create({
+        customer: user.stripeId,
+        return_url: `${request.headers.get("origin")}/dashboard/billing`,
+      });
+      return NextResponse.json({ url: session.url });
+    }
+
+    // Otherwise, create a new checkout session
     // Create a product for the package if it doesn't exist
     const product = await stripe.products.create({
       name: `${packageIndication} Package`,
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
     });
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card","paypal"],
       line_items: [
         {
           price: recurringPrice.id,
@@ -65,10 +66,13 @@ export async function POST(request: Request) {
       mode: "subscription",
       success_url: `${request.headers.get(
         "origin"
-      )}/api/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+      )}/dashboard/billing?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${request.headers.get("origin")}/dashboard/billing?ssss=qqq`,
       customer: user.stripeId || undefined,
-      client_reference_id: user.id, // Use the internal user ID as a reference
+      client_reference_id: user.id,
+      metadata: {
+        userId: user.id,
+      },
     });
 
     return NextResponse.json({ url: session.url });

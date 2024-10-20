@@ -24,7 +24,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  stripeId     String?
+  stripeId     String?   @unique
   subscription Billings?
   chatBots     ChatBot[]
 }
