@@ -169,3 +169,41 @@ export const handleInvoicePaymentFailed = async (invoice: Stripe.Invoice) => {
   await resetQueryNumber(user.id);
   console.log(`Payment failed for user ${user.id}, moved to free plan.`);
 };
+
+export const handleCheckoutSessionCompleted = async (session: Stripe.Checkout.Session) => {
+  const customerId = session.customer as string;
+  const user = await findUserByStripeId(customerId);
+
+  if (!user) {
+    console.error(`No user found with Stripe ID: ${customerId}`);
+    return;
+  }
+
+  const amountTotal = session.amount_total! / 100; // Convert cents to dollars
+  const packageIndication = pricingPackages.find(pkg => pkg.price === amountTotal)?.indication || "FREE";
+
+  await updateUserBilling(
+    user.id,
+    packageIndication as Plans,
+    getPackageCredits(packageIndication)
+  );
+  await resetQueryNumber(user.id);
+
+  console.log(`Checkout completed for user ${user.id}, updated to plan ${packageIndication}`);
+};
+
+export const handleCheckoutSessionCanceled = async (session: Stripe.Checkout.Session) => {
+  const customerId = session.customer as string;
+  const user = await findUserByStripeId(customerId);
+
+  if (!user) {
+    console.error(`No user found with Stripe ID: ${customerId}`);
+    return;
+  }
+
+  // Keep the user on their current plan or revert to FREE if there's an issue
+  const currentPlan = user.subscription?.plan || "FREE";
+  await updateUserBilling(user.id, currentPlan as Plans, getPackageCredits(currentPlan));
+
+  console.log(`Checkout canceled for user ${user.id}, plan unchanged or reverted to FREE`);
+};
