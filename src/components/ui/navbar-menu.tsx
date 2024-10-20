@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { buttonVariants } from "@/components/ui/button"; 
 
 const transition = {
   type: "spring",
@@ -18,13 +19,13 @@ export const MenuItem = ({
   active,
   item,
   children,
-  isDashboard, // Added isDashboard prop
+  isDashboard,
 }: {
   setActive: (item: string) => void;
   active: string | null;
   item: string;
   children?: React.ReactNode;
-  isDashboard?: boolean; // Added isDashboard type
+  isDashboard?: boolean;
 }) => {
   return (
     <div
@@ -38,9 +39,10 @@ export const MenuItem = ({
     >
       <motion.p
         transition={{ duration: 0.3 }}
-        className={`cursor-pointer bg-transparent hover:opacity-[0.9] ${
-          isDashboard ? "dark:text-white" : "text-black"
-        }`} // Conditional text color
+        className={`${buttonVariants({
+          variant: "ghost",
+          size: "sm",
+        })} ${isDashboard ? "text-white" : ""}`}
       >
         {item}
       </motion.p>
@@ -75,11 +77,11 @@ export const MenuItem = ({
 export const Menu = ({
   setActive,
   children,
-  isDashboard, // Added isDashboard prop
+  isDashboard,
 }: {
   setActive: (item: string | null) => void;
   children: React.ReactNode;
-  isDashboard?: boolean; // Added isDashboard type
+  isDashboard?: boolean;
 }) => {
   return (
     <nav

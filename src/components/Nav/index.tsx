@@ -88,9 +88,9 @@ const Navbar = ({
               isDashboard={isDashboard}
             >
               <div className="flex flex-col space-y-4 text-sm text-black dark:text-white">
-                <HoveredLink isDashboard={isDashboard} href="/blog">
-                  Blog
-                </HoveredLink>
+                {/* <HoveredLink isDashboard={isDashboard} href="/pricing">
+                  Pricing
+                </HoveredLink> */}
                 <HoveredLink isDashboard={isDashboard} href="/docs">
                   Docs
                 </HoveredLink>

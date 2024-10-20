@@ -15,7 +15,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     if (isMounted) {
-      KouahAiBotEmbedd('cm1lghktm0001br0k599pwsvf');
+      KouahAiBotEmbedd('cm1wv3f960001u02gtoklt110');
     }
   }, [isMounted]);
   return (

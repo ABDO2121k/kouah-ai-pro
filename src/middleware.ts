@@ -12,6 +12,7 @@ export default authMiddleware({
     "/api/auth-callback(.*)",
     "/redirectUrl",
     "/docs(.*)",
+    "/pricing(.*)",
     "/api/uploadthing(.*)", // Add this line
   ],
   ignoredRoutes: [

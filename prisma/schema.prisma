@@ -30,12 +30,13 @@ model User {
 }
 
 model Billings {
-  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  plan    Plans   @default(FREE)
-  credits Int     @default(10)
-  User    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String? @unique @db.Uuid
-  queriesNumber Int @default(0) 
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  plan            Plans     @default(FREE)
+  credits         Int       @default(10)
+  User            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String?   @unique @db.Uuid
+  queriesNumber   Int       @default(0)
+  lastPaymentDate DateTime?
 }
 
 model LeadField {
