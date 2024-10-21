@@ -1,7 +1,8 @@
 interface PricingFeatures {
   KouahAiBot: number;
   queriesPerMonth: number;
-  maxDocsPerBot: number;
+  maxWebPages: number;
+  maxYoutube: number;
   maxStoragePerBot: number; // in bytes
   restAPI: boolean;
   removePoweredByLabel: boolean;
@@ -24,7 +25,8 @@ export const pricingPackages: PricingPackage[] = [
     features: {
       KouahAiBot: 1,
       queriesPerMonth: 20,
-      maxDocsPerBot: 100,
+      maxWebPages: 100,
+      maxYoutube: 100,
       maxStoragePerBot: 52428800, // 50MB in bytes
       restAPI: false,
       removePoweredByLabel: false,
@@ -38,7 +40,8 @@ export const pricingPackages: PricingPackage[] = [
     features: {
       KouahAiBot: 2,
       queriesPerMonth: 1500,
-      maxDocsPerBot: 100,
+      maxWebPages: 100,
+      maxYoutube: 100,
       maxStoragePerBot: 52428800, // 50MB in bytes
       restAPI: true,
       removePoweredByLabel: false,
@@ -53,7 +56,8 @@ export const pricingPackages: PricingPackage[] = [
     features: {
       KouahAiBot: 4,
       queriesPerMonth: 7500,
-      maxDocsPerBot: 2000,
+      maxWebPages: 2000,
+      maxYoutube: 2000,
       maxStoragePerBot: 1073741824, // 1GB in bytes
       restAPI: true,
       removePoweredByLabel: true,
@@ -67,7 +71,8 @@ export const pricingPackages: PricingPackage[] = [
     features: {
       KouahAiBot: 8,
       queriesPerMonth: 15000,
-      maxDocsPerBot: 10000,
+      maxWebPages: 10000,
+      maxYoutube: 10000,
       maxStoragePerBot: 5368709120, // 5GB in bytes
       restAPI: true,
       removePoweredByLabel: true,
@@ -75,20 +80,3 @@ export const pricingPackages: PricingPackage[] = [
     },
   },
 ];
-
-
-// {
-//   indication: "STANDARD",
-//   name: "Starter",
-//   price: 19,
-//   features: {
-//     KouahAiBot: 2,
-//     queriesPerMonth: 3,
-//     maxWebPages: 3,
-//     maxYoutube: 3,
-//     maxStoragePerBot: 52428800/50, // 50MB in bytes
-//     restAPI: true,
-//     removePoweredByLabel: false,
-//     queryLogRetention: 30,
-//   },
-// },
