@@ -59,7 +59,9 @@ export const createChatBot = async () => {
       return { status: 401, message: "Unauthorized: User not found" };
     }
 
-    const dbUser = await db.user.findFirst({
+    console.log("Clerk user ID:", user.id); // Log the Clerk user ID
+
+    const dbUser = await db.user.findUnique({
       where: {
         clerkId: user.id,
       },
@@ -68,7 +70,11 @@ export const createChatBot = async () => {
     if (!dbUser) {
       return { status: 404, message: "User not found in the database" };
     }
-     await checkUserLimits(user.id,"create_chatbot")
+
+    console.log("Database user ID:", dbUser.id); // Log the database user ID
+
+    await checkUserLimits(dbUser.id, "create_chatbot");
+
     const chatbot = await db.chatBot.create({
       data: {
         userId: dbUser.id,
@@ -77,12 +83,15 @@ export const createChatBot = async () => {
         id: true,
       },
     });
-    if (chatbot)
+
+    if (chatbot) {
       await db.chatbotTheme.create({
         data: {
           chatbotId: chatbot.id,
         },
       });
+    }
+
     return { status: 200, chatbot };
   } catch (err) {
     console.error("Error creating chatbot:", err);
