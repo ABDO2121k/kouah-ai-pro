@@ -12,9 +12,13 @@ import { cn, formatFeature, getFeatureTooltip } from "@/lib/utils";
 import Link from "next/link";
 import { currentUser } from "@clerk/nextjs";
 import SubscriptionButton from "./SubscriptionButton";
+import { useGetChatbot } from "@/hooks/chatbot/use-chatbot";
+import { Plans } from "@prisma/client";
 
 const Billing = async () => {
   const user = await currentUser();
+  const { chatbot } = useGetChatbot();
+  console.log({ bill: chatbot.User.billing });
 
   return (
     <div className="container max-w-7xl py-12 px-4 sm:px-6 lg:px-8">
@@ -111,8 +115,11 @@ const Billing = async () => {
                       {user ? "Go to Dashboard" : "Sign up"}
                       <ArrowRight className="h-5 w-5 ml-1.5" />
                     </Link>
-                  ) : user ? (
-                    <SubscriptionButton type={pkg.indication} />
+                  ) : chatbot?.user ? (
+                    <SubscriptionButton
+                      type={pkg.indication as Plans}
+                      currentPlan={chatbot.User.billing?.plan || null}
+                    />
                   ) : (
                     <Link
                       href="/auth/sign-in"

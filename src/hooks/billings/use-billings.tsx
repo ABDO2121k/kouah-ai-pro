@@ -19,7 +19,8 @@ export const useBillings = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create session");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create session");
       }
 
       const { url } = await response.json();

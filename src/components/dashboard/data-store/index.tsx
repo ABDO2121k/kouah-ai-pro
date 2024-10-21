@@ -39,7 +39,7 @@ const DataStore = () => {
     chatbot,
   } = useGetFiles();
 
-  const userPlan = getUserPlan(chatbot);
+  const userPlan = getUserPlan(chatbot?.User);
 
   return (
     <div className="flex flex-col gap-3 p-5 h-full max-h-[calc(100vh-3.5rem)] overflow-y-auto pb-20">

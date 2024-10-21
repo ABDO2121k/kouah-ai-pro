@@ -6,6 +6,7 @@ import { Pinecone } from "@pinecone-database/pinecone";
 import { OpenAI } from "openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { db } from "@/lib/prisma";
+import { checkUserLimits } from "../user";
 
 export const chatAi = async (
   chatbotId: string,
@@ -234,6 +235,10 @@ export const chatWithBot = async (
       },
     });
     if (!chatbot) throw new Error("chatbot not found !!!!!");
+
+    // Check query limit
+    await checkUserLimits(chatbot?.User?.id??"", "query");
+
     await db.chatBot.update({
       where: {
         id,
@@ -257,6 +262,7 @@ export const chatWithBot = async (
         },
       });
     }
+
     const chatbotResponse = await chatAi(
       id,
       message,
@@ -343,8 +349,15 @@ export const createChatRoom = async (
       where: {
         id: chatbotId,
       },
+      include: {
+        User: true,
+      },
     });
     if (!chatbot) throw new Error("Chatbot not found!");
+
+    // if (type === "live") {
+    //   await checkUserLimits(chatbot?.User?.id??"", "create_chatbot");
+    // }
 
     const existingChatRoom = await db.chatRoom.findFirst({
       where: {

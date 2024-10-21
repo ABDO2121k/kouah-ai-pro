@@ -11,7 +11,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the user by clerkId instead of id
     const user = await db.user.findUnique({
       where: { clerkId: userId },
       include: { subscription: true },
@@ -23,7 +22,6 @@ export async function POST(request: Request) {
 
     const { packageIndication } = await request.json();
 
-    // If user is already subscribed and not changing plans, create a billing portal session
     const selectedPackage = pricingPackages.find(
       (pkg) => pkg.indication === packageIndication
     );
@@ -32,44 +30,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid package" }, { status: 400 });
     }
 
-    // Check if user is already subscribed and not changing plans
-    if (user.subscription?.plan !== "FREE" && user.stripeId && user.subscription?.plan === selectedPackage.indication) {
-      const session = await stripe.billingPortal.sessions.create({
+    // If user already has a stripeId (meaning they have an existing subscription)
+    if (user.stripeId) {
+      const billingPortalSession = await stripe.billingPortal.sessions.create({
         customer: user.stripeId,
         return_url: `${request.headers.get("origin")}/dashboard/billing`,
       });
-      return NextResponse.json({ url: session.url });
+      return NextResponse.json({ url: billingPortalSession.url });
     }
 
-    // Otherwise, create a new checkout session
-    // Create a product for the package if it doesn't exist
-    const product = await stripe.products.create({
-      name: `${packageIndication} Package`,
-    });
-
-    // Create a recurring price for the product
-    const recurringPrice = await stripe.prices.create({
-      product: product.id,
-      unit_amount: selectedPackage.price * 100, // Stripe expects the amount in cents
-      currency: "usd",
-      recurring: { interval: "month" },
-    });
-
+    // If user doesn't have a stripeId, create a new checkout session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card","paypal"],
+      customer_email: user.email,
       line_items: [
         {
-          price: recurringPrice.id,
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: selectedPackage.name,
+            },
+            unit_amount: selectedPackage.price * 100,
+            recurring: {
+              interval: "month",
+            },
+          },
           quantity: 1,
         },
       ],
       mode: "subscription",
-      success_url: `${request.headers.get(
-        "origin"
-      )}/dashboard/billing?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${request.headers.get("origin")}/dashboard/billing?ssss=qqq`,
-      customer: user.stripeId || undefined,
-      client_reference_id: user.id,
+      success_url: `${request.headers.get("origin")}/dashboard/billing?success=true`,
+      cancel_url: `${request.headers.get("origin")}/dashboard/billing?canceled=true`,
       metadata: {
         userId: user.id,
       },

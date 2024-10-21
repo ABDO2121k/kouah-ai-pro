@@ -5,6 +5,7 @@ import { pricingPackages } from "@/data/packages";
 import Stripe from "stripe";
 import { Plans } from "@prisma/client";
 import { db } from "@/lib/prisma";
+import { getUserPlan } from "@/lib/utils";
 
 /**
  * Finds a user by their Stripe ID
@@ -248,6 +249,12 @@ export const handleCheckoutSessionCompleted = async (
       (pkg) => pkg.price === subscription.items.data[0].price.unit_amount! / 100
     )?.indication || "FREE";
 
+  // Update user with stripeId
+  await db.user.update({
+    where: { id: session.metadata.userId },
+    data: { stripeId: session.customer as string },
+  });
+
   await updateUserBilling(
     session.metadata.userId,
     packageIndication as Plans,
@@ -287,3 +294,66 @@ export const handleCheckoutSessionCanceled = async (
     `Checkout canceled for user ${user.id}, plan unchanged or reverted to FREE`
   );
 };
+
+
+export async function checkUserLimits(
+    userId: string,
+    action: 'query' | 'create_chatbot' | 'file' | 'web' | 'youtube',
+    chatbotId?: string,
+    count: number = 1,
+    fileSize?: bigint
+  ) {
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      include: { subscription: true },
+    });
+  
+    if (!user || !user.subscription) {
+      throw new Error("User or subscription not found");
+    }
+  
+    const plan = getUserPlan(user);
+    
+    switch (action) {
+      case 'query':
+        const currentQueries = user.subscription.queriesNumber;
+        if (currentQueries >= plan.features.queriesPerMonth) {
+          throw new Error("Monthly query limit exceeded");
+        }
+        break;
+      case 'create_chatbot':
+        const currentChatbots = await db.chatBot.count({
+          where: { userId: userId }
+        });
+        if (currentChatbots >= plan.features.KouahAiBot) {
+          throw new Error("Chatbot creation limit exceeded");
+        }
+        break;
+      case 'file':
+        if (!chatbotId) throw new Error("Chatbot ID is required for file uploads");
+        const chatbot = await db.chatBot.findUnique({
+          where: { id: chatbotId },
+          select: { fileUsage: true }
+        });
+        if (!chatbot) throw new Error("Chatbot not found");
+        const newTotalSize = chatbot.fileUsage + (fileSize || BigInt(0));
+        if (newTotalSize > BigInt(plan.features.maxStoragePerBot)) {
+          throw new Error("File storage limit exceeded");
+        }
+        break;
+      case 'web':
+        if (!chatbotId) throw new Error("Chatbot ID is required for web page uploads");
+        const currentWebPages = await db.file.count({ where: { chatBotId: chatbotId, type: 'web' } });
+        if (currentWebPages + count > plan.features.maxWebPages) {
+          throw new Error("Web page limit exceeded");
+        }
+        break;
+      case 'youtube':
+        if (!chatbotId) throw new Error("Chatbot ID is required for YouTube video uploads");
+        const currentVideos = await db.file.count({ where: { chatBotId: chatbotId, type: 'youtube' } });
+        if (currentVideos + count > plan.features.maxYoutube) {
+          throw new Error("YouTube video limit exceeded");
+        }
+        break;
+    }
+  }

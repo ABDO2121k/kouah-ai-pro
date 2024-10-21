@@ -24,8 +24,8 @@ export const getBarColor = (percentage: number) => {
   return "bg-blue-500";
 };
 //eslint-disable-next-line
-export const getUserPlan = (chatbot: any) => {
-  const planName = chatbot?.User.subscription?.plan || "FREE";
+export const getUserPlan = (user: any) => {
+  const planName = user.subscription?.plan || "FREE";
   return (
     pricingPackages.find((pkg) => pkg.indication === planName) ||
     pricingPackages[0]
@@ -43,8 +43,10 @@ export function formatFeature(key: string, value: any): string {
       return `${value} KouahAiBot${value > 1 ? "s" : ""}`;
     case "queriesPerMonth":
       return `${value} queries per month`;
-    case "maxDocsPerBot":
+    case "maxWebPages":
       return `Maximum of ${value} docs/webpages`;
+    case "maxYoutube":
+      return `Maximum of ${value} youtube videos`;
     case "maxStoragePerBot":
       return `${formatFileSize(value)} doc storage per KouahAiBot`;
     case "restAPI":

@@ -16,7 +16,7 @@ import CustomProgress from "../progress";
 const UpgradePlanCard = () => {
   const router = useRouter();
   const { chatbot, chatbots } = useGetChatbot();
-  const userPlan = getUserPlan(chatbot);
+  const userPlan = getUserPlan(chatbot?.User);
   // console.log({ chatbot });
   const queriesUsed = chatbot?.User?.subscription?.queriesNumber || 0;
   const queriesLimit = userPlan.features.queriesPerMonth || 0;

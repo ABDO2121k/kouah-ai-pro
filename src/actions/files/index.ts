@@ -11,6 +11,7 @@ import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { YoutubeLoader } from "@langchain/community/document_loaders/web/youtube";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { checkUserLimits } from "../user";
 
 export interface FileUpload {
   fileName: string;
@@ -24,6 +25,17 @@ export interface FileUpload {
 
 export const uploadFile = async (bot: string | undefined, file: FileUpload) => {
   try {
+    if (!bot) throw new Error("Chatbot ID is required");
+
+    const chatbot = await db.chatBot.findUnique({
+      where: { id: bot },
+      include: { User: true },
+    });
+    if (!chatbot) throw new Error("Chatbot not found");
+
+    // Check file size limit
+    await checkUserLimits(chatbot.User?.id??"", 'file', bot, 1, file?.size??undefined);
+
     const createdFile = await db.file.create({
       data: {
         fileName: file.fileName,
@@ -48,7 +60,7 @@ export const uploadFile = async (bot: string | undefined, file: FileUpload) => {
     return { status: 200, message: "file uploaded with success", createdFile };
   } catch (err) {
     console.error("Error uploading file:", err);
-    return { status: 500, message: "External server error", createdFile: null };
+    return { status: 500, message: err instanceof Error ? err.message : "External server error", createdFile: null };
   }
 };
 
@@ -225,6 +237,15 @@ export const uploadUrls = async (
   NotAddVector?: boolean
 ) => {
   try {
+    const chatbot = await db.chatBot.findUnique({
+      where: { id: bot },
+      include: { User: true },
+    });
+    if (!chatbot) throw new Error("Chatbot not found");
+
+    // Check URL limit
+    await checkUserLimits(chatbot.User?.id??"", type, bot, urls.length);
+
     for (const url of urls) {
       let content: string | null = null;
       const createdFile = await db.file.create({
@@ -280,7 +301,7 @@ export const uploadUrls = async (
     };
   } catch (err) {
     console.error("Error uploading files:", err);
-    return { status: 500, message: "External server error" };
+    return { status: 500, message: err instanceof Error ? err.message : "External server error" };
   }
 };
 
@@ -411,6 +432,12 @@ export const deleteMultipleFilesDb = async (
 
 export const rebuild = async (chatbotId: string) => {
   try {
+    const chatbot = await db.chatBot.findUnique({
+      where: { id: chatbotId },
+      include: { User: true },
+    });
+    if (!chatbot) throw new Error("Chatbot not found");
+
     await removePinecone(chatbotId);
 
     const files = await db.file.findMany({
@@ -444,6 +471,6 @@ export const rebuild = async (chatbotId: string) => {
     return { status: 200, message: "Chatbot files rebuilt successfully" };
   } catch (err) {
     console.error("Error rebuilding chatbot files:", err);
-    return { status: 500, message: "External server error" };
+    return { status: 500, message: err instanceof Error ? err.message : "External server error" };
   }
 };

@@ -9,6 +9,26 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useGetChatbot } from "../chatbot/use-chatbot";
+import { checkUserLimits } from "@/actions/user";
+import { getCurrentUserFromDb } from "@/actions/auth";
+
+// Add this function to check file size limits
+const checkFileSizeLimits = async (userId: string, files: File[], bot: string) => {
+  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+  try {
+    await checkUserLimits(userId, 'file', bot, files.length, BigInt(totalSize));
+    return true;
+  } catch (error) {
+    if (error instanceof Error) {
+      toast({
+        title: "File size limit exceeded",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+    return false;
+  }
+};
 
 export const useUpload = (botId?: string, NotAddVector?: boolean) => {
   const [files, setFiles] = useState<File[]>([]);
@@ -44,7 +64,6 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
       let bot: string | undefined;
       if (!botId) {
         const createdBot = await createChatBot();
-        // console.log({ createdBot });
         if (createdBot.status === 200 && createdBot.chatbot) {
           bot = createdBot.chatbot.id;
         } else {
@@ -63,9 +82,17 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
         throw new Error("Bot ID is undefined");
       }
 
-      // console.log({ res });
+      // Check file size limits after upload
+      const currentUser = await getCurrentUserFromDb();
+      if (!currentUser) {
+        throw new Error("User not found");
+      }
+      const isWithinLimits = await checkFileSizeLimits(currentUser.id, files, bot);
+      if (!isWithinLimits) {
+        throw new Error("File size limit exceeded");
+      }
+
       const fileUploaded = await uploadFiles(bot, res, NotAddVector);
-      // console.log({ fileUploaded });
       setActions((prev) => prev + 1);
       toast({
         title: "Files uploaded successfully",
@@ -80,7 +107,7 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
       console.error("Upload error:", err);
       toast({
         title: "Something went wrong",
-        description: "Please try again later",
+        description: err instanceof Error ? err.message : "Please try again later",
         variant: "destructive",
       });
     } finally {
@@ -128,7 +155,6 @@ export const useUploadUrl = (
   const handleAddToDB = async () => {
     setLoading(true);
 
-    // await new Promise(resolve => setTimeout(resolve, 1000));
     let bot: string | undefined;
     if (!botId) {
       const createdBot = await createChatBot();
