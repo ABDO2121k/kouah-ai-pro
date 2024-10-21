@@ -50,7 +50,7 @@ const UpgradePlanCard = () => {
           )}
         />
       </div>
-      <Button className="mt-4 w-full" onClick={() => router.push("/billings")}>
+      <Button className="mt-4 w-full" onClick={() => router.push("/dashboard/billing")}>
         <ArrowUp className="mr-1" />
         Upgrade Plan
       </Button>

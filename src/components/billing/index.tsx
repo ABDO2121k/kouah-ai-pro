@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import { pricingPackages } from "@/data/packages";
 import { Check, HelpCircle, ArrowRight } from "lucide-react";
@@ -10,15 +11,13 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { cn, formatFeature, getFeatureTooltip } from "@/lib/utils";
 import Link from "next/link";
-import { currentUser } from "@clerk/nextjs";
 import SubscriptionButton from "./SubscriptionButton";
 import { useGetChatbot } from "@/hooks/chatbot/use-chatbot";
 import { Plans } from "@prisma/client";
 
-const Billing = async () => {
-  const user = await currentUser();
+const Billing =  () => {
   const { chatbot } = useGetChatbot();
-  console.log({ bill: chatbot.User.billing });
+  console.log({ bill: chatbot?.User });
 
   return (
     <div className="container max-w-7xl py-12 px-4 sm:px-6 lg:px-8">
@@ -106,19 +105,19 @@ const Billing = async () => {
                 <div className="p-5">
                   {pkg.price === 0 ? (
                     <Link
-                      href={user ? "/dashboard" : "/auth/sign-in"}
+                      href={"/dashboard"}
                       className={buttonVariants({
                         className: "w-full",
                         variant: "secondary",
                       })}
                     >
-                      {user ? "Go to Dashboard" : "Sign up"}
+                     Go to Dashboard
                       <ArrowRight className="h-5 w-5 ml-1.5" />
                     </Link>
-                  ) : chatbot?.user ? (
+                  ) : chatbot?.User ? (
                     <SubscriptionButton
                       type={pkg.indication as Plans}
-                      currentPlan={chatbot.User.billing?.plan || null}
+                      currentPlan={chatbot?.User?.subscription?.plan || null}
                     />
                   ) : (
                     <Link

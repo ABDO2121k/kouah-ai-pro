@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs";
 import { removePinecone } from "../files";
+import { checkUserLimits } from "../user";
 
 export const getAccountChatBots = async () => {
   try {
@@ -67,7 +68,7 @@ export const createChatBot = async () => {
     if (!dbUser) {
       return { status: 404, message: "User not found in the database" };
     }
-
+     await checkUserLimits(user.id,"create_chatbot")
     const chatbot = await db.chatBot.create({
       data: {
         userId: dbUser.id,

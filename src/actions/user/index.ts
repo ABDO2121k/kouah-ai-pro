@@ -149,19 +149,25 @@ export const handleSubscriptionChange = async (
     return;
   }
 
-  const packageIndication =
-    pricingPackages.find(
-      (pkg) => pkg.price === subscription.items.data[0].price.unit_amount! / 100
-    )?.indication || "FREE";
+  if (subscription.cancel_at_period_end) {
+    console.log(`Subscription set to cancel at end of period: ${subscription.id}`);
+    await updateUserBilling(user.id, "FREE", getPackageCredits("FREE"));
+    console.log(`User ${user.id} plan updated to FREE (effective at period end)`);
+  } else {
+    const packageIndication =
+      pricingPackages.find(
+        (pkg) => pkg.price === subscription.items.data[0].price.unit_amount! / 100
+      )?.indication || "FREE";
 
-  await updateUserBilling(
-    user.id,
-    packageIndication as Plans,
-    getPackageCredits(packageIndication)
-  );
+    await updateUserBilling(
+      user.id,
+      packageIndication as Plans,
+      getPackageCredits(packageIndication)
+    );
+    console.log(`Subscription ${subscription.status} for user ${user.id}, plan: ${packageIndication}`);
+  }
+
   await resetQueryNumber(user.id);
-
-  console.log(`Subscription ${subscription.status} for user ${user.id}`);
 };
 
 /**

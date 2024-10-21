@@ -13,10 +13,14 @@ import { checkUserLimits } from "@/actions/user";
 import { getCurrentUserFromDb } from "@/actions/auth";
 
 // Add this function to check file size limits
-const checkFileSizeLimits = async (userId: string, files: File[], bot: string) => {
+const checkFileSizeLimits = async (
+  userId: string,
+  files: File[],
+  bot: string
+) => {
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
   try {
-    await checkUserLimits(userId, 'file', bot, files.length, BigInt(totalSize));
+    await checkUserLimits(userId, "file", bot, files.length, BigInt(totalSize));
     return true;
   } catch (error) {
     if (error instanceof Error) {
@@ -44,6 +48,43 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
   const handleUpload = async () => {
     try {
       setIsUploading(true);
+      let bot: string | undefined;
+      if (!botId) {
+        const createdBot = await createChatBot();
+        if (createdBot.status === 200 && createdBot.chatbot) {
+          bot = createdBot.chatbot.id;
+        } else {
+          toast({
+            title: "Something went wrong",
+            description: createdBot.message || "Failed to create chat bot",
+            variant: "destructive",
+          });
+          setFiles([]);
+          return setIsUploading(false);
+        }
+      } else {
+        bot = botId;
+      }
+
+      if (!bot) {
+        throw new Error("Bot ID is undefined");
+      }
+
+      // Check file size limits after upload
+      const currentUser = await getCurrentUserFromDb();
+      if (!currentUser) {
+        throw new Error("User not found");
+      }
+
+      const isWithinLimits = await checkFileSizeLimits(
+        currentUser.id,
+        files,
+        bot
+      );
+      if (!isWithinLimits) {
+        throw new Error("File size limit exceeded");
+      }
+
       const uploadedFiles = await startUpload(files);
       console.log({ uploadedFiles });
       if (!uploadedFiles) {
@@ -61,37 +102,6 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
         type: "file",
       }));
 
-      let bot: string | undefined;
-      if (!botId) {
-        const createdBot = await createChatBot();
-        if (createdBot.status === 200 && createdBot.chatbot) {
-          bot = createdBot.chatbot.id;
-        } else {
-          toast({
-            title: "Something went wrong",
-            description: createdBot.message || "Failed to create chat bot",
-            variant: "destructive",
-          });
-          return;
-        }
-      } else {
-        bot = botId;
-      }
-
-      if (!bot) {
-        throw new Error("Bot ID is undefined");
-      }
-
-      // Check file size limits after upload
-      const currentUser = await getCurrentUserFromDb();
-      if (!currentUser) {
-        throw new Error("User not found");
-      }
-      const isWithinLimits = await checkFileSizeLimits(currentUser.id, files, bot);
-      if (!isWithinLimits) {
-        throw new Error("File size limit exceeded");
-      }
-
       const fileUploaded = await uploadFiles(bot, res, NotAddVector);
       setActions((prev) => prev + 1);
       toast({
@@ -107,11 +117,13 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
       console.error("Upload error:", err);
       toast({
         title: "Something went wrong",
-        description: err instanceof Error ? err.message : "Please try again later",
+        description:
+          err instanceof Error ? err.message : "Please try again later",
         variant: "destructive",
       });
     } finally {
       setIsUploading(false);
+      setFiles([]);
     }
   };
   return {
@@ -166,6 +178,8 @@ export const useUploadUrl = (
           description: createdBot.message || "Failed to create chat bot",
           variant: "destructive",
         });
+        setLoading(false);
+        setUrls([]);
         return;
       }
     } else {
@@ -183,6 +197,7 @@ export const useUploadUrl = (
     });
     setActions((prev) => prev + 1);
     setLoading(false);
+    setUrls([]);
     if (NotAddVector !== true) {
       localStorage.setItem("selectedChatbot", bot);
       router.push("/dashboard/bot");

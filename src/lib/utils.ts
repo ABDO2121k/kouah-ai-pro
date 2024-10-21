@@ -25,7 +25,8 @@ export const getBarColor = (percentage: number) => {
 };
 //eslint-disable-next-line
 export const getUserPlan = (user: any) => {
-  const planName = user.subscription?.plan || "FREE";
+  console.log({user})
+  const planName = user?.subscription?.plan || "FREE";
   return (
     pricingPackages.find((pkg) => pkg.indication === planName) ||
     pricingPackages[0]
