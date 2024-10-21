@@ -26,7 +26,7 @@ export const useChatbot = (chatbotId: string) => {
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [iconLoading,setIconLoading]=useState(false)
+  const [iconLoading, setIconLoading] = useState(false);
   const [wouldLive, setWouldLive] = useState(false);
   const [onChats, setOnChats] = useState<
     {
@@ -34,6 +34,7 @@ export const useChatbot = (chatbotId: string) => {
       content: string;
       isImage?: boolean;
       seen?: boolean;
+      isBillingError?: boolean;
     }[]
   >([]);
   const [theme, setTheme] = useState<ThemeType>(null);
@@ -113,7 +114,7 @@ export const useChatbot = (chatbotId: string) => {
   }, [chatbotId]);
 
   const onStartChatting = handleSubmit(async (data) => {
-    const values=data
+    const values = data;
     reset({ content: "", image: undefined });
     if (
       values.image &&
@@ -188,10 +189,21 @@ export const useChatbot = (chatbotId: string) => {
               { role: "assistant", content: response.response ?? " " },
             ]);
           } else {
+            if (response.isBillingError) {
+              setOnChats((prev) => [
+                ...prev,
+                {
+                  role: "assistant",
+                  content:
+                    "You have reached your query limit. Please upgrade your plan to continue using the chatbot.",
+                  isBillingError: true,
+                },
+              ]);
+            }
             console.error("Error in chatbot response:", response);
             toast({
               title: "Error",
-              description: "An error occurred while processing your request.",
+              description: response.message,
               variant: "destructive",
             });
           }
@@ -281,7 +293,7 @@ export const useChatbot = (chatbotId: string) => {
   });
 
   const handleMakeRealTime = async () => {
-    setIconLoading(true)
+    setIconLoading(true);
     if (onRealTime?.chatroom) {
       const response = await retrieveChatAndMakeItLive(
         chatbotId,
@@ -314,7 +326,7 @@ export const useChatbot = (chatbotId: string) => {
         });
       }
     }
-    setIconLoading(false)
+    setIconLoading(false);
   };
 
   const toggleRoomMode = useCallback(
@@ -364,7 +376,7 @@ export const useChatbot = (chatbotId: string) => {
     loadingLive,
     handleMakeRealTime,
     toggleRoomMode,
-    iconLoading
+    iconLoading,
   };
 };
 
@@ -384,6 +396,6 @@ export const useGetChatbot = () => {
     setActions,
     setChatbot,
     actions,
-    chatbots
+    chatbots,
   };
 };

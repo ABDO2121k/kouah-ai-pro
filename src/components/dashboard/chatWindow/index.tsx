@@ -339,6 +339,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                   chatRoomId={onRealTime?.chatroom ?? ""}
                   realTimeMode={onRealTime?.mode ?? false}
                   handleMakeRealTime={handleMakeRealTime}
+                  isDashboard={opened ? true : false}
                 />
               </TabsContent>
               <TabsContent value="helpdesk">
@@ -361,6 +362,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
               chatRoomId={onRealTime?.chatroom ?? ""}
               realTimeMode={onRealTime?.mode ?? false}
               handleMakeRealTime={handleMakeRealTime}
+              isDashboard={opened ? true : false}
             />
           )}
           <div

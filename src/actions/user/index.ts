@@ -152,7 +152,11 @@ export const handleSubscriptionChange = async (
   if (subscription.cancel_at_period_end) {
     console.log(`Subscription set to cancel at end of period: ${subscription.id}`);
     await updateUserBilling(user.id, "FREE", getPackageCredits("FREE"));
-    console.log(`User ${user.id} plan updated to FREE (effective at period end)`);
+    await db.user.update({
+      where: { id: user.id },
+      data: { stripeId: null },
+    });
+    console.log(`User ${user.id} plan updated to FREE (effective at period end) and stripeId set to null`);
   } else {
     const packageIndication =
       pricingPackages.find(
@@ -186,7 +190,11 @@ export const handleSubscriptionDeleted = async (
 
   await updateUserBilling(user.id, "FREE", getPackageCredits("FREE"));
   await resetQueryNumber(user.id);
-  console.log(`Subscription deleted for user ${user.id}`);
+  await db.user.update({
+    where: { id: user.id },
+    data: { stripeId: null },
+  });
+  console.log(`Subscription deleted for user ${user.id} and stripeId set to null`);
 };
 
 /**
@@ -227,7 +235,11 @@ export const handleInvoicePaymentFailed = async (
 
   await updateUserBilling(user.id, "FREE", getPackageCredits("FREE"));
   await resetQueryNumber(user.id);
-  console.log(`Payment failed for user ${user.id}, moved to free plan.`);
+  await db.user.update({
+    where: { id: user.id },
+    data: { stripeId: null },
+  });
+  console.log(`Payment failed for user ${user.id}, moved to free plan and stripeId set to null`);
 };
 
 /**
@@ -295,9 +307,13 @@ export const handleCheckoutSessionCanceled = async (
     currentPlan as Plans,
     getPackageCredits(currentPlan)
   );
+  await db.user.update({
+    where: { id: user.id },
+    data: { stripeId: null },
+  });
 
   console.log(
-    `Checkout canceled for user ${user.id}, plan unchanged or reverted to FREE`
+    `Checkout canceled for user ${user.id}, plan unchanged or reverted to FREE and stripeId set to null`
   );
 };
 

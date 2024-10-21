@@ -237,8 +237,12 @@ export const chatWithBot = async (
     if (!chatbot) throw new Error("chatbot not found !!!!!");
 
     // Check query limit
-    await checkUserLimits(chatbot?.User?.id??"", "query");
-
+    try {
+      await checkUserLimits(chatbot?.User?.id ?? "", "query");
+      //eslint-disable-next-line
+    } catch (limitError: any) {
+      return { message: limitError.message, isBillingError: true, status: 403 };
+    }
     await db.chatBot.update({
       where: {
         id,

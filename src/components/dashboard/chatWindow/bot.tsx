@@ -23,6 +23,7 @@ type BotProps = {
   usedSuggestedQuestions: string[];
   chatRoomId: string | null;
   handleMakeRealTime: () => Promise<void>;
+  isDashboard?: boolean;
 };
 const Bot = forwardRef<HTMLDivElement, BotProps>(
   (
@@ -40,6 +41,7 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
       chatRoomId,
       realTimeMode,
       handleMakeRealTime,
+      isDashboard,
     },
     ref
   ) => {
@@ -117,6 +119,7 @@ const Bot = forwardRef<HTMLDivElement, BotProps>(
               chatRoomId={chatRoomId}
               realTimeMode={realTimeMode}
               handleMakeRealTime={handleMakeRealTime}
+              isDashboard={isDashboard}
             />
           ))}
           {onAiTyping && <Responding theme={chatbot?.theme ?? ""} />}

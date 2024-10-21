@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import dayjs from "dayjs";
 import { ChatbotType } from "@/hooks/chatbot/use-chatbot";
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 
 type Props = {
   message: {
@@ -25,7 +26,9 @@ type Props = {
   chatRoomId?: string | null;
   isNotShowing?: boolean;
   realTimeMode?: boolean;
+  isBillingError?: boolean;
   handleMakeRealTime?: () => Promise<void>;
+  isDashboard?: boolean;
 };
 
 const Bubble = ({
@@ -40,7 +43,9 @@ const Bubble = ({
   chatRoomId,
   isNotShowing,
   realTimeMode,
-  handleMakeRealTime
+  handleMakeRealTime,
+  isBillingError,
+  isDashboard,
 }: Props) => {
   const renderContent = (content: string) => {
     const parts = content?.split("**{{online}}**");
@@ -57,8 +62,10 @@ const Bubble = ({
         >
           {parts.join("")}
         </ReactMarkdown>
-        {hasOnlineTag && showRealtime && !isNotShowing && (
-          chatRoomId && !realTimeMode ? (
+        {hasOnlineTag &&
+          showRealtime &&
+          !isNotShowing &&
+          (chatRoomId && !realTimeMode ? (
             <button
               className="inline-block px-2 py-1 text-xs font-semibold text-white bg-[#06b6d4] rounded-full mt-2 cursor-pointer"
               style={styleB}
@@ -74,7 +81,18 @@ const Bubble = ({
             >
               {wouldLive ? "Cancel" : "Online Support"}
             </button>
-          ) : null
+          ) : null)}
+        {isBillingError && (
+          <div className="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+            You have reached your query limit. Please upgrade your plan to continue using the chatbot.
+            {isDashboard && (
+              <Link href="/dashboard/billing">
+                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                  Upgrade
+                </button>
+              </Link>
+            )}
+          </div>
         )}
       </>
     );
