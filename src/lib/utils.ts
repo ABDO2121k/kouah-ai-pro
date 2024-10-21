@@ -68,8 +68,10 @@ export function getFeatureTooltip(key: string): string {
       return "Number of KouahAiBots you can create with this plan.";
     case "queriesPerMonth":
       return "Maximum number of queries you can make per month.";
-    case "maxDocsPerBot":
-      return "Maximum number of documents or webpages you can add to each KouahAiBot.";
+    case "maxWebPages":
+      return "Maximum number of webpages you can add to each KouahAiBot.";
+    case "maxYoutube":
+      return "Maximum number of youtube videos you can add to each KouahAiBot.";
     case "maxStoragePerBot":
       return "Maximum storage capacity for documents per KouahAiBot.";
     case "restAPI":

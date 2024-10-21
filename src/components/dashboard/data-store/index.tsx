@@ -84,18 +84,18 @@ const DataStore = () => {
                   <div>
                     <p className="text-sm mb-1">
                       Web Pages: {chatbot?.webUsage ?? 0} /{" "}
-                      {userPlan.features.maxDocsPerBot}
+                      {userPlan.features.maxWebPages}
                     </p>
                      <CustomProgress
                       percentage={calculateUsagePercentage(
                         chatbot?.webUsage ?? 0,
-                        userPlan.features.maxDocsPerBot
+                        userPlan.features.maxWebPages
                       )}
                       backgroundColor="bg-gray-200"
                       fillColor={getBarColor(
                         calculateUsagePercentage(
                           chatbot?.webUsage ?? 0,
-                          userPlan.features.maxDocsPerBot
+                          userPlan.features.maxWebPages
                         )
                       )}
                     />
@@ -103,17 +103,17 @@ const DataStore = () => {
                   <div>
                     <p className="text-sm mb-1">
                       YouTube: {chatbot?.videosUsage ?? 0} /{" "}
-                      {userPlan.features.maxDocsPerBot}
+                      {userPlan.features.maxYoutube}
                     </p>
                     <Progress
                       value={calculateUsagePercentage(
                         chatbot?.videosUsage ?? 0,
-                        userPlan.features.maxDocsPerBot
+                        userPlan.features.maxYoutube
                       )}
                       color={getBarColor(
                         calculateUsagePercentage(
                           chatbot?.videosUsage ?? 0,
-                          userPlan.features.maxDocsPerBot
+                          userPlan.features.maxYoutube
                         )
                       )}
                     />
