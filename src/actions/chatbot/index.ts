@@ -59,7 +59,7 @@ export const createChatBot = async () => {
       return { status: 401, message: "Unauthorized: User not found" };
     }
 
-    console.log("Clerk user ID:", user.id); // Log the Clerk user ID
+    console.log("Clerk user ID:", user.id); 
 
     const dbUser = await db.user.findUnique({
       where: {
@@ -71,7 +71,7 @@ export const createChatBot = async () => {
       return { status: 404, message: "User not found in the database" };
     }
 
-    console.log("Database user ID:", dbUser.id); // Log the database user ID
+    console.log("Database user ID:", dbUser.id); 
 
     await checkUserLimits(dbUser.id, "create_chatbot");
 
@@ -93,9 +93,10 @@ export const createChatBot = async () => {
     }
 
     return { status: 200, chatbot };
-  } catch (err) {
+    //eslint-disable-next-line
+  } catch (err:any) {
     console.error("Error creating chatbot:", err);
-    return { status: 500, message: "Internal server error" };
+    return { status: 500, message:err.message };
   }
 };
 

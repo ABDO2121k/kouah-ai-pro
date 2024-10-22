@@ -21,13 +21,19 @@ interface UserAccountNavProps {
   isDashboard: boolean; // Added isDashboard prop
 }
 
-const UserAccountNav = ({ email, imageUrl, name, isDashboard }: UserAccountNavProps) => {
+const UserAccountNav = ({
+  email,
+  imageUrl,
+  name,
+  isDashboard,
+}: UserAccountNavProps) => {
   const { signOut } = useClerk();
   const router = useRouter();
 
   const handleSignOut = () => {
     signOut().then(() => {
       router.push("/");
+      router.refresh();
     });
   };
 
@@ -56,7 +62,10 @@ const UserAccountNav = ({ email, imageUrl, name, isDashboard }: UserAccountNavPr
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className={cn("bg-white", { "bg-zinc-900 text-white": isDashboard })} align="end">
+      <DropdownMenuContent
+        className={cn("bg-white", { "bg-zinc-900 text-white": isDashboard })}
+        align="end"
+      >
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-0.5 leading-none">
             {name && <p className="font-medium text-sm">{name}</p>}

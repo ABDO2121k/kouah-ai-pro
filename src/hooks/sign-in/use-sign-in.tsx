@@ -19,7 +19,6 @@ export const useSignInForm = () => {
   const onHandleSubmit = methods.handleSubmit(
     async (values: UserLoginProps) => {
       if (!isLoaded) return;
-
       try {
         setLoading(true);
         const authenticated = await signIn.create({
@@ -47,18 +46,23 @@ export const useSignInForm = () => {
     }
   );
   const handleGoogleSignIn = async () => {
+    if (!isLoaded) return;
+
     try {
-      await signIn?.authenticateWithRedirect({
+      setLoading(true);
+      await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: `/dashboard`,
-        redirectUrlComplete: `/dashboard`,
+        redirectUrl: "/auth-callback",
+        redirectUrlComplete: "/dashboard",
       });
-      //eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error during Google Sign In:", error);
       toast({
         title: "Error",
-        description: "Failed to sign in with Google",
+        description: "Failed to sign in with Google. Please try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
   return {

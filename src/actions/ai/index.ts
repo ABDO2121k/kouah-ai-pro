@@ -41,6 +41,7 @@ export const chatAi = async (
   console.log(
     results.map((r: { pageContent: string }) => r.pageContent).join("\n\n")
   );
+  console.log({ results });
   // const response = await openai.chat.completions.create({
   //   model: "gpt-3.5-turbo",
   //   temperature: 0,

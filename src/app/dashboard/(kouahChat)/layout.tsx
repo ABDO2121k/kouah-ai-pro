@@ -11,9 +11,9 @@ const Layout = async ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const user = await currentUser();
-  const dbUser = await db.user.findFirst({ where: { clerkId: user?.id } });
-  if (!dbUser) redirect("/auth-callback");
+  // const user = await currentUser();
+  // const dbUser = await db.user.findFirst({ where: { clerkId: user?.id } });
+  // if (!dbUser) redirect("/auth-callback");
   const layout = cookies().get("react-resizable-panels:layout:mail");
   const collapsed = cookies().get("react-resizable-panels:collapsed");
   const defaultLayout = layout ? JSON.parse(layout.value) : undefined;

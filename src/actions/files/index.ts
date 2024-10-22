@@ -239,7 +239,12 @@ const getYoutubeContent = async (url: string) => {
     return docs.map((doc) => doc.pageContent).join("\n");
   } catch (error) {
     console.error("Error loading YouTube content:", error);
-    return null; // Return null or handle the error as needed
+    console.error("Error details:", JSON.stringify(error, null, 2));
+    console.error("Environment:", process.env.NODE_ENV);
+    console.error("Vercel environment variables:", process.env.VERCEL_ENV);
+    
+    // Return a more informative error message
+    return `Error fetching YouTube content: ${error instanceof Error ? error.message : 'Unknown error'}`;
   }
 };
 
@@ -493,3 +498,4 @@ export const rebuild = async (chatbotId: string) => {
     };
   }
 };
+

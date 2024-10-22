@@ -9,12 +9,13 @@ export default authMiddleware({
     "/bot-test",
     "/favicon.ico",
     "/noise.webp",
-    "/api/auth-callback(.*)",
+    "/auth-callback(.*)",
     "/redirectUrl",
     "/docs(.*)",
     "/pricing(.*)",
     "/api/uploadthing(.*)", // Add this line
     "/api/webhooks/stripe(.*)",
+    // "/dashboard",
   ],
   ignoredRoutes: [
     "/embed(.*)",
