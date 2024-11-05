@@ -45,6 +45,10 @@ const nextConfig = {
   },
   // reactStrictMode: true,
   // transpilePackages: ['@kouahai/frame'],
+  output: 'standalone',
+  experimental: {
+    outputFileTracingRoot: undefined,
+  },
 };
 
 const withNextra = nextra({

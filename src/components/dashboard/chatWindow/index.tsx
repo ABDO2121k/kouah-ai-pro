@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { X, History, PhoneCall, PhoneOff, Loader2 } from "lucide-react";
 import { BOT_TABS_MENU } from "@/constants/menu";
 import { useChatbot } from "@/hooks/chatbot/use-chatbot";
-import { cn } from "@/lib/utils";
+import { cn, getUserPlan } from "@/lib/utils";
 import HelpDisk from "./HelpDisk";
 import Bot from "./bot";
 import { motion } from "framer-motion";
@@ -44,6 +44,7 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
   } = useChatbot(chatbotId);
 
   const searchParams = useSearchParams();
+  const plan = getUserPlan(chatbot?.User ?? "");
   const opened = searchParams ? searchParams.get("opened") : null;
   const [isOpen, setIsOpen] = useState(opened == "true" ? true : false);
 
@@ -378,7 +379,9 @@ const ChatWindow = ({ chatbotId }: { chatbotId: string }) => {
                 : {}
             }
           >
-            <p className="text-gray-400 text-xs">Powered By Web Kouah AI</p>
+            {!plan.features.removePoweredByLabel && (
+              <p className="text-gray-400 text-xs">Powered By Web Kouah AI</p>
+            )}
           </div>
         </motion.div>
       </Loader>{" "}
