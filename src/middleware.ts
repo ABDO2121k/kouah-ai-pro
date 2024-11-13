@@ -30,6 +30,7 @@ export default authMiddleware({
     "/favicon.ico",
     "/_next/static/chunks/(.*)",
     "/_next/static/(.*)",
+    "/api/chat(.*)"
   ],
 });
 
