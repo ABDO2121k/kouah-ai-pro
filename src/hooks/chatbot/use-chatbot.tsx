@@ -12,7 +12,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "../use-toast";
 import { useUploadThing } from "@/lib/uploadThing";
-import { addMessagesToChatRoom, chatWithBot } from "@/actions/ai";
+import {
+  addMessagesToChatRoom,
+  addMessageToQueries,
+  chatWithBot,
+} from "@/actions/ai";
 import { createChatRoom, retrieveChatAndMakeItLive } from "@/actions/ai";
 import { useSendMessage } from "@/hooks/realTime/useRealTime";
 
@@ -72,6 +76,100 @@ export const useChatbot = (chatbotId: string) => {
     formState: { errors: emailErrors },
   } = useForm<{ email: string }>();
 
+  const handleChatStream = async (
+    question: string,
+    currentChats: typeof onChats
+  ) => {
+    setOnAiTyping(true);
+    const response = await chatWithBot(
+      chatbotId,
+      currentChats,
+      question,
+      onRealTime?.chatroom
+    );
+
+    if (response.status === 200 && response.chatbotInfo) {
+      try {
+        const streamResponse = await fetch("/api/chat", {
+          method: "POST",
+          body: JSON.stringify(response.chatbotInfo),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!streamResponse.ok) throw new Error("Stream response not ok");
+
+        const reader = streamResponse.body?.getReader();
+        if (!reader) throw new Error("Failed to get stream reader");
+
+        const decoder = new TextDecoder();
+        let done = false;
+        let accResponse = "";
+
+        while (!done) {
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+
+          if (value) {
+            const chunkValue = decoder.decode(value);
+            accResponse += chunkValue;
+
+            setOnChats((prev) => {
+              const lastMessage = prev[prev.length - 1];
+              if (lastMessage?.role === "assistant") {
+                return prev.map((msg, index) => {
+                  if (index === prev.length - 1) {
+                    return { ...msg, content: accResponse };
+                  }
+                  return msg;
+                });
+              } else {
+                return [...prev, { role: "assistant", content: accResponse }];
+              }
+            });
+          }
+        }
+        setOnAiTyping(false);
+        // After stream ends, update databases
+        if (onRealTime?.chatroom) {
+          await addMessagesToChatRoom(onRealTime.chatroom, [
+            { role: "user", content: question },
+            { role: "assistant", content: accResponse },
+          ]);
+          emitNewMessageToChatbot(chatbotId);
+        }
+
+        await addMessageToQueries(chatbotId, question, accResponse);
+      } catch (error) {
+        console.error("Error reading stream:", error);
+        toast({
+          title: "Error",
+          description: "Failed to process the response stream",
+          variant: "destructive",
+        });
+      }
+    } else {
+      if (response.isBillingError) {
+        setOnChats((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "You have reached your query limit. Please upgrade your plan to continue using the chatbot.",
+            isBillingError: true,
+          },
+        ]);
+      }
+      console.error("Error in chatbot response:", response);
+      toast({
+        title: "Error",
+        description: response.message,
+        variant: "destructive",
+      });
+    }
+    setOnAiTyping(false);
+  };
   // end forms
   const onScrollToBottom = () => {
     messageWindowRef.current?.scroll({
@@ -165,7 +263,6 @@ export const useChatbot = (chatbotId: string) => {
 
     if (values.content) {
       if (!onRealTime?.mode) {
-        setOnAiTyping(true);
         setOnChats((prev) => [
           ...prev,
           {
@@ -174,41 +271,8 @@ export const useChatbot = (chatbotId: string) => {
             isImage: false,
           },
         ]);
-        const response = await chatWithBot(
-          chatbotId,
-          onChats,
-          values.content,
-          onRealTime?.chatroom
-        );
 
-        if (response) {
-          if (response.status === 200) {
-            setOnAiTyping(false);
-            setOnChats((prev) => [
-              ...prev,
-              { role: "assistant", content: response.response ?? " " },
-            ]);
-          } else {
-            if (response.isBillingError) {
-              setOnChats((prev) => [
-                ...prev,
-                {
-                  role: "assistant",
-                  content:
-                    "You have reached your query limit. Please upgrade your plan to continue using the chatbot.",
-                  isBillingError: true,
-                },
-              ]);
-            }
-            console.error("Error in chatbot response:", response);
-            toast({
-              title: "Error",
-              description: response.message,
-              variant: "destructive",
-            });
-          }
-        }
-        setOnAiTyping(false);
+        await handleChatStream(values.content, onChats);
       } else {
         sendMessage(onRealTime.chatroom, values.content, "user", false);
         await addMessagesToChatRoom(onRealTime.chatroom, [
@@ -232,24 +296,7 @@ export const useChatbot = (chatbotId: string) => {
 
     setUsedSuggestedQuestions((prev) => [...prev, question]);
 
-    const response = await chatWithBot(chatbotId, onChats, question);
-
-    if (response) {
-      if (response.status === 200) {
-        setOnAiTyping(false);
-        setOnChats((prev) => [
-          ...prev,
-          { role: "assistant", content: response.response ?? " " },
-        ]);
-      } else {
-        console.error("Error in chatbot response:", response);
-        toast({
-          title: "Error",
-          description: "An error occurred while processing your request.",
-          variant: "destructive",
-        });
-      }
-    }
+    await handleChatStream(question, onChats);
   };
 
   const handleLiveSubmit = handleSubmitEmail(async (data) => {

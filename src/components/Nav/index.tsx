@@ -35,7 +35,7 @@ const Navbar = ({
       className={cn(
         "sticky h-14 inset-x-0 top-0 w-full z-30  border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all animate-out text-black",
         {
-          "dark:text-white dark:bg-zinc-900": isDashboard, // Apply dark style only if isDashboard is true
+          "dark:text-white dark:bg-zinc-900": isDashboard, 
           "w-[80%] m-auto rounded-xl mt-3  shadow-lg backdrop-blur-xl top-[20px] animate-in":
             scroll.y != 0 && !isDashboard,
         }

@@ -85,3 +85,25 @@ export function getFeatureTooltip(key: string): string {
       return "Feature description not available.";
   }
 }
+
+export async function getFullResponseFromStream(
+  stream: ReadableStream
+): Promise<string> {
+  const reader = stream.getReader();
+  let result = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      // Convert the Uint8Array to text
+      const text = new TextDecoder().decode(value);
+      result += text;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return result;
+}
