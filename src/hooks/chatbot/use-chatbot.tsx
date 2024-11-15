@@ -446,3 +446,54 @@ export const useGetChatbot = () => {
     chatbots,
   };
 };
+
+
+
+
+
+
+
+
+interface ButtonDesign {
+  buttonBackground: string;
+  buttonImage?: string|null;
+  buttonFullBg: boolean;
+  useCustomButton: boolean;
+}
+
+export const useButtonDesign = (chatbotId: string) => {
+  const [loading, setLoading] = useState(true);
+  const [buttonDesign, setButtonDesign] = useState<ButtonDesign>({
+    buttonBackground: "#ffff",
+    buttonImage: null,
+    buttonFullBg: false,
+    useCustomButton: false
+  });
+
+  useEffect(() => {
+    const fetchButtonDesign = async () => {
+      try {
+        const response = await getChatBot(chatbotId);
+        if (response?.chatbot) {
+          setButtonDesign({
+            buttonBackground: response.chatbot.buttonBackground ?? "#ffff",
+            buttonImage: response.chatbot.buttonImage,
+            buttonFullBg: response.chatbot.buttonFullBg || false,
+            useCustomButton: response.chatbot.useCustomButton || false
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching button design:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchButtonDesign();
+  }, [chatbotId]);
+
+  return {
+    loading,
+    buttonDesign
+  };
+};

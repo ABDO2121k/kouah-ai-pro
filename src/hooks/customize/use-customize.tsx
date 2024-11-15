@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChatbotType, useGetChatbot } from "../chatbot/use-chatbot";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  ButtonFormSchema,
+  ButtonFormType,
   LogoFormSchema,
   LogoFormType,
   ThemeFormType,
@@ -12,6 +14,7 @@ import { useUploadThing } from "@/lib/uploadThing";
 import {
   getChatbotTheme,
   ThemeType,
+  updateButtonForm,
   updateLogoForm,
 } from "@/actions/customize";
 import { toast } from "../use-toast";
@@ -47,7 +50,7 @@ export const useCustomize = () => {
         suggestQ: chatbot.suggestQ?.join("\n") || "",
         initialMessage: chatbot.initialMessage || "",
         theme: chatbot?.theme || "light",
-        subTitle:chatbot?.subTitle
+        subTitle: chatbot?.subTitle,
       });
     }
     if (chatbot && !copyChatbot) {
@@ -78,7 +81,7 @@ export const useCustomize = () => {
       description: response.message,
       variant: response?.code === 200 ? "default" : "destructive",
     });
-    setActions((prev:number) => prev + 1);
+    setActions((prev: number) => prev + 1);
     setLoading(false);
   });
   const watchLogo = watch("logo");
@@ -229,72 +232,99 @@ export const useCustomizeTheme = () => {
   };
 };
 
-// export const useCustomizeTheme = () => {
-//   const [loading, setLoading] = useState(false);
-//   const { chatbot, setActions } = useGetChatbot();
-//   const {
-//     register,
-//     handleSubmit,
-//     setValue,
-//     watch,
-//     control,
-//     reset,
-//     formState: { errors },
-//   } = useForm<ThemeFormType>({
-//     resolver: zodResolver(ThemFormSchema),
-//     mode: "onChange",
-//   });
+export const useButtonForm = () => {
+  const [loading, setLoading] = useState(false);
+  const { chatbot, setActions } = useGetChatbot();
+  const [localLogo, setLocalLogo] = useState<string | undefined>(
+    chatbot?.useCustomButton ? chatbot?.buttonImage : undefined
+  );
+  const { startUpload } = useUploadThing("logoUploader");
+  
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<ButtonFormType>({
+    resolver: zodResolver(ButtonFormSchema),
+    mode: "onChange",
+    defaultValues: {
+      buttonBackground: "#ffff",
+      buttonFullBg: false,
+      useCustomButton: false,
+    }
+  });
 
-//   const handleCustomizeTheme = handleSubmit(async (values) => {
-//     setLoading(true);
-//     const response = await updateThemeForm(chatbot.id, { ...values });
-//     toast({
-//       title: response?.code === 200 ? "Success" : "Error",
-//       description: response.message,
-//       variant: response?.code === 200 ? "default" : "destructive",
-//     });
-//     setActions((prev) => prev + 1);
-//     setLoading(false);
-//   });
-//   const getTheme = async () => {
-//     const response = await getChatbotTheme(chatbot?.id);
-//     if (response.code == 200) {
-//       reset({
-//         ...response.theme,
-//       });
-//     } else {
-//       toast({
-//         title: "Error",
-//         description: response.message,
-//         variant: "destructive",
-//       });
-//     }
-//   };
-//   useEffect(() => {
-//     if (chatbot) getTheme();
-//   }, [chatbot]);
+  // Initialize form with chatbot values
+  useEffect(() => {
+    if (chatbot) {
+      reset({
+        buttonBackground: chatbot.buttonBackground || "#ffff",
+        buttonFullBg: chatbot.buttonFullBg || false,
+        useCustomButton: chatbot.useCustomButton || false,
+        buttonImage: undefined,
+      });
+      
+      // Set initial image if exists and custom button is enabled
+      if (chatbot.buttonImage && chatbot.useCustomButton) {
+        setLocalLogo(chatbot.buttonImage);
+      }
+    }
+  }, [chatbot, reset]);
 
-//   // const theme = {
-//   //   containerBackground: watch("containerBackground"),
-//   //   borderColor: watch("borderColor"),
-//   //   primaryTextColor: watch("primaryTextColor"),
-//   //   primaryBackground: watch("primaryBackground"),
-//   //   botMessageTextColor: watch("botMessageTextColor"),
-//   //   botMessageBackground: watch("botMessageBackground"),
-//   //   suggestedQuestionTextColor: watch("suggestedQuestionTextColor"),
-//   //   suggestedQuestionBackground: watch("suggestedQuestionBackground"),
-//   //   textColor: watch("textColor"),
-//   //   textBackground: watch("textBackground"),
-//   //   placeholderTextColor: watch("placeholderTextColor"),
-//   // };
-//   return {
-//     loading,
-//     register,
-//     errors,
-//     setValue,
-//     watch,
-//     control,
-//     handleCustomizeTheme,
-//     // theme,
-//   };
-// };
+  const handleCustomizeButton = handleSubmit(async (values) => {
+    setLoading(true);
+    let buttonImageUrl = values.useCustomButton ? localLogo : undefined;
+
+    if (values.buttonImage?.[0]) {
+      const uploaded = await startUpload([values.buttonImage[0]]);
+      if (uploaded && uploaded[0].url) {
+        buttonImageUrl = uploaded[0].url;
+        setLocalLogo(uploaded[0].url);
+      }
+    }
+
+    const response = await updateButtonForm(chatbot.id, {
+      buttonBackground: values.buttonBackground || "#ffff",
+      buttonImage: buttonImageUrl,
+      buttonFullBg: values.buttonFullBg || false,
+      useCustomButton: values.useCustomButton,
+    });
+
+    toast({
+      title: response?.code === 200 ? "Success" : "Error",
+      description: response.message,
+      variant: response?.code === 200 ? "default" : "destructive",
+    });
+    
+    setActions((prev) => prev + 1);
+    setLoading(false);
+  });
+
+  const watchButtonImage = watch("buttonImage");
+
+  useEffect(() => {
+    if (watchButtonImage?.[0]) {
+      const newImageUrl = URL.createObjectURL(watchButtonImage[0]);
+      setLocalLogo(newImageUrl);
+
+      return () => {
+        URL.revokeObjectURL(newImageUrl);
+      };
+    }
+  }, [watchButtonImage]);
+
+  return {
+    loading,
+    register,
+    errors,
+    setValue,
+    watch,
+    control,
+    handleCustomizeButton,
+    localLogo,
+  };
+};

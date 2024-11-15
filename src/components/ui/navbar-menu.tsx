@@ -42,7 +42,7 @@ export const MenuItem = ({
         className={`${buttonVariants({
           variant: "ghost",
           size: "sm",
-        })} ${isDashboard ? "text-white" : ""}`}
+        })} ${isDashboard ? "text-black dark:text-white" : ""}`}
       >
         {item}
       </motion.p>

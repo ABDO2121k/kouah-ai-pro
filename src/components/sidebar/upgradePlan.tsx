@@ -24,7 +24,7 @@ const UpgradePlanCard = () => {
   const chatbotsUsed = chatbots?.length ?? 0;
   const chatbotsLimit = userPlan.features.KouahAiBot || 0;
   return (
-    <div className="p-1 border rounded-lg shadow-md bg-white text-sm">
+    <div className="p-1 border rounded-lg shadow-md bg-white dark:bg-zinc-900 dark:border-zinc-800 text-sm dark:text-white">
       <h3 className="text-base font-semibold">Upgrade Plan</h3>
       <div className="mt-1">
         <p>
@@ -50,7 +50,10 @@ const UpgradePlanCard = () => {
           )}
         />
       </div>
-      <Button className="mt-4 w-full" onClick={() => router.push("/dashboard/billing")}>
+      <Button 
+        className="mt-4 w-full dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700" 
+        onClick={() => router.push("/dashboard/billing")}
+      >
         <ArrowUp className="mr-1" />
         Upgrade Plan
       </Button>

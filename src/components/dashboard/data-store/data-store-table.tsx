@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FileIcon, Trash2, Plus, Loader2 } from "lucide-react";
+import { FileIcon, Trash2, Plus, Loader2, ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatFileSize } from "@/lib/utils";
 import AddNew from "./AddNew";
@@ -112,7 +112,17 @@ const DataStoreTable: React.FC<{
     },
     {
       accessorKey: "fileName",
-      header: "File Name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            File Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const file = row.original;
         return (
@@ -124,7 +134,17 @@ const DataStoreTable: React.FC<{
     },
     {
       accessorKey: "type",
-      header: "Type",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Type
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const file = row.original;
         return (

@@ -1,28 +1,27 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import { Palette } from "lucide-react";
-import { useCustomizeContext } from "@/context/use-customize-context";
-import { useCustomizeThemeContext } from "@/context/use-theme-context";
+import { UseFormRegister } from "react-hook-form";
 
-const ColorSelector = ({
-  element,
-}: {
+interface ColorSelectorProps {
   element: {
     label: string;
     name: string;
   };
-}) => {
-  const { watch, register } = useCustomizeThemeContext();
-  // const { watch, register } = useCustomizeTheme();
+  //eslint-disable-next-line
+  watch: (name: string) => any;
+   //eslint-disable-next-line
+  register: UseFormRegister<any>;
+}
 
+const ColorSelector = ({ element, watch, register }: ColorSelectorProps) => {
   const color = watch(element.name);
+  
   return (
     <div className="space-y-2">
       <Label
-        htmlFor={`${element.label
-          .replace(/\s+/g, "-")
-          .toLowerCase()}-form-item`}
+        htmlFor={`${element.label.replace(/\s+/g, "-").toLowerCase()}-form-item`}
         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
       >
         {element.label}

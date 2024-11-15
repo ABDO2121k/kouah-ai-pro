@@ -1,7 +1,9 @@
 import ColorSelector from "./Selector";
+import { useCustomizeThemeContext } from "@/context/use-theme-context";
 
-// Parent Component: ColorSelectors
 const ColorSelectors = () => {
+  const { watch, register } = useCustomizeThemeContext();
+  
   const colorOptions = [
     { label: "Container Background", name: "containerBackground" },
     { label: "Border Color", name: "borderColor" },
@@ -25,7 +27,12 @@ const ColorSelectors = () => {
   return (
     <div className="grid grid-cols-2 gap-4">
       {colorOptions.map((option, i) => (
-        <ColorSelector key={i} element={option} />
+        <ColorSelector 
+          key={i} 
+          element={option} 
+          watch={watch} 
+          register={register}
+        />
       ))}
     </div>
   );

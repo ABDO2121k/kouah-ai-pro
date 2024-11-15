@@ -23,7 +23,7 @@ import Datepicker from "react-tailwindcss-datepicker";
 import { DateValueType } from "react-tailwindcss-datepicker";
 import { useGetChatbot } from "@/hooks/chatbot/use-chatbot";
 import dayjs from "dayjs";
-import { Download, Copy } from "lucide-react";
+import { Download, Copy, ArrowUpDown } from "lucide-react";
 import { CSVLink } from "react-csv";
 
 const QueriesTable: React.FC = () => {
@@ -85,18 +85,48 @@ const QueriesTable: React.FC = () => {
   const columns: ColumnDef<(typeof data)[0]>[] = [
     {
       accessorKey: "createdAt",
-      header: "Created At",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Created At
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         return dayjs(row.getValue("createdAt")).format("DD/MM/YYYY HH:mm");
       },
     },
     {
       accessorKey: "query",
-      header: "Query",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Query
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
     },
     {
       accessorKey: "answer",
-      header: "Answer",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Answer
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
     },
     {
       header: "Actions",

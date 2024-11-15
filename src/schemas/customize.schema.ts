@@ -58,4 +58,33 @@ export const ThemFormSchema = z.object({
   placeholderTextColor: z.string(),
 });
 
+export type ButtonFormType = {
+  //eslint-disable-next-line
+  buttonImage?: any;
+  buttonBackground: string;
+  buttonFullBg: boolean;
+  useCustomButton: boolean;
+};
+
+export const ButtonFormSchema = z
+  .object({
+    buttonBackground: z.string().nullable(),
+    buttonFullBg: z.boolean().default(false),
+    useCustomButton: z.boolean().default(false),
+    buttonImage: z.any().optional(),
+  })
+  .refine((schema) => {
+    if (schema.buttonImage?.length) {
+      if (
+        //eslint-disable-next-line
+        ACCEPTED_FILE_TYPES.includes(schema.buttonImage?.[0].type!) &&
+        schema.buttonImage?.[0].size <= MAX_UPLOAD_SIZE
+      ) {
+        return true;
+      }
+    }
+    if (!schema.buttonImage?.length) {
+      return true;
+    }
+  });
 export type ThemeFormType = z.infer<typeof ThemFormSchema>;

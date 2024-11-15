@@ -113,4 +113,48 @@ export const getChatbotTheme = async (chatbotId: string) => {
   }
 };
 
+export const updateButtonForm = async (
+  chatbotId: string,
+  values: {
+    buttonBackground: string;
+    buttonImage?: string;
+    buttonFullBg: boolean;
+    useCustomButton: boolean;
+  }
+) => {
+  try {
+    const userClerk = await currentUser();
+    if (!userClerk) throw new Error("user not found !!!");
+
+    const dbChatbot = await db.chatBot.findFirst({
+      where: {
+        id: chatbotId,
+        User: {
+          clerkId: userClerk.id ?? "",
+        },
+      },
+    });
+
+    if (!dbChatbot) {
+      throw new Error("Chatbot not found or you don't have access to it.");
+    }
+
+    await db.chatBot.update({
+      where: { id: chatbotId },
+      data: {
+        buttonBackground: values.buttonBackground,
+        buttonImage: values.buttonImage,
+        buttonFullBg: values.buttonFullBg,
+        useCustomButton: values.useCustomButton
+      }
+    });
+
+    return { message: "Button settings updated successfully", code: 200 };
+    //eslint-disable-next-line
+  } catch (err: any) {
+    console.log({ err });
+    return { message: err?.message, code: 500 };
+  }
+};
+
 export type ThemeType = Awaited<ReturnType<typeof getChatbotTheme>>["theme"];

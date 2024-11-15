@@ -87,39 +87,43 @@ model ChatBotLeads {
 }
 
 model ChatBot {
-  id             String         @id @default(cuid())
-  origin         String         @default("files")
-  assistantId    String?
-  title          String         @default("Your chatbot title")
-  subTitle       String         @default("")
-  description    String         @default("")
-  logo           String         @default("")
-  theme          String         @default("light")
-  leads          Boolean        @default(false)
-  language       String         @default("arabic")
-  initialMessage String         @default("Hello, how can I help you?")
-  suggestQ       String[]       @default(["I wnat to talk to manager !!!"])
-  placeHolder    String         @default("Type your question here...")
-  leadFields     LeadField[]
-  files          File[]
-  queries        Query[]
-  chatBotLeads   ChatBotLeads[]
-  createdAt      DateTime       @default(now())
-  User           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String?        @db.Uuid
-  leadsTitle     String         @default("Tell us how to reach you")
-  queriesNumber  Int            @default(0)
-  HelpDesk       HelpDesk[]
-  isRealTimeChat Boolean        @default(false)
-  isHelpDisk     Boolean        @default(false)
-  isLead         Boolean        @default(false)
-  videosUsage    Int            @default(0)
-  fileUsage      BigInt         @default(0)
-  webUsage       Int            @default(0)
-  useTheme       Boolean        @default(false)
-  chatbotTheme   ChatbotTheme?  @relation(fields: [chatbotThemeId], references: [id])
-  chatbotThemeId String?        @unique
-  ChatRoom       ChatRoom[]
+  id               String         @id @default(cuid())
+  origin           String         @default("files")
+  assistantId      String?
+  title            String         @default("Your chatbot title")
+  subTitle         String         @default("")
+  description      String         @default("")
+  logo             String         @default("")
+  theme            String         @default("light")
+  leads            Boolean        @default(false)
+  language         String         @default("arabic")
+  initialMessage   String         @default("Hello, how can I help you?")
+  suggestQ         String[]       @default(["I wnat to talk to manager !!!"])
+  placeHolder      String         @default("Type your question here...")
+  leadFields       LeadField[]
+  files            File[]
+  queries          Query[]
+  chatBotLeads     ChatBotLeads[]
+  createdAt        DateTime       @default(now())
+  User             User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String?        @db.Uuid
+  leadsTitle       String         @default("Tell us how to reach you")
+  queriesNumber    Int            @default(0)
+  HelpDesk         HelpDesk[]
+  isRealTimeChat   Boolean        @default(false)
+  isHelpDisk       Boolean        @default(false)
+  isLead           Boolean        @default(false)
+  videosUsage      Int            @default(0)
+  fileUsage        BigInt         @default(0)
+  webUsage         Int            @default(0)
+  useTheme         Boolean        @default(false)
+  chatbotTheme     ChatbotTheme?  @relation(fields: [chatbotThemeId], references: [id])
+  chatbotThemeId   String?        @unique
+  ChatRoom         ChatRoom[]
+  buttonBackground String?        @default("#ffff")
+  buttonImage      String?
+  buttonFullBg     Boolean        @default(false)
+  useCustomButton    Boolean        @default(false)
 }
 
 model ChatbotTheme {

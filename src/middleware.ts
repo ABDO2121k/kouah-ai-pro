@@ -13,7 +13,7 @@ export default authMiddleware({
     "/redirectUrl",
     "/docs(.*)",
     "/pricing(.*)",
-    "/api/uploadthing(.*)", // Add this line
+    // "/api/uploadthing(.*)", // Add this line
     "/api/webhooks/stripe(.*)",
     // "/dashboard",
   ],
@@ -25,12 +25,13 @@ export default authMiddleware({
     "/api/frame(.*)",
     "/api/button",
     "/test3",
-    "/buttonT",
+    "/buttonT(.*)",
     "/frameT",
     "/favicon.ico",
     "/_next/static/chunks/(.*)",
     "/_next/static/(.*)",
-    "/api/chat(.*)"
+    "/api/chat(.*)",
+    "/api/uploadThing(.*)"
   ],
 });
 

@@ -63,14 +63,17 @@ const UserAccountNav = ({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className={cn("bg-white", { "bg-zinc-900 text-white": isDashboard })}
+        className={cn("bg-white", {
+          "dark:bg-zinc-900 dark:text-white": isDashboard,
+          "dark:border-zinc-800": isDashboard
+        })}
         align="end"
       >
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-0.5 leading-none">
-            {name && <p className="font-medium text-sm">{name}</p>}
+            {name && <p className="font-medium text-sm text-zinc-900 dark:text-white">{name}</p>}
             {email && (
-              <p className="w-[200px] truncate text-xs text-zinc-700">
+              <p className="w-[200px] truncate text-xs text-zinc-700 dark:text-zinc-300">
                 {email}
               </p>
             )}
