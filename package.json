@@ -13,7 +13,7 @@
     "@clerk/nextjs": "^4.31.5",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.9.0",
-    "@kouahai/embed": "^2.0.41",
+    "@kouahai/embed": "^2.0.47",
     "@kouahai/frame": "^2.0.31",
     "@langchain/community": "^0.3.0",
     "@langchain/core": "^0.3.11",
