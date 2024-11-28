@@ -16,6 +16,7 @@ export default authMiddleware({
     // "/api/uploadthing(.*)", // Add this line
     "/api/webhooks/stripe(.*)",
     // "/dashboard",
+    "/about"
   ],
   ignoredRoutes: [
     "/embed(.*)",
