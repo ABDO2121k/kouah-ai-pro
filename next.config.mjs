@@ -17,7 +17,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'www.gravatar.com',
-        pathname: '/avatar*', // Allow any path that starts with /avatar
+        pathname: '/avatar*',
       },
       {
         protocol: 'https',

@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid package" }, { status: 400 });
     }
 
-    // If user already has a stripeId (meaning they have an existing subscription)
+    // if use 3ndo deja subscription w stripeId
     if (user.stripeId) {
       const billingPortalSession = await stripe.billingPortal.sessions.create({
         customer: user.stripeId,
@@ -39,7 +39,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ url: billingPortalSession.url });
     }
 
-    // If user doesn't have a stripeId, create a new checkout session
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
       line_items: [

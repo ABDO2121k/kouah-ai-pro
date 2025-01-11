@@ -7,11 +7,7 @@ import { Plans } from "@prisma/client";
 import { db } from "@/lib/prisma";
 import { getUserPlan } from "@/lib/utils";
 
-/**
- * Finds a user by their Stripe ID
- * @param stripeId The Stripe ID of the user
- * @returns The user object with subscription details, or null if not found
- */
+
 const findUserByStripeId = async (stripeId: string) => {
   return db.user.findFirst({
     where: { stripeId },
@@ -19,12 +15,7 @@ const findUserByStripeId = async (stripeId: string) => {
   });
 };
 
-/**
- * Updates or creates a user's billing information
- * @param userId The ID of the user
- * @param plan The subscription plan
- * @param credits The number of credits for the user
- */
+
 const updateUserBilling = async (
   userId: string,
   plan: Plans,
@@ -37,11 +28,7 @@ const updateUserBilling = async (
   });
 };
 
-/**
- * Gets the number of credits for a given package
- * @param packageIndication The package indication string
- * @returns The number of credits for the package, or 0 if not found
- */
+
 const getPackageCredits = (packageIndication: string): number => {
   return (
     pricingPackages.find((pkg) => pkg.indication === packageIndication)
@@ -49,11 +36,7 @@ const getPackageCredits = (packageIndication: string): number => {
   );
 };
 
-/**
- * Retrieves a user's subscription
- * @param userId The ID of the user
- * @returns The user's subscription, or null if not found
- */
+
 export const getUserSubscription = async (userId: string) => {
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -62,12 +45,6 @@ export const getUserSubscription = async (userId: string) => {
   return user?.subscription || null;
 };
 
-/**
- * Updates a user's credits after usage
- * @param userId The ID of the user
- * @param creditsUsed The number of credits used
- * @returns The updated number of credits
- */
 export const updateUserCredits = async (
   userId: string,
   creditsUsed: number
@@ -88,11 +65,7 @@ export const updateUserCredits = async (
   return updatedCredits;
 };
 
-// /**
-//  * Checks a user's usage limits
-//  * @param userId The ID of the user
-//  * @returns An object containing limit information
-//  */
+
 // export const checkUserLimits = async (userId: string) => {
 //   const user = await db.user.findUnique({
 //     where: { id: userId },
@@ -121,10 +94,7 @@ export const updateUserCredits = async (
 //   };
 // };
 
-/**
- * Resets the query number for a user
- * @param userId The ID of the user
- */
+
 const resetQueryNumber = async (userId: string): Promise<void> => {
   await db.billings.update({
     where: { userId },
@@ -132,10 +102,7 @@ const resetQueryNumber = async (userId: string): Promise<void> => {
   });
 };
 
-/**
- * Handles subscription changes
- * @param subscription The Stripe subscription object
- */
+
 export const handleSubscriptionChange = async (
   subscription: Stripe.Subscription
 ): Promise<void> => {
@@ -181,10 +148,6 @@ export const handleSubscriptionChange = async (
   await resetQueryNumber(user.id);
 };
 
-/**
- * Handles subscription deletions
- * @param subscription The Stripe subscription object
- */
 export const handleSubscriptionDeleted = async (
   subscription: Stripe.Subscription
 ): Promise<void> => {
@@ -206,10 +169,7 @@ export const handleSubscriptionDeleted = async (
   );
 };
 
-/**
- * Handles successful invoice payments
- * @param invoice The Stripe invoice object
- */
+
 export const handleInvoicePaymentSucceeded = async (
   invoice: Stripe.Invoice
 ): Promise<void> => {
@@ -228,10 +188,7 @@ export const handleInvoicePaymentSucceeded = async (
   console.log(`Payment succeeded for user ${user.id}`);
 };
 
-/**
- * Handles failed invoice payments
- * @param invoice The Stripe invoice object
- */
+
 export const handleInvoicePaymentFailed = async (
   invoice: Stripe.Invoice
 ): Promise<void> => {
@@ -253,10 +210,7 @@ export const handleInvoicePaymentFailed = async (
   );
 };
 
-/**
- * Handles completed checkout sessions
- * @param session The Stripe Checkout Session object
- */
+
 export const handleCheckoutSessionCompleted = async (
   session: Stripe.Checkout.Session
 ): Promise<void> => {
@@ -278,7 +232,7 @@ export const handleCheckoutSessionCompleted = async (
       (pkg) => pkg.price === subscription.items.data[0].price.unit_amount! / 100
     )?.indication || "FREE";
 
-  // Update user with stripeId
+  //kan diro update l user ila session t create with success
   await db.user.update({
     where: { id: session.metadata.userId },
     data: { stripeId: session.customer as string },
@@ -296,10 +250,7 @@ export const handleCheckoutSessionCompleted = async (
   );
 };
 
-/**
- * Handles canceled checkout sessions
- * @param session The Stripe Checkout Session object
- */
+
 export const handleCheckoutSessionCanceled = async (
   session: Stripe.Checkout.Session
 ): Promise<void> => {

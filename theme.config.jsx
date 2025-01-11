@@ -38,7 +38,7 @@ const config = {
         )
     },
     sidebar: {
-        toggleButton: true, // Enable the collapse button for the sidebar
+        toggleButton: true, 
     }
 }
 

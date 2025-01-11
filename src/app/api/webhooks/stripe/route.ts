@@ -26,14 +26,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // Handle the event
   switch (event.type) {
     case "customer.subscription.created":
     case "customer.subscription.updated":
       const subscription = event.data.object as Stripe.Subscription;
       await handleSubscriptionChange(subscription);
       break;
-    case "checkout.session.completed":
+    case "checkout.session.completed": // hadi dial first time when user pay
       const session = event.data.object as Stripe.Checkout.Session;
       await handleCheckoutSessionCompleted(session);
       break;

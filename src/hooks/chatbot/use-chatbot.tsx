@@ -16,8 +16,9 @@ import {
   addMessagesToChatRoom,
   addMessageToQueries,
   chatWithBot,
+  createChatRoom,
+  retrieveChatAndMakeItLive,
 } from "@/actions/ai";
-import { createChatRoom, retrieveChatAndMakeItLive } from "@/actions/ai";
 import { useSendMessage } from "@/hooks/realTime/useRealTime";
 
 type ChatBotsResponse = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
@@ -175,7 +176,7 @@ export const useChatbot = (chatbotId: string) => {
     messageWindowRef.current?.scroll({
       top: messageWindowRef.current.scrollHeight,
       left: 0,
-      behavior: "smooth",
+      // behavior: "smooth",
     });
   };
 
@@ -447,16 +448,9 @@ export const useGetChatbot = () => {
   };
 };
 
-
-
-
-
-
-
-
 interface ButtonDesign {
   buttonBackground: string;
-  buttonImage?: string|null;
+  buttonImage?: string | null;
   buttonFullBg: boolean;
   useCustomButton: boolean;
 }
@@ -467,7 +461,7 @@ export const useButtonDesign = (chatbotId: string) => {
     buttonBackground: "#ffff",
     buttonImage: null,
     buttonFullBg: false,
-    useCustomButton: false
+    useCustomButton: false,
   });
 
   useEffect(() => {
@@ -479,7 +473,7 @@ export const useButtonDesign = (chatbotId: string) => {
             buttonBackground: response.chatbot.buttonBackground ?? "#ffff",
             buttonImage: response.chatbot.buttonImage,
             buttonFullBg: response.chatbot.buttonFullBg || false,
-            useCustomButton: response.chatbot.useCustomButton || false
+            useCustomButton: response.chatbot.useCustomButton || false,
           });
         }
       } catch (error) {
@@ -494,6 +488,6 @@ export const useButtonDesign = (chatbotId: string) => {
 
   return {
     loading,
-    buttonDesign
+    buttonDesign,
   };
 };
