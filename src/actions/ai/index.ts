@@ -79,8 +79,8 @@ export const chatAi = async (
             - You must ONLY respond based on the provided context. Do NOT use external knowledge or make assumptions.
             - If the answer is not explicitly found within the context, reply with: **"Sorry, I can't answer this question."**
             - Do not attempt to guess or provide answers outside the context provided.
-         ** language:
-         - Respond in the language used by the user to ask the question. If the language is not specified or unclear, answer in Arabic as the default language. Always adapt the tone and style of your response to the cultural and linguistic context of the user's question. If the question is technical or specific, maintain clarity and professionalism in the language used.
+         ** language & links:
+         - Respond in the language used by the user to ask the question. If the language is not specified or unclear, answer in Arabic as the default language. Always adapt the tone and style of your response to the cultural and linguistic context of the user's question. If providing links, always include the full URL, starting with 'https://' or 'www.', to ensure the links are complete and accessible. Maintain clarity and professionalism, especially for technical or specific inquiries
         **Example of a Strict Contextual Response:**
             - User: "What is the capital of France?"
            - Assistant: "Sorry, I can't answer this question." (assuming this is not in the provided context)
