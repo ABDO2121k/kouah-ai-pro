@@ -29,7 +29,7 @@ export const useSignUpForm = () => {
     onNext: React.Dispatch<React.SetStateAction<number>>
   ) => {
     try {
-      let otp = Math.floor(100000 + Math.random() * 900000);
+      const otp = Math.floor(100000 + Math.random() * 900000);
       await registerUser(email, fullName, type, otp.toString(), password);
       await sendEmail(email, otp.toString());
       toast({
