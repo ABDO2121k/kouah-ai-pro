@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate;"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.31.5",
@@ -21,7 +21,7 @@
     "@langchain/pinecone": "^0.1.0",
     "@mantine/hooks": "^7.12.2",
     "@pinecone-database/pinecone": "^3.0.3",
-    "@prisma/client": "^5.20.0",
+    "@prisma/client": "^6.2.1",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.2",
@@ -90,7 +90,7 @@
     "vaul": "^0.9.4",
     "youtube-transcript": "^1.2.1",
     "youtubei.js": "^12.2.0",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -101,7 +101,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.8",
     "postcss": "^8",
-    "prisma": "^5.20.0",
+    "prisma": "^6.2.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
