@@ -1,20 +1,20 @@
 "use server";
 
 import { db } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs";
+import { getCurrentUserFromDb } from "../auth";
 
 export const updateGenerale = async (
   chatbotId: string,
   values: { description: string | undefined; isHelpDisk: boolean; title: string,isLead:boolean,isRealTimeChat:boolean }
 ) => {
   try {
-    const userClerk = await currentUser();
-    if (!userClerk) throw new Error("user not found !!!");
+    const user=await getCurrentUserFromDb();
+    if (!user) throw new Error("user not found !!!");
     const dbChatbot = await db.chatBot.findFirst({
       where: {
         id: chatbotId,
         User: {
-          clerkId: userClerk.id ?? "",
+          id: user.id ?? "",
         },
       },
     });

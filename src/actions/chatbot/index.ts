@@ -1,18 +1,18 @@
 "use server";
 
 import { db } from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs";
 import { removePinecone } from "../files";
 import { checkUserLimits } from "../user";
+import { getCurrentUserFromDb } from "../auth";
 
 export const getAccountChatBots = async () => {
   try {
-    const userClerk = await currentUser();
-    if (!userClerk) throw new Error("user not found !!!");
+    const user = await getCurrentUserFromDb();
+    if (!user) throw new Error("user not found !!!");
     const chatbots = await db.chatBot.findMany({
       where: {
         User: {
-          clerkId: userClerk.id ?? "",
+          id: user.id ?? "",
         },
       },
       include: {
@@ -26,12 +26,12 @@ export const getAccountChatBots = async () => {
         },
         ChatRoom: {
           orderBy: {
-            createdAt: 'asc',
+            createdAt: "asc",
           },
           include: {
             message: {
               orderBy: {
-                createdAt: 'asc',
+                createdAt: "asc",
               },
             }, // لجلب الرسائل المرتبطة بكل غرفة دردشة
           },
@@ -54,24 +54,13 @@ export const getAccountChatBots = async () => {
 
 export const createChatBot = async () => {
   try {
-    const user = await currentUser();
-    if (!user) {
-      return { status: 401, message: "Unauthorized: User not found" };
-    }
-
-    console.log("Clerk user ID:", user.id); 
-
-    const dbUser = await db.user.findUnique({
-      where: {
-        clerkId: user.id,
-      },
-    });
+    const dbUser = await getCurrentUserFromDb();
 
     if (!dbUser) {
       return { status: 404, message: "User not found in the database" };
     }
 
-    console.log("Database user ID:", dbUser.id); 
+    console.log("Database user ID:", dbUser.id);
 
     await checkUserLimits(dbUser.id, "create_chatbot");
 
@@ -94,15 +83,15 @@ export const createChatBot = async () => {
 
     return { status: 200, chatbot };
     //eslint-disable-next-line
-  } catch (err:any) {
+  } catch (err: any) {
     console.error("Error creating chatbot:", err);
-    return { status: 500, message:err.message };
+    return { status: 500, message: err.message };
   }
 };
 
 export const deleteChatbot = async (chatotId: string) => {
   try {
-    const user = await currentUser();
+    const user = await getCurrentUserFromDb();
     if (!user) {
       return { status: 401, message: "Unauthorized: User not found" };
     }
@@ -111,7 +100,7 @@ export const deleteChatbot = async (chatotId: string) => {
       where: {
         id: chatotId,
         User: {
-          clerkId: user.id,
+          id: user.id,
         },
       },
     });
@@ -122,7 +111,7 @@ export const deleteChatbot = async (chatotId: string) => {
       where: {
         id: chatotId,
         User: {
-          clerkId: user.id,
+          id: user.id,
         },
       },
     });
@@ -136,17 +125,12 @@ export const deleteChatbot = async (chatotId: string) => {
 
 export const getChatBot = async (chatbotId: string) => {
   try {
-    // const user = await currentUser();
-    // if (!user) {
-    //   return { status: 401, message: "Unauthorized: User not found" };
-    // }
+
 
     const chatbot = await db.chatBot.findFirst({
       where: {
         id: chatbotId,
-        // User: {
-        //   clerkId: user.id,
-        // },
+       
       },
       include: {
         leadFields: true, // لجلب حقول الـ Leads
@@ -159,12 +143,12 @@ export const getChatBot = async (chatbotId: string) => {
         },
         ChatRoom: {
           orderBy: {
-            createdAt: 'desc',
+            createdAt: "desc",
           },
           include: {
             message: {
               orderBy: {
-                createdAt: 'desc',
+                createdAt: "desc",
               },
             }, // لجلب الرسائل المرتبطة بكل غرفة دردشة
           },

@@ -1,8 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSignUp } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -10,12 +8,11 @@ import {
   UserRegistrationSchema,
 } from "@/schemas/auth-schema";
 import { toast } from "../use-toast";
-import { onCompleteUserRegistration } from "@/actions/auth";
+import { registerUser, sendEmail, verifyOTP } from "@/actions/auth";
+import { signIn } from "next-auth/react";
 
 export const useSignUpForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const { signUp, isLoaded, setActive } = useSignUp();
-  const router = useRouter();
   const methods = useForm<UserRegistrationProps>({
     resolver: zodResolver(UserRegistrationSchema),
     defaultValues: {
@@ -27,75 +24,52 @@ export const useSignUpForm = () => {
   const onGenerateOTP = async (
     email: string,
     password: string,
+    type: string,
+    fullName: string,
     onNext: React.Dispatch<React.SetStateAction<number>>
   ) => {
-    if (!isLoaded) return;
-
     try {
-      await signUp.create({
-        emailAddress: email,
-        password: password,
+      let otp = Math.floor(100000 + Math.random() * 900000);
+      await registerUser(email, fullName, type, otp.toString(), password);
+      await sendEmail(email, otp.toString());
+      toast({
+        title: "Success",
+        description: "OTP sent to your email",
       });
-
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      // console.log("aaaaaaaaa");
       onNext((prev) => prev + 1);
-    } catch (error) {
-      // console.log({ error });
-      // alert(error.errors[0].longMessage);
+    } catch (error: any) {
       toast({
         title: "Error",
-        // @ts-expect-error unknown type
-        description: error?.errors[0].longMessage,
+        description: error?.message,
       });
     }
   };
 
   const onHandleSubmit = methods.handleSubmit(
     async (values: UserRegistrationProps) => {
-      if (!isLoaded) return;
-
       try {
         setLoading(true);
-        const completeSignUp = await signUp.attemptEmailAddressVerification({
-          code: values.otp,
-        });
+        const otpVerification = await verifyOTP(values.email, values.otp);
 
-        if (completeSignUp.status !== "complete") {
-          return { message: "Something went wrong!" };
+        if (otpVerification?.status == 200) {
+          setLoading(false);
+          await signIn("credentials", {
+            email: values.email,
+            password: values.password,
+            callbackUrl: "/dashboard",
+          });
         }
 
-        if (completeSignUp.status == "complete") {
-          if (!signUp.createdUserId) return;
-
-          const registered = await onCompleteUserRegistration(
-            values.email,
-            values.fullname,
-            signUp.createdUserId,
-            values.type
-          );
-
-          if (registered?.status == 200 && registered.user) {
-            await setActive({
-              session: completeSignUp.createdSessionId,
-            });
-
-            setLoading(false);
-            router.push("/dashboard");
-          }
-
-          if (registered?.status == 400) {
-            toast({
-              title: "Error",
-              description: "Something went wrong!",
-            });
-          }
+        if (otpVerification?.status == 400) {
+          toast({
+            title: "Error",
+            description: "Something went wrong!",
+          });
         }
-      } catch (error) {
+      } catch (error: any) {
         toast({
           title: "Error",
-           // @ts-expect-error unknown type
-          description: error.errors[0].longMessage,
+          description: error.message,
         });
       }
     }

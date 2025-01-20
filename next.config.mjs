@@ -10,12 +10,6 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'images.clerk.dev',
-        pathname: '/*',
-
-      },
-      {
-        protocol: 'https',
         hostname: 'www.gravatar.com',
         pathname: '/avatar*',
       },
@@ -36,11 +30,13 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'img.clerk.com',
-        pathname: '/*',
-      },
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/a/**',
+      }
+
     ],
-    domains: ['images.clerk.dev', "img.clerk.com", 'pbs.twimg.com', 'www.gravatar.com', "ucarecdn.com", "utfs.io"],
+    domains: ['pbs.twimg.com', 'www.gravatar.com', "ucarecdn.com", "utfs.io"],
 
   },
   // reactStrictMode: true,

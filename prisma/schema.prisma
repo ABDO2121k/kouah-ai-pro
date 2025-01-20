@@ -16,15 +16,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  fullName  String
-  email     String   @unique
-  clerkId   String   @unique
-  type      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullName     String
+  email        String    @unique
+  type         String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   stripeId     String?   @unique
+  password     String?
+  otp          String?
   subscription Billings?
   chatBots     ChatBot[]
 }
@@ -123,7 +123,7 @@ model ChatBot {
   buttonBackground String?        @default("#ffff")
   buttonImage      String?
   buttonFullBg     Boolean        @default(false)
-  useCustomButton    Boolean        @default(false)
+  useCustomButton  Boolean        @default(false)
 }
 
 model ChatbotTheme {

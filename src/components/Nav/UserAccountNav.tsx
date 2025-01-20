@@ -10,9 +10,8 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { useClerk } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils"; // Import cn utility
+import { signOut } from "next-auth/react";
 
 interface UserAccountNavProps {
   email: string | undefined;
@@ -27,14 +26,8 @@ const UserAccountNav = ({
   name,
   isDashboard,
 }: UserAccountNavProps) => {
-  const { signOut } = useClerk();
-  const router = useRouter();
-
   const handleSignOut = () => {
-    signOut().then(() => {
-      router.push("/");
-      router.refresh();
-    });
+    signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -65,13 +58,17 @@ const UserAccountNav = ({
       <DropdownMenuContent
         className={cn("bg-white", {
           "dark:bg-zinc-900 dark:text-white": isDashboard,
-          "dark:border-zinc-800": isDashboard
+          "dark:border-zinc-800": isDashboard,
         })}
         align="end"
       >
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-0.5 leading-none">
-            {name && <p className="font-medium text-sm text-zinc-900 dark:text-white">{name}</p>}
+            {name && (
+              <p className="font-medium text-sm text-zinc-900 dark:text-white">
+                {name}
+              </p>
+            )}
             {email && (
               <p className="w-[200px] truncate text-xs text-zinc-700 dark:text-zinc-300">
                 {email}
@@ -98,9 +95,6 @@ const UserAccountNav = ({
 
         <DropdownMenuSeparator className="sm:hidden" />
         <DropdownMenuItem className="sm:hidden" asChild>
-          <Link href="/blog">Blog</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="sm:hidden" asChild>
           <Link href="/docs">Docs</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="sm:hidden" asChild>
@@ -109,12 +103,12 @@ const UserAccountNav = ({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="cursor-pointer">
-          <span
-            className="text-red-600 font-bold flex items-center"
+          <button
+            className="text-red-600 font-bold flex items-center cursor-pointer"
             onClick={handleSignOut}
           >
             <LogOut className="h-4 w-4 mr-1" /> Log out
-          </span>
+          </button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

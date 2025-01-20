@@ -11,21 +11,13 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "../theme/button";
 import { HoveredLink, MenuItem } from "../ui/navbar-menu";
 import { useState } from "react";
-
-interface User {
-  id: string;
-  fullName: string;
-  given_name: string | null;
-  family_name: string | null;
-  email: string;
-  picture: string | null;
-}
+import { Session } from "next-auth";
 
 const Navbar = ({
   user,
   isDashboard,
 }: {
-  user: User | null;
+  user: Session["user"];
   isDashboard: boolean;
 }) => {
   const [scroll] = useWindowScroll();
@@ -35,7 +27,7 @@ const Navbar = ({
       className={cn(
         "sticky h-14 inset-x-0 top-0 w-full z-30  border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all animate-out text-black",
         {
-          "dark:text-white dark:bg-zinc-900": isDashboard, 
+          "dark:text-white dark:bg-zinc-900": isDashboard,
           "w-[80%] m-auto rounded-xl mt-3  shadow-lg backdrop-blur-xl top-[20px] animate-in":
             scroll.y != 0 && !isDashboard,
         }
@@ -60,21 +52,17 @@ const Navbar = ({
             />
           </Link>
           {/* mobile Navbar here */}
-          {!user || !user.email ? (
+          {!user.email ? (
             <MobileNav
-              isAuth={user && user?.id ? true : false}
+              isAuth={user?.email ? true : false}
               isDashboard={isDashboard}
             />
           ) : (
             <div className="sm:hidden">
               <UserAccountNav
-                name={
-                  !user.given_name || !user.family_name
-                    ? "Your account"
-                    : `${user.given_name} ${user.family_name}`
-                }
+                name={user.fullName ?? `Your account`}
                 email={user.email ?? ``}
-                imageUrl={user.picture ?? ``}
+                imageUrl={user.image ?? ``}
                 isDashboard={isDashboard}
               />
             </div>
@@ -135,13 +123,9 @@ const Navbar = ({
             ) : (
               <>
                 <UserAccountNav
-                  name={
-                    !user.given_name || !user.family_name
-                      ? "Your account"
-                      : `${user.given_name} ${user.family_name}`
-                  }
+                  name={user.fullName ?? `Your account`}
                   email={user.email ?? ``}
-                  imageUrl={user.picture ?? ``}
+                  imageUrl={user.image ?? ``}
                   isDashboard={isDashboard}
                 />
                 {isDashboard && (

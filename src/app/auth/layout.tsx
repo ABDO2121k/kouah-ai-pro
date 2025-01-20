@@ -1,5 +1,4 @@
-import { ContainerScroll } from "@/components/ui/container-scroll-animation";
-import { currentUser } from "@clerk/nextjs";
+import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -9,7 +8,7 @@ type Props = {
 };
 
 const Layout = async ({ children }: Props) => {
-  const user = await currentUser();
+  const user = await getServerSession();
   if (user) redirect("/");
 
   return (
