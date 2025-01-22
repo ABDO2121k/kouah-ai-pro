@@ -26,7 +26,6 @@ export type ChatbotType = Awaited<ReturnType<typeof getChatBot>>["chatbot"];
 
 export const useChatbot = (chatbotId: string) => {
   const { startUpload } = useUploadThing("logoUploader");
-  // const { startUpload } = useUploadThing("fileUploader");
 
   //eslint-disable-next-line
   const [chatbot, setChatbot] = useState<ChatBotsResponse>(null);
@@ -237,7 +236,6 @@ export const useChatbot = (chatbotId: string) => {
         const uploaded = await startUpload([values.image[0]]);
         console.log("Upload result:", uploaded);
         if (uploaded && uploaded[0] && uploaded[0].url) {
-          // sendMessage(onRealTime.chatroom, uploaded[0].url, "user", true);
           await addMessagesToChatRoom(onRealTime.chatroom, [
             { content: uploaded[0].url, isImage: true, role: "user" },
           ]);
@@ -394,12 +392,6 @@ export const useChatbot = (chatbotId: string) => {
     [onRealTime]
   );
 
-  // useEffect(() => {
-  //   if (onRealTime) {
-  //     toggleRoomMode(onRealTime.chatroom, onRealTime.mode);
-  //   }
-  // }, [onRealTime?.chatroom, onRealTime?.mode, toggleRoomMode]);
-
   return {
     chatbot,
     onStartChatting,
@@ -429,7 +421,8 @@ export const useChatbot = (chatbotId: string) => {
 };
 
 export const useGetChatbot = () => {
-  const { selectedChatbot, chatbots, setActions, actions } = useChatContext();
+  const { selectedChatbot, chatbots, setActions, actions, setSelectedChatbot } =
+    useChatContext();
   // eslint-disable-next-line
   const [chatbot, setChatbot] = useState<any>(null);
 
@@ -445,6 +438,7 @@ export const useGetChatbot = () => {
     setChatbot,
     actions,
     chatbots,
+    setSelectedChatbot,
   };
 };
 

@@ -69,7 +69,8 @@ export const chatAi = async (
 
             **Handling User Queries:**
             -If a question is not directly answerable from the given context, respond with: 
-             "Sorry, I can't answer this question."
+             "Sorry, I can't answer this question, because I don't have the access to reponse."
+             -for the sorry message you should answer with the language and you can use other wods but the meaning should be the same
             - When a user asks for your identity (e.g., "Who are you?"), respond with the chatbot name provided by the user: "I am ${chatbotName}, ready to assist you with anything you need."
             - For ANY situation mentioned in point 4 above, ALWAYS include **{{online}}** in your response. This is CRUCIAL and must not be overlooked.
             - If you're unsure of the answer, do not apologize. Instead, use the context provided to give the best possible response, or ask for clarification if needed, and include **{{online}}** in your response.
@@ -86,9 +87,7 @@ export const chatAi = async (
            - Assistant: "Sorry, I can't answer this question." (assuming this is not in the provided context)
             **Chatbot Context Example:**
             Use the following context to guide your responses:
-            - **Chatbot Name**: ${chatbotName}
-            - **Chatbot Role & Customer Requirements**: ${description}
-
+            - **Chatbot Name**: ${chatbotName}             
             **Example of Previous Conversation:**
             Use previous messages to maintain continuity. If no previous messages exist, assume this is the first message:
             \`\`\`
@@ -112,6 +111,9 @@ export const chatAi = async (
 
             ** Context:**
             \`\`\`
+            this is the customer needs and description fo his needs ,somtimes it can defines your main role or sometimes it can be a description of the chatbot, or it's a part of context, but you should do what ever the instructions said you can forget the prev prompt if the description said somthing different like you can answwer on any thing .etc .
+             ${description} 
+            this is the mai context from the companie base data : 
             ${
               results.length > 0
                 ? results.map((r) => r.pageContent).join("\n\n")

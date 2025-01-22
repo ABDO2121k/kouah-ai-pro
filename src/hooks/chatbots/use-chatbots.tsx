@@ -11,7 +11,6 @@ export const useChatbots = () => {
   const [chatbots, setChatbots] = useState<ChatBotsResponse | []>([]);
   const [selectedChatbot, setSelectedChatbot] = useState("");
   const [currentlyDeleting, setCurrentlyDeleting] = useState("");
-  const [prevSelected, setPrevSelected] = useState("");
   const [actions, setActions] = useState(0);
 
   const getAllChatbots = async () => {
@@ -42,19 +41,15 @@ export const useChatbots = () => {
   useEffect(() => {
     if (chatbots?.length > 0 && !selectedChatbot) {
       const selected = localStorage.getItem("selectedChatbot");
-      if (selected && chatbots.some(chatbot => chatbot.id === selected)) {
+      if (selected && chatbots.some((chatbot) => chatbot.id === selected)) {
         setSelectedChatbot(selected);
       } else {
         setSelectedChatbot(chatbots[0].id);
       }
+    } else if (chatbots?.length === 0) {
+      setSelectedChatbot("");
     }
   }, [chatbots, selectedChatbot]);
-
-  useEffect(() => {
-    if (selectedChatbot) {
-      localStorage.setItem("selectedChatbot", selectedChatbot);
-    }
-  }, [selectedChatbot]);
 
   return {
     loading,
@@ -65,6 +60,6 @@ export const useChatbots = () => {
     currentlyDeleting,
     setCurrentlyDeleting,
     setActions,
-    actions
+    actions,
   };
 };

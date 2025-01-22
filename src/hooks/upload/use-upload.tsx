@@ -39,7 +39,7 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
   const { startUpload } = useUploadThing("fileUploader");
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
-  const { setActions } = useGetChatbot();
+  const { setActions, setSelectedChatbot } = useGetChatbot();
 
   const handleFileUpload = (files: File[]) => {
     setFiles(files);
@@ -53,6 +53,7 @@ export const useUpload = (botId?: string, NotAddVector?: boolean) => {
         const createdBot = await createChatBot();
         if (createdBot.status === 200 && createdBot.chatbot) {
           bot = createdBot.chatbot.id;
+          setSelectedChatbot(bot);
         } else {
           toast({
             title: "Something went wrong",
@@ -142,7 +143,7 @@ export const useUploadUrl = (
   const [loading, setLoading] = useState(false);
   const [urls, setUrls] = useState<string[]>([]);
   const router = useRouter();
-  const { setActions } = useGetChatbot();
+  const { setActions, setSelectedChatbot } = useGetChatbot();
 
   const schema = z.object({
     url: z.string().url({ message: "Please enter a valid URL" }),
@@ -172,6 +173,7 @@ export const useUploadUrl = (
       const createdBot = await createChatBot();
       if (createdBot.status === 200 && createdBot.chatbot) {
         bot = createdBot.chatbot.id;
+        setSelectedChatbot(bot);
       } else {
         toast({
           title: "Something went wrong",

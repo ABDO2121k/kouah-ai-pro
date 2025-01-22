@@ -1,8 +1,7 @@
 "use client";
 
 import { useChatbots } from "@/hooks/chatbots/use-chatbots";
-import { createContext, useContext, useEffect, useState } from "react";
-// import { Message, useChat } from "ai/react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 
 type ChatContextType = ReturnType<typeof useChatbots>;
 
@@ -15,18 +14,13 @@ const initialChatContextValue: ChatContextType = {
   currentlyDeleting: "",
   setCurrentlyDeleting: () => {},
   setActions: () => {},
-  actions:0
+  actions: 0,
 };
 
 //eslint-disable-next-line
 const ChatContext = createContext<ChatContextType>(initialChatContextValue);
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
-  //eslint-disable-next-line
-  // const { messages, handleInputChange, handleSubmit, input, setInput } =
-  //   useChat({
-  //     api: "/api/chat-stream"
-  //   });
   const {
     loading,
     chatbots,
@@ -36,7 +30,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     currentlyDeleting,
     setCurrentlyDeleting,
     setActions,
-    actions
+    actions,
   } = useChatbots();
 
   useEffect(() => {
@@ -44,17 +38,28 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("selectedChatbot", selectedChatbot);
   }, [selectedChatbot]);
 
-  const values = {
-    loading,
-    chatbots,
-    selectedChatbot,
-    setSelectedChatbot,
-    deletechatbot,
-    currentlyDeleting,
-    setCurrentlyDeleting,
-    setActions,
-    actions
-  };
+  const values = useMemo(
+    () => ({
+      loading,
+      chatbots,
+      selectedChatbot,
+      setSelectedChatbot,
+      deletechatbot,
+      currentlyDeleting,
+      setCurrentlyDeleting,
+      setActions,
+      actions,
+    }),
+    [
+      loading,
+      chatbots,
+      selectedChatbot,
+      deletechatbot,
+      currentlyDeleting,
+      setActions,
+      actions,
+    ]
+  );
 
   return <ChatContext.Provider value={values}>{children}</ChatContext.Provider>;
 };

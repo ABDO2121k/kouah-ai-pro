@@ -13,6 +13,7 @@ const HI = () => {
       <div className="col-span-5 md:col-span-5 lg:col-span-4 h-[calc(screen-3.5rem-10rem)] md:h-[70%] lg:h-[30rem]  p-5 ">
         <iframe
           src={`/embed/${selectedChatbot}?opened=true`}
+          title="chatbot"
           className="h-full w-full rounded-md shadow-lg overflow-none"
         />
       </div>
