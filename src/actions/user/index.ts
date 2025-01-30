@@ -347,3 +347,11 @@ export async function checkUserLimits(
       break;
   }
 }
+
+
+
+export const getUserById=(userId:string)=>{
+  return db.user.findUnique({
+    where:{id:userId}
+  })
+}

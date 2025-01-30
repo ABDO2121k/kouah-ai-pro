@@ -16,6 +16,7 @@ const publicRoutes = [
   "/pricing",
   "/api/webhooks/stripe",
   "/about",
+  "/embed",
 ];
 
 // Array of routes to be completely ignored by the middleware
