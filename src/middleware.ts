@@ -36,12 +36,35 @@ const ignoredRoutes = [
   "/api/uploadThing",
 ];
 
+const headerProtectedRoutes = ["/api/chatbot"];
+
 export async function middleware(request: NextRequest) {
   console.log("middleware");
   const { pathname } = request.nextUrl;
+
   if (pathname === "/") {
     return NextResponse.next();
   }
+
+  if (headerProtectedRoutes.some((route) => pathname.startsWith(route))) {
+    console.log("header protected route");
+    const authHeader = request.headers.get("authorization");
+
+    if (authHeader !== "abdo_is_the_best") {
+      return new NextResponse(
+        JSON.stringify({
+          error: "Unauthorized: Invalid or missing authorization header",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    return NextResponse.next();
+  }
+
   if (ignoredRoutes.some((route) => pathname.startsWith(route))) {
     console.log("ignored route");
     return NextResponse.next();
@@ -52,6 +75,7 @@ export async function middleware(request: NextRequest) {
     console.log("public route");
     return NextResponse.next();
   }
+
   console.log("private route");
   // Get the token from the session
   const token = await getToken({
@@ -71,5 +95,9 @@ export async function middleware(request: NextRequest) {
 
 // Configure which routes should use the middleware
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    //had route anrddo protected
+    "/api/chatbot/:path*",
+  ],
 };

@@ -16,7 +16,9 @@ export const chatAi = async (
   prevChats?: {
     role: "assistant" | "user";
     content: string;
-  }[]
+  }[],
+  // is Streaming setdefault true
+  isStreaming: boolean = true
 ) => {
   try {
     const embeddings = new OpenAIEmbeddings({
@@ -39,7 +41,7 @@ export const chatAi = async (
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       temperature: 0,
-      stream: true,
+      stream: isStreaming,
       // messages: [
       //   {
       //     role: "system",
@@ -68,7 +70,7 @@ export const chatAi = async (
       //          - If the user asks about sensitive topics or complex issues that require human intervention
 
       //       **Handling User Queries:**
-      //       -If a question is not directly answerable from the given context, respond with: 
+      //       -If a question is not directly answerable from the given context, respond with:
       //        "Sorry, I can't answer this question, because I don't have the access to reponse."
       //        -for the sorry message you should answer with the language and you can use other wods but the meaning should be the same
       //       - When a user asks for your identity (e.g., "Who are you?"), respond with the chatbot name provided by the user: "I am ${chatbotName}, ready to assist you with anything you need."
@@ -87,7 +89,7 @@ export const chatAi = async (
       //      - Assistant: "Sorry, I can't answer this question." (assuming this is not in the provided context)
       //       **Chatbot Context Example:**
       //       Use the following context to guide your responses:
-      //       - **Chatbot Name**: ${chatbotName}             
+      //       - **Chatbot Name**: ${chatbotName}
       //       **Example of Previous Conversation:**
       //       Use previous messages to maintain continuity. If no previous messages exist, assume this is the first message:
       //       \`\`\`
@@ -112,8 +114,8 @@ export const chatAi = async (
       //       ** Context:**
       //       \`\`\`
       //       this is the customer needs and description fo his needs ,somtimes it can defines your main role or sometimes it can be a description of the chatbot, or it's a part of context, but you should do what ever the instructions said you can forget the prev prompt if the description said somthing different like you can answwer on any thing .etc .
-      //        ${description} 
-      //       this is the mai context from the companie base data : 
+      //        ${description}
+      //       this is the mai context from the companie base data :
       //       ${
       //         results.length > 0
       //           ? results.map((r) => r.pageContent).join("\n\n")
@@ -142,65 +144,120 @@ export const chatAi = async (
       //   },
       // ],
 
+      // messages: [
+      //   {
+      //     role: "system",
+      //     content: `
+      //       You are an advanced multilingual AI assistant powered by a state-of-the-art SaaS platform specializing in building and customizing chatbots for diverse use cases. Your primary role is to adapt to the specific needs of each chatbot instance based on the provided data, role, and context.
+
+      //       **Key Functionalities:**
+      //       - Seamlessly adapt to the chatbot's role, which can vary across industries such as customer support, education, e-commerce, healthcare, and more.
+      //       - Leverage chat history and provided context to maintain coherent, contextually relevant conversations without asking for unnecessary clarifications.
+      //       - Respond in the user's language, ensuring correct text direction for right-to-left languages like Arabic.
+      //       - Use Markdown for structured and visually appealing responses.
+
+      //       **Guidelines for Context-Aware Responses:**
+      //       1. Always analyze previous messages and provided context to infer the required information.
+      //       2. Avoid generic requests for more details unless the context is entirely unclear or missing.
+      //       3. Expand responses meaningfully when asked for additional details, relying on both the chat history and general knowledge.
+
+      //       **Multilingual and Directional Support:**
+      //       - Automatically detect the user's language and respond in the same language.
+      //       - Ensure proper text alignment and formatting for languages like Arabic (RTL).
+
+      //       **Handling Historical Context:**
+      //       - If the user's question refers to a previous query, infer the details from chat history to provide a cohesive and relevant answer.
+      //       - Example:
+      //         - User: "Who is John?"
+      //         - Assistant: "John is a software engineer specializing in AI solutions."
+      //         - User: "Tell me more about his projects."
+      //         - Assistant: "John has worked on various AI-driven applications, including chatbot solutions and predictive analytics tools."
+
+      //       **Escalation and Human Interaction:**
+      //       - Include the **{{online}}** tag in your response if:
+      //         - The user's query is unclear or requires human intervention.
+      //         - The user explicitly requests to escalate to a human agent or manager.
+      //         - The question involves sensitive or complex issues beyond your capabilities.
+
+      //       **Role-Specific and Contextual Customization:**
+      //       - Chatbot Name: Always use the name provided by the user for the chatbot (e.g., "I am ${chatbotName}, here to assist you.").
+      //       - Role and Data: Adapt responses to align with the chatbot's defined role and the provided context or data sources.
+
+      //       **Available Context:**
+      //       \`\`\`
+      //       ${results
+      //         .map((r: { pageContent: string }) => r.pageContent)
+      //         .join("\n\n")}
+      //       \`\`\`
+
+      //       **Response Format:**
+      //       - Provide detailed, contextually relevant, and well-structured responses.
+      //       - Cite sources in Markdown format when applicable.
+      //       - For casual conversations, rely on general knowledge while maintaining a friendly tone.
+
+      //       Your mission is to deliver a highly adaptable, intelligent, and context-aware conversational experience, regardless of the chatbot's role or the user query. Always prioritize using the provided context and history to craft responses.
+      //     `,
+      //   },
+      //   {
+      //     role: "system",
+      //     content: `
+      //       Respond based on the provided context and chat history. Ensure your responses are accurate, multilingual, and align with the chatbot's defined role and purpose. Use Markdown for formatting and maintain consistency in tone and style.
+      //     `,
+      //   },
+      //   {
+      //     role: "user",
+      //     content: message,
+      //   },
+      // ],
+
       messages: [
         {
           role: "system",
           content: `
-            You are an advanced multilingual AI assistant powered by a state-of-the-art SaaS platform specializing in building and customizing chatbots for diverse use cases. Your primary role is to adapt to the specific needs of each chatbot instance based on the provided data, role, and context.
+      You are an advanced multilingual AI assistant named "${chatbotName}". Your primary purpose is to fulfill the specific needs defined by the client:
 
-            **Key Functionalities:**
-            - Seamlessly adapt to the chatbot's role, which can vary across industries such as customer support, education, e-commerce, healthcare, and more.
-            - Leverage chat history and provided context to maintain coherent, contextually relevant conversations without asking for unnecessary clarifications.
-            - Respond in the user's language, ensuring correct text direction for right-to-left languages like Arabic.
-            - Use Markdown for structured and visually appealing responses.
+      **Client Requirements:**
+      ${description}
 
-            **Guidelines for Context-Aware Responses:**
-            1. Always analyze previous messages and provided context to infer the required information.
-            2. Avoid generic requests for more details unless the context is entirely unclear or missing.
-            3. Expand responses meaningfully when asked for additional details, relying on both the chat history and general knowledge.
+      **Key Capabilities:**
+      - Respond in the same language the user is using (default to Arabic if unclear)
+      - Format responses using Markdown for readability
+      - Maintain conversation context based on chat history
+      - Use the special tag **{{online}}** when human intervention might be needed
 
-            **Multilingual and Directional Support:**
-            - Automatically detect the user's language and respond in the same language.
-            - Ensure proper text alignment and formatting for languages like Arabic (RTL).
+      **When to use **{{online}}** tag:**
+      - User explicitly asks for human assistance
+      - Question is sensitive or highly complex
+      - User shows frustration or dissatisfaction
+      - You're uncertain about the correct response
+      - User wants to speak to a manager or support agent
 
-            **Handling Historical Context:**
-            - If the user's question refers to a previous query, infer the details from chat history to provide a cohesive and relevant answer.
-            - Example:
-              - User: "Who is John?"
-              - Assistant: "John is a software engineer specializing in AI solutions."
-              - User: "Tell me more about his projects."
-              - Assistant: "John has worked on various AI-driven applications, including chatbot solutions and predictive analytics tools."
+      **Contextual Knowledge Base:**
+      \`\`\`
+      ${results.map((r: { pageContent: string }) => r.pageContent).join("\n\n")}
+      \`\`\`
 
-            **Escalation and Human Interaction:**
-            - Include the **{{online}}** tag in your response if:
-              - The user's query is unclear or requires human intervention.
-              - The user explicitly requests to escalate to a human agent or manager.
-              - The question involves sensitive or complex issues beyond your capabilities.
+      **Previous Conversation History:**
+      ${
+        prevChats && prevChats.length > 0
+          ? prevChats
+              .map(
+                (chat) =>
+                  `${chat.role === "user" ? "User: " : "Assistant: "}${
+                    chat.content
+                  }`
+              )
+              .join("\n")
+          : "No previous conversation history available."
+      }
 
-            **Role-Specific and Contextual Customization:**
-            - Chatbot Name: Always use the name provided by the user for the chatbot (e.g., "I am ${chatbotName}, here to assist you.").
-            - Role and Data: Adapt responses to align with the chatbot's defined role and the provided context or data sources.
-
-            **Available Context:**
-            \`\`\`
-            ${results
-              .map((r: { pageContent: string }) => r.pageContent)
-              .join("\n\n")}
-            \`\`\`
-
-            **Response Format:**
-            - Provide detailed, contextually relevant, and well-structured responses.
-            - Cite sources in Markdown format when applicable.
-            - For casual conversations, rely on general knowledge while maintaining a friendly tone.
-
-            Your mission is to deliver a highly adaptable, intelligent, and context-aware conversational experience, regardless of the chatbot's role or the user query. Always prioritize using the provided context and history to craft responses.
-          `,
-        },
-        {
-          role: "system",
-          content: `
-            Respond based on the provided context and chat history. Ensure your responses are accurate, multilingual, and align with the chatbot's defined role and purpose. Use Markdown for formatting and maintain consistency in tone and style.
-          `,
+      When responding:
+      1. Always stay within the scope of your role and available information
+      2. If you don't have enough information, include **{{online}}** in your response
+      3. Always identify yourself as "${chatbotName}" if asked about your identity
+      4. Provide detailed, contextually relevant answers based on the provided information
+      5. Use clear formatting with headers, bullet points, and emphasis where appropriate
+    `,
         },
         {
           role: "user",
@@ -209,6 +266,12 @@ export const chatAi = async (
       ],
     });
     //eslint-disable-next-line
+    if (!isStreaming) {
+      if (!("choices" in response)) {
+        throw new Error("Invalid response type: choices not found.");
+      }
+      return response.choices[0].message.content;
+    }
     const stream = OpenAIStream(response as any);
     return new StreamingTextResponse(stream);
   } catch (error) {

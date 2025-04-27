@@ -107,7 +107,6 @@ const ChatInput = ({
               }
             >
               <Send className="h-4 w-4 mx-auto" />{" "}
-              {/* Centered icon inside the button */}
             </Button>
           </div>
         </div>
