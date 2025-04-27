@@ -97,7 +97,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico).*)",
-    //had route anrddo protected
+    //had route anrddo protected 
     "/api/chatbot/:path*",
+
   ],
 };

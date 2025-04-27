@@ -43,8 +43,8 @@ export async function POST(
       message,
       chatbotName,
       description,
-      history || [],
-      false
+      false,
+      history || []
     );
     return NextResponse.json(response, { status: 200 });
   } catch (error) {

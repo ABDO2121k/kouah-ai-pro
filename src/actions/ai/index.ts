@@ -12,13 +12,13 @@ export const chatAi = async (
   chatbotId: string,
   message: string,
   chatbotName: string,
-  description: string,
+  description: string, 
+   isStreaming: boolean,
   prevChats?: {
     role: "assistant" | "user";
     content: string;
   }[],
   // is Streaming setdefault true
-  isStreaming: boolean = true
 ) => {
   try {
     const embeddings = new OpenAIEmbeddings({
