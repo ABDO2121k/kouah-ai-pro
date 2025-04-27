@@ -46,7 +46,7 @@ export async function POST(
       false,
       history || []
     );
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json({message:response}, { status: 200 });
   } catch (error) {
     console.error("Error in chat processing:", error);
     return NextResponse.json(
