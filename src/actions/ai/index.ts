@@ -220,7 +220,7 @@ export const chatAi = async (
       ${description}
 
       **Key Capabilities:**
-      - Respond in the same language the user is using (default to Arabic if unclear)
+      - Respond in the same language the user is using 
       - Format responses using Markdown for readability
       - Maintain conversation context based on chat history
       - Use the special tag **{{online}}** when human intervention might be needed
