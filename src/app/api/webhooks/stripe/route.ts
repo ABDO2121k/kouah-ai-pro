@@ -32,6 +32,10 @@ export async function POST(req: Request) {
       const subscription = event.data.object as Stripe.Subscription;
       await handleSubscriptionChange(subscription);
       break;
+    case "customer.subscription.deleted":
+      const deletedSubscription = event.data.object as Stripe.Subscription;
+      await handleSubscriptionDeleted(deletedSubscription);
+      break;
     case "checkout.session.completed": // hadi dial first time when user pay
       const session = event.data.object as Stripe.Checkout.Session;
       await handleCheckoutSessionCompleted(session);

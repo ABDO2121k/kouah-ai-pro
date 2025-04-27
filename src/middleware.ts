@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
   if (headerProtectedRoutes.some((route) => pathname.startsWith(route))) {
     console.log("header protected route");
     const authHeader = request.headers.get("authorization");
-
+    console.log({authHeader});
     if (authHeader !== "abdo_is_the_best") {
       return new NextResponse(
         JSON.stringify({
